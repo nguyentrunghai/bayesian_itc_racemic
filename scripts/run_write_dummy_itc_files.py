@@ -35,7 +35,7 @@ import os
 
 import numpy as np
 
-from _data_files import read_experimental_design_parameters, write_dummy_itc_file
+from _data_io import read_experimental_design_parameters, write_dummy_itc_file
 
 
 def _number_of_lines(csv_file):
@@ -46,8 +46,8 @@ def _number_of_lines(csv_file):
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument( "--experimental_desgin_parameters_file",  type=str, default="experimental_desgin_parameters.dat")
-parser.add_argument( "--digitized_heat_dir",  type=str, default="digitized_heat")
+parser.add_argument("--experimental_desgin_parameters_file",  type=str, default="experimental_desgin_parameters.dat")
+parser.add_argument("--digitized_heat_dir",  type=str, default="digitized_heat")
 
 args = parser.parse_args()
 
