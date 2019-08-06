@@ -59,8 +59,11 @@ for exper_name in exper_names:
     digitized_heat_file = os.path.join(args.digitized_heat_dir, exper_name+".csv")
     number_of_injections = _number_of_lines(digitized_heat_file)
 
+    if number_of_injections != parameters[exper_name]["number_of_injections"]:
+        raise ValueError("Number of injections is not consistent in " + exper_name)
+
     itc_file_name = exper_name + ".itc"
-    write_dummy_itc_file( parameters[exper_name], itc_file_name, number_of_injections=number_of_injections)
+    write_dummy_itc_file(parameters[exper_name], itc_file_name, number_of_injections=number_of_injections)
 
 print("DONE")
 
