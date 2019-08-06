@@ -39,7 +39,10 @@ def write_dummy_itc_file(experimental_design_parameters, out_file_name,
                          filter_period=5,
                          cell_volume=1.434,
                          bottom="# 25\n# 3.649\n# 9.80219\n?\n"):
-    number_of_injections = number_of_injections if number_of_injections is not None else experimental_design_parameters["number_of_injections"]
+    if number_of_injections is not None:
+        number_of_injections = number_of_injections
+    else:
+        number_of_injections = experimental_design_parameters["number_of_injections"]
 
     out_string  = "$ITC\n"
     out_string += "$ %d\n" % number_of_injections
