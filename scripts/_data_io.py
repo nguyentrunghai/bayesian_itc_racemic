@@ -1,8 +1,10 @@
 
 import os
 
+
 from bitc.instruments import Instrument                                                                                   
 from bitc.experiments import ExperimentMicroCal, ExperimentMicroCalWithDummyITC
+
 
 def read_experimental_design_parameters(file_name):                                                                                                                       
     """
@@ -19,26 +21,24 @@ def read_experimental_design_parameters(file_name):
                 exper_name = entries[0] + "_" + entries[1]
                 parameters[exper_name] = {}
                 parameters[exper_name]["syringe_concentration"] = float(entries[2])
-                parameters[exper_name]["cell_concentration"]    = float(entries[3])
-                parameters[exper_name]["number_of_injections"]  = int(entries[5])
-                parameters[exper_name]["injection_volume"]      = float(entries[6])
-                parameters[exper_name]["spacing"]               = int(entries[7])
-                parameters[exper_name]["stir_rate"]             = int(entries[8])
+                parameters[exper_name]["cell_concentration"] = float(entries[3])
+                parameters[exper_name]["number_of_injections"] = int(entries[5])
+                parameters[exper_name]["injection_volume"] = float(entries[6])
+                parameters[exper_name]["spacing"] = int(entries[7])
+                parameters[exper_name]["stir_rate"] = int(entries[8])
     return parameters
 
 
 
-def write_dummy_itc_file(   experimental_design_parameters, out_file_name, 
-                            number_of_injections=None,
-                            target_temperature=25, 
-                            equilibration_time=180, 
-                            reference_power=5,
-                            injection_duration=3,
-                            filter_period=5,
-                            cell_volume=1.434,
-                            bottom = "# 25\n# 3.649\n# 9.80219\n?\n"):
-    """
-    """
+def write_dummy_itc_file(experimental_design_parameters, out_file_name,
+                         number_of_injections=None,
+                         target_temperature=25,
+                         equilibration_time=180,
+                         reference_power=5,
+                         injection_duration=3,
+                         filter_period=5,
+                         cell_volume=1.434,
+                         bottom="# 25\n# 3.649\n# 9.80219\n?\n"):
     number_of_injections = number_of_injections if number_of_injections is not None else experimental_design_parameters["number_of_injections"]
 
     out_string  = "$ITC\n"
@@ -69,9 +69,7 @@ def write_dummy_itc_file(   experimental_design_parameters, out_file_name,
     return None
 
 
-def write_heat_in_origin_format(heats, injection_volume, out):                                                                                               
-    """
-    """
+def write_heat_in_origin_format(heats, injection_volume, out):
     out_string = "%12s %5s %12s %12s %12s %12s\n" % ("DH", "INJV", "Xt", "Mt", "XMt", "NDH")
 
     for heat in heats:
