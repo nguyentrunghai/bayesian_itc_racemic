@@ -62,5 +62,5 @@ for exper_name in exper_names:
     itc_file_name = exper_name + ".itc"
     write_dummy_itc_file( parameters[exper_name], itc_file_name, number_of_injections=number_of_injections)
 
-print "DONE"
+print("DONE")
 
