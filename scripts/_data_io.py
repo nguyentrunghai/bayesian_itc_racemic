@@ -44,7 +44,7 @@ def write_dummy_itc_file(experimental_design_parameters, out_file_name,
     else:
         number_of_injections = experimental_design_parameters["number_of_injections"]
 
-    out_string  = "$ITC\n"
+    out_string = "$ITC\n"
     out_string += "$ %d\n" % number_of_injections
     out_string += "$NOT\n"
 
