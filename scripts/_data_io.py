@@ -18,7 +18,7 @@ def read_experimental_design_parameters(file_name):
             if not line.startswith("#"):
                 entries = line.split()
 
-                exper_name = entries[0] + "_" + entries[1]
+                exper_name = entries[1]
                 parameters[exper_name] = {}
                 parameters[exper_name]["syringe_concentration"] = float(entries[2])
                 parameters[exper_name]["cell_concentration"] = float(entries[3])
