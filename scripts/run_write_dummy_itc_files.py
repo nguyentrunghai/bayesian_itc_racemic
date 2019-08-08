@@ -63,7 +63,9 @@ for exper_name in exper_names:
         raise ValueError("Number of injections is not consistent in " + exper_name)
 
     itc_file_name = exper_name + ".itc"
-    write_dummy_itc_file(parameters[exper_name], itc_file_name, number_of_injections=number_of_injections)
+    write_dummy_itc_file(parameters[exper_name], itc_file_name,
+                         number_of_injections=number_of_injections,
+                         cell_volume=1.3513)
 
 print("DONE")
 
