@@ -18,14 +18,14 @@ def read_experimental_design_parameters(file_name):
             if not line.startswith("#"):
                 entries = line.split()
 
-                exper_name = entries[1]
-                parameters[exper_name] = {}
-                parameters[exper_name]["syringe_concentration"] = float(entries[2])
-                parameters[exper_name]["cell_concentration"] = float(entries[3])
-                parameters[exper_name]["number_of_injections"] = int(entries[5])
-                parameters[exper_name]["injection_volume"] = float(entries[6])
-                parameters[exper_name]["spacing"] = int(entries[7])
-                parameters[exper_name]["stir_rate"] = int(entries[8])
+                label = entries[1]
+                parameters[label] = {}
+                parameters[label]["syringe_concentration"] = float(entries[2])
+                parameters[label]["cell_concentration"] = float(entries[3])
+                parameters[label]["number_of_injections"] = int(entries[5])
+                parameters[label]["injection_volume"] = float(entries[6])
+                parameters[label]["spacing"] = int(entries[7])
+                parameters[label]["stir_rate"] = int(entries[8])
     return parameters
 
 
