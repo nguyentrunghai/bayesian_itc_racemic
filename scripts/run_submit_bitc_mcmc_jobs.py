@@ -4,28 +4,28 @@ import glob
 import argparse
 parser = argparse.ArgumentParser()
 
-parser.add_argument( "--itc_data_dir",     type=str, default="1.itc_origin_heat_files")
-parser.add_argument( "--heat_data_dir",    type=str, default="1.itc_origin_heat_files")
+parser.add_argument("--itc_data_dir",     type=str, default="1.itc_origin_heat_files")
+parser.add_argument("--heat_data_dir",    type=str, default="1.itc_origin_heat_files")
 
-parser.add_argument( "--exclude_experiments", type=str, default="")
+parser.add_argument("--exclude_experiments", type=str, default="")
 
-parser.add_argument( "--script",           type=str, default ="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
-parser.add_argument( "--heat_file_suffix", type=str, default =".DAT")
+parser.add_argument("--script",           type=str, default ="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
+parser.add_argument("--heat_file_suffix", type=str, default =".DAT")
 
-parser.add_argument( "--dc",               type=float, default=0.1)      # cell concentration relative uncertainty
-parser.add_argument( "--ds",               type=float, default=0.1)      # syringe concentration relative uncertainty
+parser.add_argument("--dc",               type=float, default=0.1)      # cell concentration relative uncertainty
+parser.add_argument("--ds",               type=float, default=0.1)      # syringe concentration relative uncertainty
 
-parser.add_argument( "--dummy_itc_file",        action="store_true", default=False)
+parser.add_argument("--dummy_itc_file",        action="store_true", default=False)
 
-parser.add_argument( "--uniform_cell_concentration",        action="store_true", default=False)
-parser.add_argument( "--uniform_syringe_concentration",     action="store_true", default=False)
-parser.add_argument( "--concentration_range_factor",        type=float, default=10.)
+parser.add_argument("--uniform_cell_concentration",        action="store_true", default=False)
+parser.add_argument("--uniform_syringe_concentration",     action="store_true", default=False)
+parser.add_argument("--concentration_range_factor",        type=float, default=10.)
 
-parser.add_argument( "--niters",            type=int, default=11000000)
-parser.add_argument( "--nburn",             type=int, default=1000000)
-parser.add_argument( "--nthin",             type=int, default=2000)
+parser.add_argument("--niters",            type=int, default=11000000)
+parser.add_argument("--nburn",             type=int, default=1000000)
+parser.add_argument("--nthin",             type=int, default=2000)
 
-parser.add_argument( "--verbosity",         type=str, default="-vvv")
+parser.add_argument("--verbosity",         type=str, default="-vvv")
 
 args = parser.parse_args()
 
@@ -37,14 +37,15 @@ itc_data_files = [os.path.basename(f) for f in itc_data_files]
 exper_names = [f.split(".itc")[0] for f in itc_data_files]
 for name in exper_names:
     if not os.path.isfile( os.path.join(args.heat_data_dir, name + args.heat_file_suffix) ):
-        print "WARNING: Integrated heat file for " + name + " does not exist"
-exper_names = [name for name in exper_names if os.path.isfile( os.path.join(args.heat_data_dir, name + args.heat_file_suffix) ) ]
+        print("WARNING: Integrated heat file for " + name + " does not exist")
+exper_names = [name for name in exper_names if
+               os.path.isfile(os.path.join(args.heat_data_dir, name + args.heat_file_suffix))]
 
 
 exclude_experiments = args.exclude_experiments.split()
 exper_names = [name for name in exper_names if name not in exclude_experiments]
 
-print "Will run these ", exper_names
+print("Will run these ", exper_names)
 
 for name in exper_names:
     out_dir = os.path.abspath(name)
@@ -91,10 +92,10 @@ cd ''' + out_dir + '''\n''' + \
     args.verbosity + \
     '''\ndate \n'''
     if (not os.path.isfile(TRACES_FILE)) or (os.path.getsize(TRACES_FILE) == 0):
-        print "Submitting " + qsub_file
+        print("Submitting " + qsub_file)
         open(qsub_file, "w").write(qsub_script)
         os.system("qsub %s"%qsub_file)
     else:
-        print TRACES_FILE + " exists, skip"
+        print(TRACES_FILE + " exists, skip")
 
 
