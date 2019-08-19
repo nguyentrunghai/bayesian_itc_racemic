@@ -10,6 +10,10 @@ parser.add_argument("--heat_data_dir", type=str, default="1.itc_origin_heat_file
 parser.add_argument("--exclude_experiments", type=str, default="")
 
 parser.add_argument("--script", type=str, default="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
+
+# currently support either "twocomponent" or "racemicmixture"
+parser.add_argument("--binding_model", type=str, default="twocomponent")
+
 parser.add_argument("--heat_file_suffix", type=str, default=".DAT")
 
 parser.add_argument("--dc", type=float, default=0.1)      # cell concentration relative uncertainty
@@ -29,6 +33,8 @@ parser.add_argument("--verbosity", type=str, default="-vvv")
 
 args = parser.parse_args()
 
+assert args.binding_model in ["twocomponent", "racemicmixture"], "Unsupported model"
+
 TRACES_FILE = "traces.pickle"
 
 itc_data_files = glob.glob(os.path.join(args.itc_data_dir, "*.itc"))
@@ -36,7 +42,7 @@ itc_data_files = [os.path.basename(f) for f in itc_data_files]
 
 exper_names = [f.split(".itc")[0] for f in itc_data_files]
 for name in exper_names:
-    if not os.path.isfile( os.path.join(args.heat_data_dir, name + args.heat_file_suffix) ):
+    if not os.path.isfile(os.path.join(args.heat_data_dir, name + args.heat_file_suffix)):
         print("WARNING: Integrated heat file for " + name + " does not exist")
 exper_names = [name for name in exper_names if
                os.path.isfile(os.path.join(args.heat_data_dir, name + args.heat_file_suffix))]
@@ -55,7 +61,7 @@ for name in exper_names:
     integ_file = os.path.join(args.heat_data_dir, name + args.heat_file_suffix)
 
     qsub_file = os.path.join(out_dir, name+"_mcmc.job")
-    log_file  = os.path.join(out_dir, name+"_mcmc.log")
+    log_file = os.path.join(out_dir, name+"_mcmc.log")
 
     if args.dummy_itc_file:
         dummy_itc_file = ''' --dummy_itc_file '''
