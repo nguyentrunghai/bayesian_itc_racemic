@@ -87,7 +87,7 @@ for name in exper_names:
 source /home/tnguye46/opt/module/anaconda.sh
 cd ''' + out_dir + '''\n''' + \
     '''date\n''' + \
-    '''python ''' + args.script + ''' twocomponent ''' + itc_file + ''' ''' + integ_file + \
+    '''python ''' + args.script + ''' ''' + args.binding_model + ''' ''' + itc_file + ''' ''' + integ_file + \
     ''' --dc %f '''%args.dc + \
     ''' --ds %f '''%args.ds + \
     dummy_itc_file + uniform_cell_concentration + uniform_syringe_concentration + \
@@ -100,7 +100,7 @@ cd ''' + out_dir + '''\n''' + \
     if (not os.path.isfile(TRACES_FILE)) or (os.path.getsize(TRACES_FILE) == 0):
         print("Submitting " + qsub_file)
         open(qsub_file, "w").write(qsub_script)
-        os.system("qsub %s"%qsub_file)
+        os.system("qsub %s" % qsub_file)
     else:
         print(TRACES_FILE + " exists, skip")
 
