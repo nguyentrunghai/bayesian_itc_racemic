@@ -20,7 +20,7 @@ parser.add_argument("--exclude_experiments", type=str, default="")
 args = parser.parse_args()
 
 def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
-    sns.set(font_scale=0.75)
+    sns.set(font_scale=0.5)
     figure_size = (3.2, 2.4)
     dpi = 300
     plt.figure(figsize=figure_size)
@@ -30,6 +30,7 @@ def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    plt.legend(loc="best")
     plt.tight_layout()
     plt.savefig(out, dpi=dpi)
     return None
