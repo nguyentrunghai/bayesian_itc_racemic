@@ -45,7 +45,8 @@ print("twocomponent_traces_files", twocomponent_traces_files)
 print("racemicmixture_traces_files", racemicmixture_traces_files)
 
 exclude_experiments = args.exclude_experiments.split()
-experiments = [experiment for experiment in twocomponent_traces_files if experiment not in exclude_experiments]
+experiments = set(twocomponent_traces_files.keys()).intersection(racemicmixture_traces_files.keys())
+experiments = [experiment for experiment in experiments if experiment not in exclude_experiments]
 print("experiments", experiments)
 
 colors = ("r", "b", "g")
