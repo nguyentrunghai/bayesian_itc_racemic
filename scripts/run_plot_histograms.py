@@ -52,10 +52,12 @@ print("experiments", experiments)
 colors = ("r", "b", "g")
 ylabel = "Probability density"
 for experiment in experiments:
+    print("Processing " + experiment)
     twocomponent_traces = pickle.load(open(twocomponent_traces_files[experiment], "r"))
     racemicmixture_trace = pickle.load(open(racemicmixture_traces_files[experiment], "r"))
 
     # DeltaG
+    print("Ploting DeltaG")
     DeltaG1 = racemicmixture_trace["DeltaG1"]
     DeltaG2 = racemicmixture_trace["DeltaG1"] + racemicmixture_trace["DeltaDeltaG"]
     data_list = (twocomponent_traces["DeltaG"], DeltaG1, DeltaG2)
@@ -65,6 +67,7 @@ for experiment in experiments:
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # DeltaH
+    print("Ploting DeltaH")
     DeltaH1 = racemicmixture_trace["DeltaH1"]
     DeltaH2 = racemicmixture_trace["DeltaH2"]
     data_list = (twocomponent_traces["DeltaH"], DeltaH1, DeltaH2)
@@ -74,6 +77,7 @@ for experiment in experiments:
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # Ls
+    print("Ploting Ls")
     Ls1 = racemicmixture_trace["Ls"] * racemicmixture_trace["rho"]
     Ls2 = racemicmixture_trace["Ls"] * (1 - racemicmixture_trace["rho"])
     data_list = (twocomponent_traces["Ls"], Ls1, Ls2)
@@ -83,6 +87,7 @@ for experiment in experiments:
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # P0
+    print("Ploting P0")
     data_list = (twocomponent_traces["P0"], racemicmixture_trace["P0"])
     labels = ("$[R]_0$ (TwoComponent)", "$[R]_0$ (RacemicMixture)")
     xlabel = "$[R]_0$ (mM)"
