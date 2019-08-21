@@ -87,3 +87,4 @@ for experiment in experiments:
     xlabel = "$[R]_0$ (mM)"
     out = "P0_" + experiment + ".pdf"
     _plot_kde_hist(data_list, labels, colors[:-1], xlabel, ylabel, out)
+    
