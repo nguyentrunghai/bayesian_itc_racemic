@@ -26,7 +26,7 @@ def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     plt.figure(figsize=figure_size)
 
     for data, label, color in zip(data_list, labels, colors):
-        sns.kedplot(data, label=label, c=color)
+        sns.kdeplot(data, label=label, c=color)
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
