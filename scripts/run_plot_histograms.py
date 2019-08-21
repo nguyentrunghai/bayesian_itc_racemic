@@ -63,7 +63,7 @@ for experiment in experiments:
     data_list = (twocomponent_traces["DeltaG"], DeltaG1, DeltaG2)
     labels = ("$\Delta G$ (TwoComponent)", "$\Delta G_1$", "$\Delta G_2$")
     xlabel = "$\Delta G$ (kcal/mol)"
-    out = "deltaG_" + experiment + ".pdf"
+    out = experiment + "_deltaG" + ".pdf"
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # DeltaH
@@ -73,7 +73,7 @@ for experiment in experiments:
     data_list = (twocomponent_traces["DeltaH"], DeltaH1, DeltaH2)
     labels = ("$\Delta H$ (TwoComponent)", "$\Delta H_1$", "$\Delta H_2$")
     xlabel = "$\Delta H$ (kcal/mol)"
-    out = "deltaH_" + experiment + ".pdf"
+    out = experiment + "_deltaH" + ".pdf"
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # Ls
@@ -83,7 +83,7 @@ for experiment in experiments:
     data_list = (twocomponent_traces["Ls"], Ls1, Ls2)
     labels = ("$[L]_s$ (TwoComponent)", "$[L_1]_s$", "$[L_2]_s$")
     xlabel = "$[L]_s$ (mM)"
-    out = "Ls_" + experiment + ".pdf"
+    out = experiment + "_Ls" + ".pdf"
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # P0
@@ -91,5 +91,5 @@ for experiment in experiments:
     data_list = (twocomponent_traces["P0"], racemicmixture_trace["P0"])
     labels = ("$[R]_0$ (TwoComponent)", "$[R]_0$ (RacemicMixture)")
     xlabel = "$[R]_0$ (mM)"
-    out = "P0_" + experiment + ".pdf"
+    out = experiment + "_P0" + ".pdf"
     _plot_kde_hist(data_list, labels, colors[:-1], xlabel, ylabel, out)
