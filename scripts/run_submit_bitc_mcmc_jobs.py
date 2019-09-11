@@ -25,6 +25,10 @@ parser.add_argument("--uniform_cell_concentration", action="store_true", default
 parser.add_argument("--uniform_syringe_concentration", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
+parser.add_argument("--uniform_rho", action="store_true", default=False)
+parser.add_argument("--stated_rho", type=float, default=0.5)
+parser.add_argument("--drho", type=float, default=0.01)
+
 parser.add_argument("--niters", type=int, default=11000000)
 parser.add_argument("--nburn", type=int, default=1000000)
 parser.add_argument("--nthin", type=int, default=2000)
