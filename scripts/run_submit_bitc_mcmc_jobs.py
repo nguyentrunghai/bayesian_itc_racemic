@@ -82,6 +82,11 @@ for name in exper_names:
     else:
         uniform_syringe_concentration = ''' '''
 
+    if args.uniform_rho:
+        uniform_rho = ''' --uniform_rho '''
+    else:
+        uniform_rho = ''' '''
+
     qsub_script = '''#!/bin/bash
 #PBS -S /bin/bash
 #PBS -o %s '''%log_file + '''
@@ -96,6 +101,9 @@ cd ''' + out_dir + '''\n''' + \
     ''' --ds %f '''%args.ds + \
     dummy_itc_file + uniform_cell_concentration + uniform_syringe_concentration + \
     ''' --concentration_range_factor %f '''%args.concentration_range_factor + \
+    uniform_rho + \
+    ''' --stated_rho %f ''' % args.stated_rho + \
+    ''' --drho %f ''' % args.drho + \
     ''' --niters %d '''%args.niters + \
     ''' --nburn %d '''%args.nburn + \
     ''' --nthin %d '''%args.nthin + \
