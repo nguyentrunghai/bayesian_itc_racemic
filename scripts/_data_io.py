@@ -1,6 +1,6 @@
 
 import os
-
+import pickle
 
 from bitc.instruments import Instrument                                                                                   
 from bitc.experiments import ExperimentMicroCal, ExperimentMicroCalWithDummyITC
@@ -99,3 +99,11 @@ def cell_concentration(itc_file, is_dummy_itc_file=False):
     return experiment.cell_concentration["macromolecule"].m
 
 
+class ITCExperiment:
+    """ store experimental design parameter """
+
+    def __init__(self, experimental_info_pickle):
+        """
+        :param experimental_info_pickle: str, name of the pickle file
+        """
+        self._exper_info = pickle.load(open(experimental_info_pickle))
