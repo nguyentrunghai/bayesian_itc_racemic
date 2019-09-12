@@ -4,8 +4,9 @@ define different heat models
 
 import numpy as np
 
-# copied from bayesian_itc
-def expected_injection_heats(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
+
+# copied from the method expected_injection_heats of the class TwoComponentBindingModel in bayesian_itc/bitc/models.py
+def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
     """
     Expected heats of injection for two-component binding model.
 
