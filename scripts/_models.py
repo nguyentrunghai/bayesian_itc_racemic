@@ -2,6 +2,7 @@
 define different heat models
 """
 
+import numpy as np
 
 # copied from bayesian_itc
 def expected_injection_heats(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
@@ -25,19 +26,19 @@ def expected_injection_heats(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta
 
     """
 
-    Kd = numpy.exp(beta * DeltaG)   # dissociation constant (M)
+    Kd = np.exp(beta * DeltaG)   # dissociation constant (M)
     N = N
 
     # Compute complex concentrations.
     # Pn[n] is the protein concentration in sample cell after n injections
     # (M)
-    Pn = numpy.zeros([N])
+    Pn = np.zeros([N])
     # Ln[n] is the ligand concentration in sample cell after n injections
     # (M)
-    Ln = numpy.zeros([N])
+    Ln = np.zeros([N])
     # PLn[n] is the complex concentration in sample cell after n injections
     # (M)
-    PLn = numpy.zeros([N])
+    PLn = np.zeros([N])
     dcum = 1.0  # cumulative dilution factor (dimensionless)
     for n in range(N):
         # Instantaneous injection model (perfusion)
@@ -58,7 +59,7 @@ def expected_injection_heats(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta
 
     # Compute expected injection heats.
     # q_n_model[n] is the expected heat from injection n
-    q_n = numpy.zeros([N])
+    q_n = np.zeros([N])
     # Instantaneous injection model (perfusion)
     # first injection
     q_n[0] = (DeltaH * V0 * PLn[0])*1000 + DeltaH_0
