@@ -48,6 +48,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--experimental_desgin_parameters_file",  type=str, default="experimental_desgin_parameters.dat")
 parser.add_argument("--digitized_heat_dir",  type=str, default="digitized_heat")
+parser.add_argument("--cell_volume_ml", type=float, default=1.3513)
 
 args = parser.parse_args()
 
@@ -65,7 +66,7 @@ for exper_name in exper_names:
     itc_file_name = exper_name + ".itc"
     write_dummy_itc_file(parameters[exper_name], itc_file_name,
                          number_of_injections=number_of_injections,
-                         cell_volume=1.3513)
+                         cell_volume=args.cell_volume_ml)
 
 print("DONE")
 
