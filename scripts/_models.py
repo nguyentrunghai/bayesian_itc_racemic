@@ -73,7 +73,7 @@ def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0
 
 
 # copied from method equilibrium_concentrations of class RacemicMixtureBindingModel in bayesian_itc/bitc/models.py
-def equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
+def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
     """
     REF: Zhi-Xin Wang An exact mathematical expression for describing competitive
                         binding of two different ligands to a protein molecule
@@ -104,3 +104,70 @@ def equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
     RL2 = C0_L2*(2.*d*np.cos(theta/3.) - a) / (3.*Kd2 + (2.*d*np.cos(theta/3.) - a))
 
     return RL1, RL2
+
+
+def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG, beta, N):
+    """
+    Expected heats of injection for racemic mixtrue binding model.
+    :param V0: cell volume (liter)
+    :param DeltaVn: injection volumes (liter)
+    :param P0: Cell concentration (millimolar)
+    :param Ls: Syringe concentration (millimolar)
+    :param rho: ratio between concentration of ligand1 and the total concentration of the syringe
+    :param DeltaH1: enthalpies of binding of ligand1 (kcal/mol)
+    :param DeltaH2: enthalpies of binding of ligand2 (kcal/mol)
+    :param DeltaH_0: heat of injection (cal)
+    :param DeltaG1: free energy of binding of ligand1 (kcal/mol)
+    :param DeltaDeltaG: difference in binding free energy between ligand2 and ligand1: DeltaDeltaG = DeltaG2 - DeltaG1 > 0
+                        DeltaDeltaG is always positive
+    :param beta: inverse temperature * gas constant (mole / kcal)
+    :param N: number of injections
+
+    :return: q_n - expected injection heat (calorie)
+    """
+
+    assert 0 < rho < 1, "rho out of range: %0.5f" %rho
+
+    # compute desociation constant (M)
+    DeltaG2 = DeltaG1 + DeltaDeltaG
+
+    Kd1 = np.exp(beta * DeltaG1)   # dissociation constant of ligand1 (M)
+    Kd2 = np.exp(beta * DeltaG2)   # dissociation constant of ligand2 (M)
+
+    # Compute complex concentrations in the sample after injection n.
+    RL1n = np.zeros([N])
+    RL2n = np.zeros([N])
+    dcum = 1.0  # cumulative dilution factor (dimensionless)
+    for n in range(N):
+        # Instantaneous injection model (perfusion)
+        # TODO: Allow injection volume to vary for each injection.
+        # dilution factor for this injection (dimensionless)
+        d = 1.0 - (DeltaVn[n] / V0)
+        dcum *= d  # cumulative dilution factor
+
+        # total concentration of protein in sample cell after n injections (mol)
+        C0_R = P0 * 1.e-3 * dcum
+
+        # total concentration of ligands in sample cell after n injections (mol)
+        C0_L = Ls * 1.e-3 * (1. - dcum)
+
+        # total concentration of ligand 1
+        C0_L1 = rho * C0_L
+        # total concentration of ligand 2
+        C0_L2 = (1. - rho) * C0_L
+
+        RL1n[n], RL2n[n] = _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V0)
+
+    # Compute expected injection heats.
+    # q_n_model[n] is the expected heat from injection n
+    q_n = np.zeros([N])
+    # Instantaneous injection model (perfusion)
+    # first injection
+    q_n[0] = (DeltaH1 * V0 * RL1n[0] + DeltaH2 * V0 * RL2n[0]) * 1000 + DeltaH_0
+    # TODO do we need dcum = 1.0 here?
+    for n in range(1, N):
+        d = 1.0 - (DeltaVn[n] / V0)  # dilution factor (dimensionless)
+        # subsequent injections
+        q_n[n] = (DeltaH1 * V0 * (RL1n[n] - d*RL1n[n-1]) + DeltaH2 * V0 * (RL2n[n] - d*RL2n[n-1])) * 1000 + DeltaH_0
+
+    return q_n
