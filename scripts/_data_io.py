@@ -5,6 +5,7 @@ import pickle
 from bitc.instruments import Instrument                                                                                   
 from bitc.experiments import ExperimentMicroCal, ExperimentMicroCalWithDummyITC
 
+import numpy as np
 
 def read_experimental_design_parameters(file_name):                                                                                                                       
     """
@@ -126,3 +127,18 @@ class ITCExperiment:
     def get_cell_concentration_milli_molar(self):
         return self._exper_info["cell_concentration"]["macromolecule"].m
 
+
+def load_heat_micro_cal(origin_heat_file):
+    """
+    :param origin_heat_file: str, name of heat file
+    :return: 1d ndarray
+    """
+
+    heats = []
+    with open(origin_heat_file) as handle:
+        handle.readline()
+        for line in handle:
+            if len(line.split()) == 6:
+                heats.append(np.float(line.split()[0]))
+
+    return np.array(heats)
