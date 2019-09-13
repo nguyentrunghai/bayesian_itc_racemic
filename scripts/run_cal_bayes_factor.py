@@ -77,7 +77,7 @@ for experiment in experiments:
 
 
 bayes_factors = pd.Series(bayes_factors)
-bayes_factors.sort_values(ascending=False, inplace=True)
+bayes_factors.sort_values(ascending=True, inplace=True)
 bayes_factors_log = np.log(bayes_factors)
 
 # plot
@@ -86,3 +86,5 @@ bayes_factors_log.plot(kind="barh")
 ax.set_xlabel("log[Bayes factor]")
 plt.tight_layout()
 plt.savefig("test.pdf", dpi=300)
+
+print("DONE!")
