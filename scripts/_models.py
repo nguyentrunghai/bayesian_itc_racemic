@@ -259,3 +259,24 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
         aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
 
     return aver_likelihood / len(P0_trace)
+
+
+def lognormal_pdf(x, stated_center, uncertainty):
+    """
+    :param x: float
+    :param stated_center: float
+    :param uncertainty: float
+    :return: pdf, float
+    """
+    if x <= 0:
+        return 0.
+
+    m = stated_center
+    v = uncertainty**2
+
+    mu = np.log(m / np.sqrt(1 + (v / (m ** 2))))
+    sigma_2 = np.log(1 + (v / (m**2)))
+
+    pdf = 1 / x / np.sqrt(2 * np.pi * sigma_2) * np.exp(-0.5 / sigma_2 * (np.log(x) - mu)**2)
+    return pdf
+
