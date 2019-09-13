@@ -30,6 +30,9 @@ parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 parser.add_argument("--experiments", type=str,
                     default="Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
+parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--xlabel", type=str, default="log[Bayes factor]")
+parser.add_argument("--out", type=str, default="bayes_factor.pdf")
 
 args = parser.parse_args()
 
@@ -80,11 +83,11 @@ bayes_factors.sort_values(ascending=True, inplace=True)
 bayes_factors_log = np.log(bayes_factors)
 
 # plot
-sns.set(font_scale=0.75)
+sns.set(font_scale=args.font_scale)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=((3.2, 2.4)))
 bayes_factors_log.plot(kind="barh")
-ax.set_xlabel("ln[Bayes factor]")
+ax.set_xlabel(args.xlabel)
 plt.tight_layout()
-plt.savefig("test.pdf", dpi=300)
+plt.savefig(args.out, dpi=300)
 
 print("DONE!")
