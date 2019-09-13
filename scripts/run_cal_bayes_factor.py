@@ -82,7 +82,7 @@ bayes_factors_log = np.log(bayes_factors)
 
 # plot
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=((3.2, 2.4)))
-bayes_factors.plot(kind="barh")
+bayes_factors_log.plot(kind="barh")
 ax.set_xlabel("log[Bayes factor]")
 plt.tight_layout()
 plt.savefig("test.pdf", dpi=300)
