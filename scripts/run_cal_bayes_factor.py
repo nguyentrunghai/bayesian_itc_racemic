@@ -22,7 +22,7 @@ parser.add_argument("exper_info_file", type=str, default="experimental_informati
 parser.add_argument("mcmc_trace_file", type=str, default="traces.pickle")
 
 parser.add_argument("experiments", type=str,
-                    default="Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
+                    default="Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
 
 args = parser.parse_args()
