@@ -131,7 +131,7 @@ class ITCExperiment:
 def load_heat_micro_cal(origin_heat_file):
     """
     :param origin_heat_file: str, name of heat file
-    :return: 1d ndarray
+    :return: 1d ndarray, heats in micro calorie
     """
 
     heats = []
