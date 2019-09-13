@@ -67,3 +67,4 @@ for experiment in experiments:
     print("aver_likelihood_rmbm: %0.5e" % aver_likelihood_rmbm)
     print("aver_likelihood_2cbm: %0.5e" % aver_likelihood_2cbm)
     print("Bayes factor: %0.5e" % bayes_factor)
+    print("")
