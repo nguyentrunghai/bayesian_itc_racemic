@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set()
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import average_likelihood_TwoComponentBindingModel, average_likelihood_RacemicMixtureBindingModel
@@ -81,9 +80,10 @@ bayes_factors.sort_values(ascending=True, inplace=True)
 bayes_factors_log = np.log(bayes_factors)
 
 # plot
+sns.set(font_scale=0.75)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=((3.2, 2.4)))
 bayes_factors_log.plot(kind="barh")
-ax.set_xlabel("log[Bayes factor]")
+ax.set_xlabel("ln[Bayes factor]")
 plt.tight_layout()
 plt.savefig("test.pdf", dpi=300)
 
