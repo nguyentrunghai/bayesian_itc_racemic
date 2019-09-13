@@ -32,6 +32,7 @@ KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
 
+bayes_factors = {}
 for experiment in experiments:
     print(experiment)
     actual_heat_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
@@ -60,6 +61,9 @@ for experiment in experiments:
                                                                        n_injections=exper_info_2cbm.get_number_injections(),
                                                                        mcmc_trace=trace_2cbm)
 
-    print("aver_likelihood_rmbm", aver_likelihood_rmbm)
-    print("aver_likelihood_2cbm", aver_likelihood_2cbm)
-    print("ratio", aver_likelihood_rmbm / aver_likelihood_2cbm)
+    bayes_factor = aver_likelihood_rmbm / aver_likelihood_2cbm
+    bayes_factors[experiment] = bayes_factor
+
+    print("aver_likelihood_rmbm: %0.5e" % aver_likelihood_rmbm)
+    print("aver_likelihood_2cbm: %0.5e" % aver_likelihood_2cbm)
+    print("Bayes factor: %0.5e" % bayes_factor)
