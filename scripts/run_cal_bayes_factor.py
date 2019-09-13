@@ -80,7 +80,7 @@ for experiment in experiments:
 
 bayes_factors = pd.Series(bayes_factors)
 bayes_factors.sort_values(ascending=True, inplace=True)
-bayes_factors_log = np.log(bayes_factors)
+bayes_factors_log = np.log10(bayes_factors)
 
 # plot
 sns.set(font_scale=args.font_scale)
