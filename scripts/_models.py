@@ -4,6 +4,7 @@ define different heat models
 
 import numpy as np
 
+KB = 0.0019872041      # in kcal/mol/K
 
 # copied from the method expected_injection_heats of the class TwoComponentBindingModel in bayesian_itc/bitc/models.py
 def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
@@ -306,3 +307,42 @@ def logsigma_guesses(q_n_cal):
     log_sigma_max = log_sigma_guess + 5
     return log_sigma_guess, log_sigma_max, log_sigma_min
 
+
+def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
+    """
+    maximum a posterior
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :return: values of parameters that maximize the posterior
+    """
+    P0_trace = mcmc_trace["P0"]
+    Ls_trace = mcmc_trace["Ls"]
+    DeltaG_trace = mcmc_trace["DeltaG"]
+    DeltaH_trace = mcmc_trace["DeltaH"]
+    DeltaH_0_trace = mcmc_trace["DeltaH_0"]
+    log_sigma_trace = mcmc_trace["log_sigma"]
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+
+    log_probs = []
+    for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
+                                                           DeltaH_0_trace, log_sigma_trace):
+        q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
+                                                     DeltaH_0, beta, n_injections)
+
+        sigma_cal = np.exp(log_sigma)
+        log_likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+
+        stated_P0 = exper_info.get_cell_concentration_milli_molar()
+        log_lognormal_P0 = np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=0.1*stated_P0))
+
+        stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+        log_lognormal_Ls = np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=0.1 * stated_Ls))
+
+        log_uniform_DeltaG = uniform_pdf(DeltaG, lower=-40., upper=40.)
+        log_uniform_DeltaH = uniform_pdf(DeltaH, lower=-100., upper=100.)
+        
