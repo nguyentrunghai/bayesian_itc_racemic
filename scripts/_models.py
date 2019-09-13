@@ -280,3 +280,17 @@ def lognormal_pdf(x, stated_center, uncertainty):
     pdf = 1 / x / np.sqrt(2 * np.pi * sigma_2) * np.exp(-0.5 / sigma_2 * (np.log(x) - mu)**2)
     return pdf
 
+
+def uniform_pdf(x, lower, upper):
+    """
+    :param x:float
+    :param lower: float
+    :param upper: float
+    :return: pdf, float
+    """
+    assert upper > lower, "upper must be greater than lower"
+    if (x < lower) or (x > upper):
+        return 0.
+
+    return 1. / (upper - lower)
+
