@@ -305,7 +305,17 @@ def logsigma_guesses(q_n_cal):
     log_sigma_guess = np.log(q_n_cal[-4:].std())
     log_sigma_min = log_sigma_guess - 10
     log_sigma_max = log_sigma_guess + 5
-    return log_sigma_guess, log_sigma_max, log_sigma_min
+    return log_sigma_min, log_sigma_max
+
+
+# copied from bayesian_itc/bitc/models
+def deltaH0_guesses(q_n_cal):
+    # Assume the last injection has the best guess for H0
+    DeltaH_0_guess = q_n_cal[-1]
+    heat_interval = (q_n_cal.max() - q_n_cal.min())
+    DeltaH_0_min = q_n_cal.min() - heat_interval
+    DeltaH_0_max = q_n_cal.max() + heat_interval
+    return DeltaH_0_min, DeltaH_0_max
 
 
 def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
@@ -345,4 +355,4 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
 
         log_uniform_DeltaG = uniform_pdf(DeltaG, lower=-40., upper=40.)
         log_uniform_DeltaH = uniform_pdf(DeltaH, lower=-100., upper=100.)
-        
+
