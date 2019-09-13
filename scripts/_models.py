@@ -171,3 +171,23 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
         q_n[n] = (DeltaH1 * V0 * (RL1n[n] - d*RL1n[n-1]) + DeltaH2 * V0 * (RL2n[n] - d*RL2n[n-1])) * 1000 + DeltaH_0
 
     return q_n
+
+
+def normal_likelihood(q_actual, q_model, sigma):
+    """
+    :param q_actual: 1d ndarray, actual or observed values of heats
+    :param q_model: heat calculated from a model
+    :param sigma: standard deviation
+    :return: likelihood, float
+
+    log_likelihood = N/(4*\sigma^2) ln(2*\pi*\sigma^2) \sum_{i=1}^{N} epsilon_i^2
+    """
+    assert len(q_actual) == len(q_model), "q_actual and q_model must have the same len"
+    sum_e_squared = np.sum((q_model - q_actual)**2)
+
+    n_injections = len(q_actual)
+    log_likelihood = n_injections / (4.*sigma**2) * np.log(2 * np.pi * sigma**2) * sum_e_squared
+
+    return np.exp(log_likelihood)
+
+
