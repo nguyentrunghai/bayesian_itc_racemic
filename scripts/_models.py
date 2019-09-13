@@ -294,3 +294,15 @@ def uniform_pdf(x, lower, upper):
 
     return 1. / (upper - lower)
 
+
+# copied from bayesian_itc/bitc/models
+def logsigma_guesses(q_n_cal):
+    """
+    :param q_n_cal: heats in calorie
+    :return:
+    """
+    log_sigma_guess = np.log(q_n_cal[-4:].std())
+    log_sigma_min = log_sigma_guess - 10
+    log_sigma_max = log_sigma_guess + 5
+    return log_sigma_guess, log_sigma_max, log_sigma_min
+
