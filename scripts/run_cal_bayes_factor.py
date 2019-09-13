@@ -7,6 +7,12 @@ import os
 import argparse
 import pickle
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import average_likelihood_TwoComponentBindingModel, average_likelihood_RacemicMixtureBindingModel
 
@@ -68,3 +74,15 @@ for experiment in experiments:
     print("aver_likelihood_2cbm: %0.5e" % aver_likelihood_2cbm)
     print("Bayes factor: %0.5e" % bayes_factor)
     print("")
+
+
+bayes_factors = pd.Series(bayes_factors)
+bayes_factors.sort_values(ascending=False, inplace=True)
+bayes_factors_log = np.log(bayes_factors)
+
+# plot
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=((3.2, 2.4)))
+bayes_factors.plot(kind="barh")
+ax.set_xlabel("log[Bayes factor]")
+plt.tight_layout()
+plt.savefig("test.pdf", dpi=300)
