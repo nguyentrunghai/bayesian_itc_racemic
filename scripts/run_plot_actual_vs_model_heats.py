@@ -69,7 +69,7 @@ for experiment in experiments:
      map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(
                                                                             actual_q_cal, exper_info_rmbm, trace_rmbm,
                                                                             uniform_rho=True,
-                                                                            stated_rho=args.stated_rh,
+                                                                            stated_rho=args.stated_rho,
                                                                             drho=args.drho)
 
     q_2cbm_cal = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
