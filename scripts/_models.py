@@ -440,4 +440,28 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
 
             log_prob += np.log(lognormal_pdf(rho, stated_center=stated_rho, uncertainty=rho_uncertainty))
 
+        log_prob += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
+        log_prob += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
+
+        log_prob += np.log(uniform_pdf(DeltaH1, lower=-100., upper=100.))
+        log_prob += np.log(uniform_pdf(DeltaH2, lower=-100., upper=100.))
+
+        log_prob += np.log(uniform_pdf(DeltaH_0, lower=DeltaH_0_min, upper=DeltaH_0_max))
+        log_prob += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
+
+        log_probs.append(log_prob)
+
+    map_idx = np.argmax(log_probs)
+    print("Map index: %d" % map_idx)
+
+    map_P0 = P0_trace[map_idx]
+    map_Ls = Ls_trace[map_idx]
+    map_rho = rho_trace[map_idx]
+    map_DeltaG1 = DeltaG1_trace[map_idx]
+    map_DeltaDeltaG = DeltaDeltaG_trace[map_idx]
+    map_DeltaH1 = DeltaH1_trace[map_idx]
+    map_DeltaH2 = DeltaH2_trace[map_idx]
+    map_DeltaH_0 = DeltaH_0_trace[map_idx]
+
+    return map_P0, map_Ls, map_rho, map_DeltaG1, map_DeltaDeltaG, map_DeltaH1, map_DeltaH2, map_DeltaH_0
 
