@@ -372,9 +372,72 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
     map_DeltaG = DeltaG_trace[map_idx]
     map_DeltaH = DeltaH_trace[map_idx]
     map_DeltaH_0 = DeltaH_0_trace[map_idx]
-    map_log_sigma = log_sigma_trace[map_idx]
 
-    return map_P0, map_Ls, map_DeltaG, map_DeltaH, map_DeltaH_0, map_log_sigma
+    return map_P0, map_Ls, map_DeltaG, map_DeltaH, map_DeltaH_0
 
+
+def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
+                                   uniform_rho=False, stated_rho=0.5, drho=0.1):
+    """
+    maximum a posterior
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :param uniform_rho: use uniform prior for rho
+    :param stated_rho: float in [0, 1], stated value of rho
+    :param drho: float, in [0, 1], relative uncertainty in rho
+    :return: values of parameters that maximize the posterior
+    """
+    P0_trace = mcmc_trace["P0"]
+    Ls_trace = mcmc_trace["Ls"]
+    rho_trace = mcmc_trace["rho"]
+    DeltaG1_trace = mcmc_trace["DeltaG1"]
+    DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"]
+    DeltaH1_trace = mcmc_trace["DeltaH1"]
+    DeltaH2_trace = mcmc_trace["DeltaH2"]
+    DeltaH_0_trace = mcmc_trace["DeltaH_0"]
+    log_sigma_trace = mcmc_trace["log_sigma"]
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+
+    DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
+    logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
+
+    log_probs = []
+
+    for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, rho_trace,
+                                                                                        DeltaG1_trace,
+                                                                                        DeltaDeltaG_trace,
+                                                                                        DeltaH1_trace, DeltaH2_trace,
+                                                                                        DeltaH_0_trace,
+                                                                                        log_sigma_trace):
+        q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                       DeltaG1, DeltaDeltaG, beta, n_injections)
+        sigma_cal = np.exp(log_sigma)
+        log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+
+        stated_P0 = exper_info.get_cell_concentration_milli_molar()
+        log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=0.1 * stated_P0))
+
+        stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+        log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=0.1 * stated_Ls))
+
+        if uniform_rho:
+            rho_lower = stated_rho - drho * stated_rho
+            assert rho_lower > 0, "rho_lower must be positive"
+            rho_upper = stated_rho + drho * stated_rho
+            assert rho_upper < 1, "rho_upper must be less than 1"
+
+            log_prob += np.log(uniform_pdf(rho, lower=rho_lower, upper=rho_upper))
+
+        else:
+            assert 0 < stated_rho < 1, "Stated rho out of range: %0.2f" % stated_rho
+            assert 0 < drho < 1, "drho out of range: %0.2f" % drho
+            rho_uncertainty = drho * stated_rho
+
+            log_prob += np.log(lognormal_pdf(rho, stated_center=stated_rho, uncertainty=rho_uncertainty))
 
 
