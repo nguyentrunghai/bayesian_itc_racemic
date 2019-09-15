@@ -10,6 +10,7 @@ import pickle
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import map_TwoComponentBindingModel, map_RacemicMixtureBindingModel
+from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 
 parser = argparse.ArgumentParser()
 
@@ -55,9 +56,24 @@ for experiment in experiments:
                                                                                         actual_q_cal,
                                                                                         exper_info_2cbm, trace_2cbm)
 
-    map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm, map_DeltaG1_rmbm, \
-    map_DeltaDeltaG_rmbm, map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm = map_RacemicMixtureBindingModel(
+    (map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
+     map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(
                                                                             actual_q_cal, exper_info_rmbm, trace_rmbm,
                                                                             uniform_rho=True,
                                                                             stated_rho=args.stated_rh,
                                                                             drho=args.drho)
+
+    q_2cbm = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
+                                            exper_info_2cbm.get_injection_volumes_liter(),
+                                            map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
+                                            map_DeltaH_0_2cbm,
+                                            beta=1 / KB / exper_info_2cbm.get_target_temperature_kelvin(),
+                                            N=exper_info_2cbm.get_number_injections())
+
+    q_rmbm = heats_RacemicMixtureBindingModel(exper_info_rmbm.get_cell_volume_liter(),
+                                              exper_info_rmbm.get_injection_volumes_liter(),
+                                              map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm,
+                                              map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm,
+                                              map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
+                                              beta=1 / KB / exper_info_rmbm.get_target_temperature_kelvin(),
+                                              N=exper_info_rmbm.get_number_injections())
