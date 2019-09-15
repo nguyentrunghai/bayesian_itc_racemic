@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--twocomponent_mcmc_dir", type=str, default="twocomponent")
 parser.add_argument("--racemicmixture_mcmc_dir", type=str, default="racemicmixture")
 
-parser.add_argument("--exclude_experiments", type=str, default="")
+parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 args = parser.parse_args()
 
 def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
@@ -45,9 +45,7 @@ racemicmixture_traces_files = {os.path.basename(os.path.dirname(f)): f for f in 
 print("twocomponent_traces_files", twocomponent_traces_files)
 print("racemicmixture_traces_files", racemicmixture_traces_files)
 
-exclude_experiments = args.exclude_experiments.split()
-experiments = set(twocomponent_traces_files.keys()).intersection(racemicmixture_traces_files.keys())
-experiments = [experiment for experiment in experiments if experiment not in exclude_experiments]
+experiments = args.experiments.split()
 print("experiments", experiments)
 
 colors = ("r", "b", "g")
