@@ -8,6 +8,9 @@ import os
 import argparse
 import pickle
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import map_TwoComponentBindingModel, map_RacemicMixtureBindingModel
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
@@ -31,11 +34,17 @@ parser.add_argument("--experiments", type=str,
 parser.add_argument("--stated_rho", type=float, default=0.5)
 parser.add_argument("--drho", type=float, default=0.1)
 
+parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--xlabel", type=str, default="injection #")
+parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
+
 args = parser.parse_args()
 
 KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
+
+sns.set(font_scale=args.font_scale)
 
 for experiment in experiments:
     print(experiment)
@@ -63,17 +72,37 @@ for experiment in experiments:
                                                                             stated_rho=args.stated_rh,
                                                                             drho=args.drho)
 
-    q_2cbm = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
-                                            exper_info_2cbm.get_injection_volumes_liter(),
-                                            map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
-                                            map_DeltaH_0_2cbm,
-                                            beta=1 / KB / exper_info_2cbm.get_target_temperature_kelvin(),
-                                            N=exper_info_2cbm.get_number_injections())
+    q_2cbm_cal = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
+                                                exper_info_2cbm.get_injection_volumes_liter(),
+                                                map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
+                                                map_DeltaH_0_2cbm,
+                                                beta=1 / KB / exper_info_2cbm.get_target_temperature_kelvin(),
+                                                N=exper_info_2cbm.get_number_injections())
+    q_2cbm_micro_cal = q_2cbm_cal * 10**6
 
-    q_rmbm = heats_RacemicMixtureBindingModel(exper_info_rmbm.get_cell_volume_liter(),
-                                              exper_info_rmbm.get_injection_volumes_liter(),
-                                              map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm,
-                                              map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm,
-                                              map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
-                                              beta=1 / KB / exper_info_rmbm.get_target_temperature_kelvin(),
-                                              N=exper_info_rmbm.get_number_injections())
+    q_rmbm_cal = heats_RacemicMixtureBindingModel(exper_info_rmbm.get_cell_volume_liter(),
+                                                  exper_info_rmbm.get_injection_volumes_liter(),
+                                                  map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm,
+                                                  map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm,
+                                                  map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
+                                                  beta=1 / KB / exper_info_rmbm.get_target_temperature_kelvin(),
+                                                  N=exper_info_rmbm.get_number_injections())
+    q_rmbm_micro_cal = q_rmbm_cal * 10**6
+
+    print("actual_q_micro_cal:", actual_q_micro_cal)
+    print("q_2cbm_micro_cal:", q_2cbm_micro_cal)
+    print("q_rmbm_micro_cal:", q_rmbm_micro_cal)
+
+    assert len(actual_q_micro_cal) == len(q_2cbm_micro_cal) == len(q_rmbm_micro_cal), "heats do not have the same len"
+    n_inj = len(actual_q_micro_cal)
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+    ax.scatter(range(1, n_inj+1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
+    ax.plot(range(1, n_inj+1), q_2cbm_micro_cal, c="r", linestyle="--", label="2cbm")
+    ax.plot(range(1, n_inj + 1), q_rmbm_micro_cal, c="b", linestyle="-", label="rmbm")
+
+    ax.set_xlabel(args.xlabel)
+    ax.set_ylabel(args.ylabel)
+    ax.legend(loc="best")
+
+    fig.tight_layout()
+    fig.savefig(experiment + ".pdf", dpi=300)
