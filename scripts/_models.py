@@ -338,6 +338,9 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
     beta = 1 / KB / exper_info.get_target_temperature_kelvin()
     n_injections = exper_info.get_number_injections()
 
+    DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
+    logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
+
     log_probs = []
     for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
                                                            DeltaH_0_trace, log_sigma_trace):
@@ -345,14 +348,33 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
                                                      DeltaH_0, beta, n_injections)
 
         sigma_cal = np.exp(log_sigma)
-        log_likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+        log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
         stated_P0 = exper_info.get_cell_concentration_milli_molar()
-        log_lognormal_P0 = np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=0.1*stated_P0))
+        log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=0.1*stated_P0))
 
         stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-        log_lognormal_Ls = np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=0.1 * stated_Ls))
+        log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=0.1 * stated_Ls))
 
-        log_uniform_DeltaG = uniform_pdf(DeltaG, lower=-40., upper=40.)
-        log_uniform_DeltaH = uniform_pdf(DeltaH, lower=-100., upper=100.)
+        log_prob += np.log(uniform_pdf(DeltaG, lower=-40., upper=40.))
+        log_prob += np.log(uniform_pdf(DeltaH, lower=-100., upper=100.))
+
+        log_prob += np.log(uniform_pdf(DeltaH_0, lower=DeltaH_0_min, upper=DeltaH_0_max))
+        log_prob += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
+
+        log_probs.append(log_prob)
+
+    map_idx = np.argmax(log_probs)
+    print("Map index: %d" % map_idx)
+
+    map_P0 = P0_trace[map_idx]
+    map_Ls = Ls_trace[map_idx]
+    map_DeltaG = DeltaG_trace[map_idx]
+    map_DeltaH = DeltaH_trace[map_idx]
+    map_DeltaH_0 = DeltaH_0_trace[map_idx]
+    map_log_sigma = log_sigma_trace[map_idx]
+
+    return map_P0, map_Ls, map_DeltaG, map_DeltaH, map_DeltaH_0, map_log_sigma
+
+
 
