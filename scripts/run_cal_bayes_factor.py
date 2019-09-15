@@ -81,7 +81,7 @@ bayes_factors_log = np.log10(bayes_factors)
 
 # plot
 sns.set(font_scale=args.font_scale)
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=((3.2, 2.4)))
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 bayes_factors_log.plot(kind="barh")
 ax.set_xlabel(args.xlabel)
 plt.tight_layout()
