@@ -102,7 +102,7 @@ for experiment in experiments:
 
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
-    ax.legend(loc="best")
+    ax.legend(loc="lower right")
 
     fig.tight_layout()
     fig.savefig(experiment + ".pdf", dpi=300)
