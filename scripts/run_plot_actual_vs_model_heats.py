@@ -17,19 +17,17 @@ from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingM
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/6.racemicmixture_mcmc/lognomP0_lognomLs_narrowUniformRho")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="6.racemicmixture_mcmc")
 
-parser.add_argument("--two_component_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/5.twocomponent_mcmc/lognomP0_lognomLs")
+parser.add_argument("--two_component_mcmc_dir", type=str, default="5.twocomponent_mcmc")
 
-parser.add_argument("--heat_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/4.heat_in_origin_format")
+parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
 parser.add_argument("--experiments", type=str,
-                    default="Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
+                    default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 
 parser.add_argument("--stated_rho", type=float, default=0.5)
 parser.add_argument("--drho", type=float, default=0.1)
@@ -106,3 +104,5 @@ for experiment in experiments:
 
     fig.tight_layout()
     fig.savefig(experiment + ".pdf", dpi=300)
+
+print("DONE!")
