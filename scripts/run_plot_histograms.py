@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--twocomponent_mcmc_dir", type=str, default="twocomponent")
 parser.add_argument("--racemicmixture_mcmc_dir", type=str, default="racemicmixture")
 
+parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 args = parser.parse_args()
 
@@ -35,16 +36,6 @@ def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     plt.savefig(out, dpi=dpi)
     return None
 
-TRACES_FILE_NAME = "traces.pickle"
-
-twocomponent_traces_files = glob.glob(os.path.join(args.twocomponent_mcmc_dir, "*", TRACES_FILE_NAME))
-racemicmixture_traces_files = glob.glob(os.path.join(args.racemicmixture_mcmc_dir, "*", TRACES_FILE_NAME))
-
-twocomponent_traces_files = {os.path.basename(os.path.dirname(f)): f for f in twocomponent_traces_files}
-racemicmixture_traces_files = {os.path.basename(os.path.dirname(f)): f for f in racemicmixture_traces_files}
-print("twocomponent_traces_files", twocomponent_traces_files)
-print("racemicmixture_traces_files", racemicmixture_traces_files)
-
 experiments = args.experiments.split()
 print("experiments", experiments)
 
@@ -52,8 +43,11 @@ colors = ("r", "b", "g")
 ylabel = "Probability density"
 for experiment in experiments:
     print("Processing " + experiment)
-    twocomponent_traces = pickle.load(open(twocomponent_traces_files[experiment], "r"))
-    racemicmixture_trace = pickle.load(open(racemicmixture_traces_files[experiment], "r"))
+    twocomponent_traces_file = os.path.join(args.twocomponent_mcmc_dir, experiment, args.mcmc_trace_file)
+    twocomponent_traces = pickle.load(open(twocomponent_traces_file))
+
+    racemicmixture_traces_file = os.path.join(args.racemicmixture_mcmc_dir, experiment, args.mcmc_trace_file)
+    racemicmixture_trace = pickle.load(open(racemicmixture_traces_file))
 
     # DeltaG
     print("Ploting DeltaG")
