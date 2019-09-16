@@ -49,7 +49,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--experimental_desgin_parameters_file",  type=str, default="experimental_desgin_parameters.dat")
 parser.add_argument("--digitized_heat_dir",  type=str, default="digitized_heat")
 parser.add_argument("--cell_volume_ml", type=float, default=1.3513)
-parser.add_argument("--experiments", type=str, defualt=" ")
+parser.add_argument("--experiments", type=str, default=" ")
 
 args = parser.parse_args()
 
