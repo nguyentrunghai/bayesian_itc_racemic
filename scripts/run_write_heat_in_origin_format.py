@@ -31,16 +31,20 @@ def _read_digitized_heat(csv_file):
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument( "--experimental_desgin_parameters_file",  type=str, default="experimental_desgin_parameters.dat")
-parser.add_argument( "--digitized_heat_dir",  type=str, default="digitized_heat")
-
+parser.add_argument("--experimental_desgin_parameters_file",  type=str, default="experimental_desgin_parameters.dat")
+parser.add_argument("--digitized_heat_dir",  type=str, default="digitized_heat")
+parser.add_argument("--experiments", type=str, default=" ")
 args = parser.parse_args()
 
+experiments_to_run = args.experiments.split()
 
 parameters = read_experimental_design_parameters(args.experimental_desgin_parameters_file)
 exper_names = parameters.keys()
 
-for exper_name in exper_names:
+for experiment in experiments_to_run:
+    assert experiment in exper_names, "Unknown experiment: " + experiment
+
+for exper_name in experiments_to_run:
     digitized_heat_file = os.path.join(args.digitized_heat_dir, exper_name+".csv")
     heats = _read_digitized_heat(digitized_heat_file)
 
