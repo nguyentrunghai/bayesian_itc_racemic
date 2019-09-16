@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--itc_data_dir", type=str, default="1.itc_origin_heat_files")
 parser.add_argument("--heat_data_dir", type=str, default="1.itc_origin_heat_files")
 
-parser.add_argument("--exclude_experiments", type=str, default="")
+parser.add_argument("--experiments", type=str, default="")
 
 parser.add_argument("--script", type=str, default="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
 
@@ -52,12 +52,13 @@ exper_names = [name for name in exper_names if
                os.path.isfile(os.path.join(args.heat_data_dir, name + args.heat_file_suffix))]
 
 
-exclude_experiments = args.exclude_experiments.split()
-exper_names = [name for name in exper_names if name not in exclude_experiments]
+experiments_to_run = args.experiments.split()
+for experiment in experiments_to_run:
+    assert experiment in exper_names, "Unknown experiment: " + experiment
 
 print("Will run these ", exper_names)
 
-for name in exper_names:
+for name in experiments_to_run:
     out_dir = os.path.abspath(name)
     if not os.path.isdir(name):
         os.makedirs(name)
