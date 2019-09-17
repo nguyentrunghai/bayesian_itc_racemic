@@ -363,7 +363,7 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
         else:
             P0_min = stated_P0 / concentration_range_factor
             P0_max = stated_P0 * concentration_range_factor
-            log_prob += np.log(uniform_pdf(stated_P0, lower=P0_min, upper=P0_max))
+            log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
 
 
         stated_Ls = exper_info.get_syringe_concentration_milli_molar()
@@ -372,7 +372,7 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
         else:
             Ls_min = stated_Ls / concentration_range_factor
             Ls_max = stated_Ls * concentration_range_factor
-            log_prob += np.log(uniform_pdf(stated_Ls, lower=Ls_min, upper=Ls_max))
+            log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
         log_prob += np.log(uniform_pdf(DeltaG, lower=-40., upper=40.))
         log_prob += np.log(uniform_pdf(DeltaH, lower=-100., upper=100.))
@@ -445,10 +445,20 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
         log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
         stated_P0 = exper_info.get_cell_concentration_milli_molar()
-        log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=dcell * stated_P0))
+        if not uniform_P0:
+            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=dcell * stated_P0))
+        else:
+            P0_min = stated_P0 / concentration_range_factor
+            P0_max = stated_P0 * concentration_range_factor
+            log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
 
         stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-        log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
+        if not uniform_Ls:
+            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
+        else:
+            Ls_min = stated_Ls / concentration_range_factor
+            Ls_max = stated_Ls * concentration_range_factor
+            log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
         if uniform_rho:
             rho_lower = stated_rho - drho * stated_rho
