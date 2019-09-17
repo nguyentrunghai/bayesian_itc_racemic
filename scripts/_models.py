@@ -318,12 +318,19 @@ def deltaH0_guesses(q_n_cal):
     return DeltaH_0_min, DeltaH_0_max
 
 
-def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
+def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
+                                 dcell=0.1, dsyringe=0.1,
+                                 uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
     """
     maximum a posterior
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :param dcell: float, relative uncertainty in cell concentration
+    :param dsyringe: float, relative uncertainty in syringe concentration
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
     :return: values of parameters that maximize the posterior
     """
     P0_trace = mcmc_trace["P0"]
@@ -351,10 +358,21 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace):
         log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
         stated_P0 = exper_info.get_cell_concentration_milli_molar()
-        log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=0.1*stated_P0))
+        if not uniform_P0:
+            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=dcell * stated_P0))
+        else:
+            P0_min = stated_P0 / concentration_range_factor
+            P0_max = stated_P0 * concentration_range_factor
+            log_prob += np.log(uniform_pdf(stated_P0, lower=P0_min, upper=P0_max))
+
 
         stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-        log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=0.1 * stated_Ls))
+        if not uniform_Ls:
+            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
+        else:
+            Ls_min = stated_Ls / concentration_range_factor
+            Ls_max = stated_Ls * concentration_range_factor
+            log_prob += np.log(uniform_pdf(stated_Ls, lower=Ls_min, upper=Ls_max))
 
         log_prob += np.log(uniform_pdf(DeltaG, lower=-40., upper=40.))
         log_prob += np.log(uniform_pdf(DeltaH, lower=-100., upper=100.))
