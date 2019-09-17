@@ -395,12 +395,19 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
 
 
 def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
+                                   dcell=0.1, dsyringe=0.1,
+                                   uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
                                    uniform_rho=False, stated_rho=0.5, drho=0.1):
     """
     maximum a posterior
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :param dcell: float, relative uncertainty in cell concentration
+    :param dsyringe: float, relative uncertainty in syringe concentration
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
     :param uniform_rho: use uniform prior for rho
     :param stated_rho: float in [0, 1], stated value of rho
     :param drho: float, in [0, 1], relative uncertainty in rho
@@ -438,10 +445,10 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
         log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
         stated_P0 = exper_info.get_cell_concentration_milli_molar()
-        log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=0.1 * stated_P0))
+        log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=dcell * stated_P0))
 
         stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-        log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=0.1 * stated_Ls))
+        log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
 
         if uniform_rho:
             rho_lower = stated_rho - drho * stated_rho
