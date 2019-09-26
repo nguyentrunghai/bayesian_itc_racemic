@@ -31,6 +31,8 @@ parser.add_argument("--nthin", type=int, default=2000)
 
 parser.add_argument("--verbosity", type=str, default="-vvv")
 
+parser.add_argument("--submit_2_queue", action="store_true", default=False)
+
 args = parser.parse_args()
 
 assert args.binding_model in ["twocomponent", "enantiomer"], "Unsupported model"
@@ -101,7 +103,8 @@ cd ''' + out_dir + '''\n''' + \
     if (not os.path.isfile(TRACES_FILE)) or (os.path.getsize(TRACES_FILE) == 0):
         print("Submitting " + qsub_file)
         open(qsub_file, "w").write(qsub_script)
-        os.system("qsub %s" % qsub_file)
+        if args.submit_2_queue:
+            os.system("qsub %s" % qsub_file)
     else:
         print(TRACES_FILE + " exists, skip")
 
