@@ -11,7 +11,7 @@ parser.add_argument("--experiments", type=str, default="")
 
 parser.add_argument("--script", type=str, default="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
 
-# currently support either "twocomponent" or "enantiomer"
+# currently support either "twocomponent" or "enantiomer", "racemicmixture"
 parser.add_argument("--binding_model", type=str, default="twocomponent")
 
 parser.add_argument("--heat_file_suffix", type=str, default=".DAT")
@@ -35,7 +35,7 @@ parser.add_argument("--submit_2_queue", action="store_true", default=False)
 
 args = parser.parse_args()
 
-assert args.binding_model in ["twocomponent", "enantiomer"], "Unsupported model"
+assert args.binding_model in ["twocomponent", "enantiomer", "racemicmixture"], "Unsupported model"
 
 TRACES_FILE = "traces.pickle"
 
