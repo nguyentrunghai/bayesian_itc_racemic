@@ -10,6 +10,8 @@ from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingM
 from _models import normal_likelihood, lognormal_pdf, uniform_pdf, deltaH0_guesses, logsigma_guesses
 
 
+KB = 0.0019872041      # in kcal/mol/K
+
 
 def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
                                  dcell=0.1, dsyringe=0.1,
