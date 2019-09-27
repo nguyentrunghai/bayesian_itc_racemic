@@ -3,6 +3,7 @@ define different heat models
 """
 
 import numpy as np
+import pymc
 
 KB = 0.0019872041      # in kcal/mol/K
 
@@ -249,3 +250,29 @@ def deltaH0_guesses(q_n_cal):
     return DeltaH_0_min, DeltaH_0_max
 
 
+
+class PyMCLogNormal(object):
+    def __init__(self, name, stated_value, uncertainty_percent):
+        """
+        :param name: str
+        :param stated_value: float, mM
+        :param uncertainty: float, 0 < uncertainty < 1
+        """
+        m = stated_value
+        uncertainty = stated_value * uncertainty_percent
+        v = uncertainty ** 2
+        model = pymc.Lognormal(name,
+                               mu=np.log(m / np.sqrt(1 + (v / (m**2)))),
+                               tau=1.0 / np.log(1 + (v / (m**2))),
+                               value=m)
+
+        setattr(self, name, model)
+
+
+class PyMCUniform(object):
+    def __init__(self, lower, upper):
+        """
+        :param lower: float
+        :param upper: float
+        """
+        assert lower < upper, "lower must be less than upper"
