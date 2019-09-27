@@ -44,6 +44,23 @@ if args.submit:
     this_script = os.path.abspath(sys.argv[0])
     experiments = args.experiments.split()
 
+    dP0 = args.dP0
+    dLs = args.Ls
+
+    uniform_P0 = " "
+    if args.uniform_P0:
+        uniform_P0 = " --uniform_P0 "
+
+    uniform_Ls = " "
+    if args.uniform_Ls:
+        uniform_Ls = " --uniform_Ls "
+
+    concentration_range_factor = args.concentration_range_factor
+
+    nsamples = args.nsamples
+    nburn = args.nburn
+    nthin = args.nthin
+
     for experiment in experiments:
 
         exper_info_file = os.path.join(args.exper_info_dir, experiment, args.experiment)
@@ -56,8 +73,30 @@ if args.submit:
 
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
+        qsub_script = '''#!/bin/bash
+#PBS -S /bin/bash
+#PBS -o %s ''' % log_file + '''
+#PBS -j oe
+#PBS -l nodes=1:ppn=4,walltime=300:00:00
 
+source /home/tnguye46/opt/module/anaconda.sh
+date
+python ''' + this_script + \
+        ''' --exper_info_file ''' + exper_info_file + \
+        ''' --heat_file ''' + heat_file + \
+        ''' --dP0 %0.5f''' % dP0 + \
+        ''' -dLs %0.5f''' % dLs + \
+        uniform_P0 + uniform_Ls + \
+        ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
+        ''' --nsamples %d''' % nsamples + \
+        ''' --nburn %d''' % nburn + \
+        ''' --nthin %d''' % nthin + \
+        ''' --out ''' + out_dir + \
+        '''\ndate\n'''
 
+        open(qsub_file, "w").write(qsub_script)
+        print("Submitting " + experiment)
+        os.system("qsub %s" % qsub_file)
 
 else:
     exper_info_file = args.exper_info_file
