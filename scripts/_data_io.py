@@ -7,6 +7,7 @@ from bitc.experiments import ExperimentMicroCal, ExperimentMicroCalWithDummyITC
 
 import numpy as np
 
+
 def read_experimental_design_parameters(file_name):                                                                                                                       
     """
     file_name   :   str, this file has a specific format and was made by hand
