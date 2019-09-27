@@ -71,6 +71,8 @@ if args.submit:
             os.makedirs(out_dir)
         out_dir = os.path.abspath(out_dir)
 
+        out = os.path.join(out_dir, args.out)
+
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
         qsub_script = '''#!/bin/bash
@@ -85,13 +87,13 @@ python ''' + this_script + \
         ''' --exper_info_file ''' + exper_info_file + \
         ''' --heat_file ''' + heat_file + \
         ''' --dP0 %0.5f''' % dP0 + \
-        ''' -dLs %0.5f''' % dLs + \
+        ''' --dLs %0.5f''' % dLs + \
         uniform_P0 + uniform_Ls + \
         ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
         ''' --nsamples %d''' % nsamples + \
         ''' --nburn %d''' % nburn + \
         ''' --nthin %d''' % nthin + \
-        ''' --out ''' + out_dir + \
+        ''' --out ''' + out + \
         '''\ndate\n'''
 
         open(qsub_file, "w").write(qsub_script)
