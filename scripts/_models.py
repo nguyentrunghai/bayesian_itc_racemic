@@ -175,38 +175,6 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
 
 
 
-def average_likelihood_TwoComponentBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace):
-    """
-    :param q_actual: observed heats, (micro calorie)
-    :param V0: cell volume (liter)
-    :param DeltaVn: injection volumes (liter)
-    :param beta: inverse temperature * gas constant (mole / kcal)
-    :param n_injections: int
-    :param mcmc_trace: dict, "parameter" --> 1d ndarray
-    :return: aver_likelihood, float
-    """
-    P0_trace = mcmc_trace["P0"]
-    Ls_trace = mcmc_trace["Ls"]
-    DeltaG_trace = mcmc_trace["DeltaG"]
-    DeltaH_trace = mcmc_trace["DeltaH"]
-    DeltaH_0_trace = mcmc_trace["DeltaH_0"]
-    log_sigma_trace = mcmc_trace["log_sigma"]
-
-    aver_likelihood = 0.
-    for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
-                                                           DeltaH_0_trace, log_sigma_trace):
-        q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
-                                                     DeltaH_0, beta, n_injections)
-        q_model_micro_cal = q_model_cal * 10.**6
-
-        sigma_cal = np.exp(log_sigma)
-        sigma_micro_cal = sigma_cal * 10**6
-
-        aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
-
-    return aver_likelihood / len(P0_trace)
-
-
 def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace):
     """
     :param q_actual: observed heats, (micro calorie)
