@@ -45,7 +45,7 @@ if args.submit:
     experiments = args.experiments.split()
 
     dP0 = args.dP0
-    dLs = args.Ls
+    dLs = args.dLs
 
     uniform_P0 = " "
     if args.uniform_P0:
