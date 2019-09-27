@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _models import average_likelihood_TwoComponentBindingModel, average_likelihood_RacemicMixtureBindingModel
+from _bayes_factor import average_likelihood_TwoComponentBindingModel, average_likelihood_RacemicMixtureBindingModel
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="6.racemicmixture_mcmc")
