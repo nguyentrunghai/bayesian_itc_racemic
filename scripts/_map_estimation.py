@@ -89,10 +89,9 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
     return map_P0, map_Ls, map_DeltaG, map_DeltaH, map_DeltaH_0
 
 
-def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
-                                   dcell=0.1, dsyringe=0.1,
-                                   uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
-                                   uniform_rho=False, stated_rho=0.5, drho=0.1):
+def map_EnantiomerBindingModel(q_actual_cal, exper_info, mcmc_trace,
+                               dcell=0.1, dsyringe=0.1,
+                               uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
     """
     maximum a posterior
     :param q_actual_cal: observed heats in calorie
@@ -103,9 +102,6 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
     :param uniform_P0: bool
     :param uniform_Ls: bool
     :param concentration_range_factor: float
-    :param uniform_rho: use uniform prior for rho
-    :param stated_rho: float in [0, 1], stated value of rho
-    :param drho: float, in [0, 1], relative uncertainty in rho
     :return: values of parameters that maximize the posterior
     """
     P0_trace = mcmc_trace["P0"]
@@ -155,20 +151,9 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
             Ls_max = stated_Ls * concentration_range_factor
             log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
-        if uniform_rho:
-            rho_lower = stated_rho - drho * stated_rho
-            assert rho_lower > 0, "rho_lower must be positive"
-            rho_upper = stated_rho + drho * stated_rho
-            assert rho_upper < 1, "rho_upper must be less than 1"
 
-            log_prob += np.log(uniform_pdf(rho, lower=rho_lower, upper=rho_upper))
+        log_prob += np.log(uniform_pdf(rho, lower=0., upper=1.))
 
-        else:
-            assert 0 < stated_rho < 1, "Stated rho out of range: %0.2f" % stated_rho
-            assert 0 < drho < 1, "drho out of range: %0.2f" % drho
-            rho_uncertainty = drho * stated_rho
-
-            log_prob += np.log(lognormal_pdf(rho, stated_center=stated_rho, uncertainty=rho_uncertainty))
 
         log_prob += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
         log_prob += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
