@@ -47,7 +47,7 @@ def average_likelihood_TwoComponentBindingModel(q_actual, V0, DeltaVn, beta, n_i
     return aver_likelihood / len(P0_trace)
 
 
-def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace):
+def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
     """
     :param q_actual: observed heats, (micro calorie)
     :param V0: cell volume (liter)
@@ -55,17 +55,22 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
     :param beta: inverse temperature * gas constant (mole / kcal)
     :param n_injections: int
     :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :param nsamples: int
     :return: aver_likelihood, float
     """
-    P0_trace = mcmc_trace["P0"]
-    Ls_trace = mcmc_trace["Ls"]
+    if nsamples is None:
+        nsamples = len(mcmc_trace["P0"])
+    assert nsamples <= len(mcmc_trace["P0"]), "nsamples too big"
+
+    P0_trace = mcmc_trace["P0"][: nsamples]
+    Ls_trace = mcmc_trace["Ls"][: nsamples]
     rho = 0.5
-    DeltaG1_trace = mcmc_trace["DeltaG1"]
-    DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"]
-    DeltaH1_trace = mcmc_trace["DeltaH1"]
-    DeltaH2_trace = mcmc_trace["DeltaH2"]
-    DeltaH_0_trace = mcmc_trace["DeltaH_0"]
-    log_sigma_trace = mcmc_trace["log_sigma"]
+    DeltaG1_trace = mcmc_trace["DeltaG1"][: nsamples]
+    DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"][: nsamples]
+    DeltaH1_trace = mcmc_trace["DeltaH1"][: nsamples]
+    DeltaH2_trace = mcmc_trace["DeltaH2"][: nsamples]
+    DeltaH_0_trace = mcmc_trace["DeltaH_0"][: nsamples]
+    log_sigma_trace = mcmc_trace["log_sigma"][: nsamples]
 
     aver_likelihood = 0.
     for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
