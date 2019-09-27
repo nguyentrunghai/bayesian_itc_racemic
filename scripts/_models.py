@@ -243,7 +243,7 @@ def logsigma_guesses(q_n_cal):
 # copied from bayesian_itc/bitc/models
 def deltaH0_guesses(q_n_cal):
     # Assume the last injection has the best guess for H0
-    DeltaH_0_guess = q_n_cal[-1]
+    #DeltaH_0_guess = q_n_cal[-1]
     heat_interval = (q_n_cal.max() - q_n_cal.min())
     DeltaH_0_min = q_n_cal.min() - heat_interval
     DeltaH_0_max = q_n_cal.max() + heat_interval
@@ -281,3 +281,4 @@ class PyMCUniform(object):
 
         model = pymc.Uniform(name, lower=lower, upper=upper, value=initial_value)
         setattr(self, name, model)
+
