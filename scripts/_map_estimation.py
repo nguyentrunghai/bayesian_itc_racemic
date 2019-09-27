@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import numpy as np
 
-from _models import heats_TwoComponentBindingModel
+from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 from _models import normal_likelihood, lognormal_pdf, uniform_pdf, deltaH0_guesses, logsigma_guesses
 
 
