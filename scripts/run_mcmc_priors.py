@@ -111,7 +111,9 @@ else:
     actual_q_cal = actual_q_micro_cal * 10**(-6)
 
     stated_P0 = exper_info.get_cell_concentration_milli_molar()
+    print("Stated P0: %0.5f" % stated_P0)
     stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+    print("Stated Ls: %0.5f" % stated_Ls)
 
     dP0 = args.dP0
     dLs = args.dLs
