@@ -63,7 +63,7 @@ if args.submit:
 
     for experiment in experiments:
 
-        exper_info_file = os.path.join(args.exper_info_dir, experiment, args.experiment)
+        exper_info_file = os.path.join(args.exper_info_dir, experiment, args.exper_info_file)
         heat_file = os.path.join(args.heat_dir, experiment + ".DAT")
 
         out_dir = experiment
