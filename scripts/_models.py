@@ -270,9 +270,14 @@ class PyMCLogNormal(object):
 
 
 class PyMCUniform(object):
-    def __init__(self, lower, upper):
+    def __init__(self, name, lower, upper):
         """
+        :param name: str
         :param lower: float
         :param upper: float
         """
         assert lower < upper, "lower must be less than upper"
+        initial_value = (lower + upper) / 2.
+
+        model = pymc.Uniform(name, lower=lower, upper=upper, value=initial_value)
+        setattr(self, name, model)
