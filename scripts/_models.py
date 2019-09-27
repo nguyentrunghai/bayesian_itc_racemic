@@ -282,3 +282,96 @@ class PyMCUniform(object):
         model = pymc.Uniform(name, lower=lower, upper=upper, value=initial_value)
         setattr(self, name, model)
 
+
+def run_mcmc(model, iterations, burn, thin):
+    mcmc = pymc.MCMC(model)
+    mcmc.sample(iter=iterations, burn=burn, thin=thin)
+    #pymc.Matplot.plot(mcmc)
+    traces = {}
+    for s in mcmc.stochastics:
+        traces[s.__name__] = s.trace(chain=None)
+    return traces
+
+
+def sample_priors(nsamples, burn, thin,
+                  q_actual_cal,
+                  stated_P0, stated_Ls, dP0=0.1, dLs=0.1,
+                  uniform_P0=False, uniform_Ls=False,
+                  concentration_range_factor=10.0):
+    """
+    :param nsamples: int
+    :param burn: int
+    :param thin: int
+    :param q_actual_cal: observed heats in calorie
+    :param stated_P0: float, unit is milli Molar
+    :param stated_Ls: float, unit is milli Molar
+    :param dP0: float in [0, 1]
+    :param dLs: float in [0, 1]
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
+    :return: traces, dict, {para_name (str) -> 1D ndarray}
+    """
+    iterations = nsamples * thin + burn
+
+    all_traces = {}
+
+    model_DeltaG = PyMCUniform("DeltaG", lower=-40., upper=40.)
+    traces = run_mcmc(model_DeltaG, iterations, burn, thin)
+    all_traces.update(traces)
+
+    model_DeltaG1 = PyMCUniform("DeltaG1", lower=-40., upper=40.)
+    traces = run_mcmc(model_DeltaG1, iterations, burn, thin)
+    all_traces.update(traces)
+
+    model_DeltaDeltaG = PyMCUniform("DeltaDeltaG", lower=0., upper=40.)
+    traces = run_mcmc(model_DeltaDeltaG, iterations, burn, thin)
+    all_traces.update(traces)
+
+    model_DeltaH = PyMCUniform("DeltaH", lower=-100., upper=100.)
+    traces = run_mcmc(model_DeltaH, iterations, burn, thin)
+    all_traces.update(traces)
+
+    model_DeltaH1 = PyMCUniform("DeltaH1", lower=-100., upper=100.)
+    traces = run_mcmc(model_DeltaH1, iterations, burn, thin)
+    all_traces.update(traces)
+
+    model_DeltaH2 = PyMCUniform("DeltaH2", lower=-100., upper=100.)
+    traces = run_mcmc(model_DeltaH2, iterations, burn, thin)
+    all_traces.update(traces)
+
+    if not uniform_P0:
+        model_P0 = PyMCLogNormal("P0", stated_value=stated_P0, uncertainty_percent=dP0)
+    else:
+        model_P0 = PyMCUniform("P0", lower=stated_P0/concentration_range_factor,
+                               upper=stated_P0*concentration_range_factor)
+
+    traces = run_mcmc(model_P0, iterations, burn, thin)
+    all_traces.update(traces)
+
+    if not uniform_Ls:
+        model_Ls = PyMCLogNormal("Ls", stated_value=stated_Ls, uncertainty_percent=dLs)
+    else:
+        model_Ls = PyMCUniform("Ls", lower=stated_Ls/concentration_range_factor,
+                               upper=stated_Ls*concentration_range_factor)
+
+    traces = run_mcmc(model_Ls, iterations, burn, thin)
+    all_traces.update(traces)
+
+    model_rho = PyMCUniform("rho", lower=0., upper=1)
+    traces = run_mcmc(model_rho, iterations, burn, thin)
+    all_traces.update(traces)
+
+    DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
+    model_DeltaH_0 = PyMCUniform("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max)
+    traces = run_mcmc(model_DeltaH_0, iterations, burn, thin)
+    all_traces.update(traces)
+
+    logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
+    model_log_sigma = PyMCUniform("log_sigma", lower=logsigma_min, upper=logsigma_max)
+    traces = run_mcmc(model_log_sigma, iterations, burn, thin)
+    all_traces.update(traces)
+
+    return all_traces
+
+
