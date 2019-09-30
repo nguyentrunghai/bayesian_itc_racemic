@@ -316,26 +316,32 @@ def sample_priors(nsamples, burn, thin,
 
     all_traces = {}
 
+    print("Sampling DeltaG")
     model_DeltaG = PyMCUniform("DeltaG", lower=-40., upper=40.)
     traces = run_mcmc(model_DeltaG, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling DeltaG1")
     model_DeltaG1 = PyMCUniform("DeltaG1", lower=-40., upper=40.)
     traces = run_mcmc(model_DeltaG1, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling DeltaDeltaG")
     model_DeltaDeltaG = PyMCUniform("DeltaDeltaG", lower=0., upper=40.)
     traces = run_mcmc(model_DeltaDeltaG, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling DeltaH")
     model_DeltaH = PyMCUniform("DeltaH", lower=-100., upper=100.)
     traces = run_mcmc(model_DeltaH, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling DeltaH1")
     model_DeltaH1 = PyMCUniform("DeltaH1", lower=-100., upper=100.)
     traces = run_mcmc(model_DeltaH1, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling DeltaH2")
     model_DeltaH2 = PyMCUniform("DeltaH2", lower=-100., upper=100.)
     traces = run_mcmc(model_DeltaH2, iterations, burn, thin)
     all_traces.update(traces)
@@ -346,6 +352,7 @@ def sample_priors(nsamples, burn, thin,
         model_P0 = PyMCUniform("P0", lower=stated_P0/concentration_range_factor,
                                upper=stated_P0*concentration_range_factor)
 
+    print("Sampling P0")
     traces = run_mcmc(model_P0, iterations, burn, thin)
     all_traces.update(traces)
 
@@ -355,18 +362,22 @@ def sample_priors(nsamples, burn, thin,
         model_Ls = PyMCUniform("Ls", lower=stated_Ls/concentration_range_factor,
                                upper=stated_Ls*concentration_range_factor)
 
+    print("Sampling Ls")
     traces = run_mcmc(model_Ls, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling rho")
     model_rho = PyMCUniform("rho", lower=0., upper=1)
     traces = run_mcmc(model_rho, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling DeltaH_0")
     DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
     model_DeltaH_0 = PyMCUniform("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max)
     traces = run_mcmc(model_DeltaH_0, iterations, burn, thin)
     all_traces.update(traces)
 
+    print("Sampling log_sigma")
     logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
     model_log_sigma = PyMCUniform("log_sigma", lower=logsigma_min, upper=logsigma_max)
     traces = run_mcmc(model_log_sigma, iterations, burn, thin)
