@@ -70,7 +70,7 @@ for experiment in experiments:
                                                          concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_embm, map_Ls_embm, map_rho_embm, map_DeltaG1_embm, map_DeltaDeltaG_embm, map_DeltaH1_embm, map_DeltaH2_embm,
-     map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info_rmbm, trace_rmbm,
+     map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info_embm, trace_embm,
                                                      uniform_P0=args.uniform_P0, uniform_Ls=args.uniform_Ls,
                                                      concentration_range_factor=args.concentration_range_factor)
 
