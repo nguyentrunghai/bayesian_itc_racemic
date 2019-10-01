@@ -53,22 +53,19 @@ for experiment in experiments:
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
     actual_q_cal = actual_q_micro_cal * 10**(-6)
 
-    exper_info_2cbm = ITCExperiment(os.path.join(args.two_component_mcmc_dir,
-                                                 experiment, args.exper_info_file))
-    exper_info_rmbm = ITCExperiment(os.path.join(args.racemic_mixture_mcmc_dir,
-                                                 experiment, args.exper_info_file))
+    exper_info_2cbm = ITCExperiment(os.path.join(args.two_component_mcmc_dir, experiment, args.exper_info_file))
+    exper_info_rmbm = ITCExperiment(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.exper_info_file))
+    exper_info_embm = ITCExperiment(os.path.join(args.enantiomer_mcmc_dir, experiment, args.exper_info_file))
 
-    trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir,
-                                               experiment, args.mcmc_trace_file)))
-    trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir,
-                                               experiment, args.mcmc_trace_file)))
+    trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
+    trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
+    trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
 
-    map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm, map_DeltaH_0_2cbm = map_TwoComponentBindingModel(
-                                                                                        actual_q_cal,
-                                                                                        exper_info_2cbm, trace_2cbm,
-                                                                                        uniform_P0=args.uniform_P0,
-                                                                                        uniform_Ls=args.uniform_Ls,
-                                                                                        concentration_range_factor=args.concentration_range_factor)
+    (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm,
+     map_DeltaH_2cbm, map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
+                                                                        uniform_P0=args.uniform_P0,
+                                                                        uniform_Ls=args.uniform_Ls,
+                                                                        concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
      map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(
