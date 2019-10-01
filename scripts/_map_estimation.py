@@ -1,5 +1,5 @@
 """
-define funtion to perform MAP (Maximum a posterior) estimation
+define function to perform MAP (Maximum a posterior) estimation
 """
 
 from __future__ import print_function
@@ -168,14 +168,13 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
 
     map_P0 = P0_trace[map_idx]
     map_Ls = Ls_trace[map_idx]
-    map_rho = rho_trace[map_idx]
     map_DeltaG1 = DeltaG1_trace[map_idx]
     map_DeltaDeltaG = DeltaDeltaG_trace[map_idx]
     map_DeltaH1 = DeltaH1_trace[map_idx]
     map_DeltaH2 = DeltaH2_trace[map_idx]
     map_DeltaH_0 = DeltaH_0_trace[map_idx]
 
-    return map_P0, map_Ls, map_rho, map_DeltaG1, map_DeltaDeltaG, map_DeltaH1, map_DeltaH2, map_DeltaH_0
+    return map_P0, map_Ls, map_DeltaG1, map_DeltaDeltaG, map_DeltaH1, map_DeltaH2, map_DeltaH_0
 
 
 def map_EnantiomerBindingModel(q_actual_cal, exper_info, mcmc_trace,
