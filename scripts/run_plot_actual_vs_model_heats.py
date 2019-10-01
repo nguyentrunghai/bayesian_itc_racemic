@@ -111,7 +111,7 @@ for experiment in experiments:
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
     ax.scatter(range(1, n_inj+1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
-    ax.plot(range(1, n_inj+1), q_2cbm_micro_cal, c="r", linestyle="--", label="2cbm")
+    ax.plot(range(1, n_inj+1), q_2cbm_micro_cal, c="r", linestyle="-", label="2cbm")
     ax.plot(range(1, n_inj + 1), q_rmbm_micro_cal, c="b", linestyle="-", label="rmbm")
     ax.plot(range(1, n_inj + 1), q_embm_micro_cal, c="g", linestyle="-", label="embm")
 
