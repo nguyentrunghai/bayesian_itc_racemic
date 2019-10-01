@@ -69,6 +69,12 @@ for experiment in experiments:
                                                          uniform_Ls=args.uniform_Ls,
                                                          concentration_range_factor=args.concentration_range_factor)
 
+    (map_P0_embm, map_Ls_embm, map_rho_embm, map_DeltaG1_embm, map_DeltaDeltaG_embm, map_DeltaH1_embm, map_DeltaH2_embm,
+     map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info_rmbm, trace_rmbm,
+                                                     uniform_P0=args.uniform_P0, uniform_Ls=args.uniform_Ls,
+                                                     concentration_range_factor=args.concentration_range_factor)
+
+    # heat calculation using map parameters
     q_2cbm_cal = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
                                                 exper_info_2cbm.get_injection_volumes_liter(),
                                                 map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
@@ -79,23 +85,35 @@ for experiment in experiments:
 
     q_rmbm_cal = heats_RacemicMixtureBindingModel(exper_info_rmbm.get_cell_volume_liter(),
                                                   exper_info_rmbm.get_injection_volumes_liter(),
-                                                  map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm,
+                                                  map_P0_rmbm, map_Ls_rmbm, 0.5,
                                                   map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm,
                                                   map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
                                                   beta=1 / KB / exper_info_rmbm.get_target_temperature_kelvin(),
                                                   N=exper_info_rmbm.get_number_injections())
     q_rmbm_micro_cal = q_rmbm_cal * 10**6
 
+    q_embm_cal = heats_RacemicMixtureBindingModel(exper_info_embm.get_cell_volume_liter(),
+                                                  exper_info_embm.get_injection_volumes_liter(),
+                                                  map_P0_embm, map_Ls_embm, map_rho_embm,
+                                                  map_DeltaH1_embm, map_DeltaH2_embm, map_DeltaH_0_embm,
+                                                  map_DeltaG1_embm, map_DeltaDeltaG_embm,
+                                                  beta=1 / KB / exper_info_embm.get_target_temperature_kelvin(),
+                                                  N=exper_info_embm.get_number_injections())
+    q_embm_micro_cal = q_embm_cal * 10 ** 6
+
     print("actual_q_micro_cal:", actual_q_micro_cal)
     print("q_2cbm_micro_cal:", q_2cbm_micro_cal)
     print("q_rmbm_micro_cal:", q_rmbm_micro_cal)
+    print("q_embm_micro_cal:", q_embm_micro_cal)
 
-    assert len(actual_q_micro_cal) == len(q_2cbm_micro_cal) == len(q_rmbm_micro_cal), "heats do not have the same len"
+    assert len(actual_q_micro_cal) == len(q_2cbm_micro_cal) == len(q_rmbm_micro_cal) == len(q_embm_micro_cal), "heats do not have the same len"
     n_inj = len(actual_q_micro_cal)
+
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
     ax.scatter(range(1, n_inj+1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
     ax.plot(range(1, n_inj+1), q_2cbm_micro_cal, c="r", linestyle="--", label="2cbm")
     ax.plot(range(1, n_inj + 1), q_rmbm_micro_cal, c="b", linestyle="-", label="rmbm")
+    ax.plot(range(1, n_inj + 1), q_embm_micro_cal, c="g", linestyle="-", label="embm")
 
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
