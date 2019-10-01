@@ -50,9 +50,11 @@ ylabel = "Probability density"
 for experiment in experiments:
     print("Processing " + experiment)
     twocomponent_traces_file = os.path.join(args.twocomponent_mcmc_dir, experiment, args.mcmc_trace_file)
+    print("Loading " + twocomponent_traces_file)
     twocomponent_traces = pickle.load(open(twocomponent_traces_file))
 
     alter_model_traces_file = os.path.join(args.alternative_model_mcmc_dir, experiment, args.mcmc_trace_file)
+    print("Loading " + alter_model_traces_file)
     alter_model_trace = pickle.load(open(alter_model_traces_file))
 
     # DeltaG
