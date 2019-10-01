@@ -12,22 +12,21 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _models import map_TwoComponentBindingModel, map_RacemicMixtureBindingModel
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
+from _map_estimation import map_TwoComponentBindingModel, map_RacemicMixtureBindingModel, map_EnantiomerBindingModel
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="6.racemicmixture_mcmc")
-
 parser.add_argument("--two_component_mcmc_dir", type=str, default="5.twocomponent_mcmc")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="6.racemicmixture_mcmc")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="7.enantiomer")
 
 parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
-parser.add_argument("--experiments", type=str,
-                    default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
+parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 
 parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
