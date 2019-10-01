@@ -32,10 +32,6 @@ parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
-parser.add_argument("--uniform_rho", action="store_true", default=False)
-parser.add_argument("--stated_rho", type=float, default=0.5)
-parser.add_argument("--drho", type=float, default=0.1)
-
 parser.add_argument("--font_scale", type=float, default=0.75)
 parser.add_argument("--xlabel", type=str, default="injection #")
 parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
@@ -61,21 +57,17 @@ for experiment in experiments:
     trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
 
-    (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm,
-     map_DeltaH_2cbm, map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
-                                                                        uniform_P0=args.uniform_P0,
-                                                                        uniform_Ls=args.uniform_Ls,
-                                                                        concentration_range_factor=args.concentration_range_factor)
+    (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
+     map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
+                                                       uniform_P0=args.uniform_P0,
+                                                       uniform_Ls=args.uniform_Ls,
+                                                       concentration_range_factor=args.concentration_range_factor)
 
-    (map_P0_rmbm, map_Ls_rmbm, map_rho_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
-     map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(
-                                                                            actual_q_cal, exper_info_rmbm, trace_rmbm,
-                                                                            uniform_P0=args.uniform_P0,
-                                                                            uniform_Ls=args.uniform_Ls,
-                                                                            concentration_range_factor=args.concentration_range_factor,
-                                                                            uniform_rho=args.uniform_rho,
-                                                                            stated_rho=args.stated_rho,
-                                                                            drho=args.drho)
+    (map_P0_rmbm, map_Ls_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm, map_DeltaH1_rmbm, map_DeltaH2_rmbm,
+     map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(actual_q_cal, exper_info_rmbm, trace_rmbm,
+                                                         uniform_P0=args.uniform_P0,
+                                                         uniform_Ls=args.uniform_Ls,
+                                                         concentration_range_factor=args.concentration_range_factor)
 
     q_2cbm_cal = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
                                                 exper_info_2cbm.get_injection_volumes_liter(),
