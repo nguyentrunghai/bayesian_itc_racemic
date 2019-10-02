@@ -79,8 +79,7 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
                                                                                    DeltaH_0_trace, log_sigma_trace):
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
-        print("type(q_model_cal)", q_model_cal)
-        if np.isnan(q_model_cal):
+        if np.any(np.isnan(q_model_cal)):
             print("q_model_cal = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
             print(V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
 
