@@ -73,6 +73,7 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
     log_sigma_trace = mcmc_trace["log_sigma"][: nsamples]
 
     aver_likelihood = 0.
+    nan_count = 0
     for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
                                                                                    DeltaG1_trace, DeltaDeltaG_trace,
                                                                                    DeltaH1_trace, DeltaH2_trace,
@@ -81,7 +82,8 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
         if np.any(np.isnan(q_model_cal)):
             print("q_model_cal = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
-            print(V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+            print(V0, DeltaVn[0], P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+            nan_count += 1
 
         q_model_micro_cal = q_model_cal * 10. ** 6
 
@@ -91,9 +93,11 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
         llh = normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
         aver_likelihood += llh
 
-        if np.isnan(llh):
-            print("llh = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
-            print(V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+        #if np.isnan(llh):
+        #    print("llh = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
+        #    print(V0, DeltaVn[0], P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+
+    print("nan_count", nan_count)
 
     return aver_likelihood / len(P0_trace)
 
