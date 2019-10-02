@@ -64,7 +64,7 @@ for experiment in experiments:
     data_list = (twocomponent_traces["DeltaG"], DeltaG1, DeltaG2)
     labels = ("$\Delta G$ (TwoComponent)", "$\Delta G_1$", "$\Delta G_2$")
     xlabel = "$\Delta G$ (kcal/mol)"
-    out = experiment + "_deltaG" + ".pdf"
+    out = experiment + "_" + args.alternative_model + "_deltaG" + ".pdf"
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # DeltaH
@@ -74,7 +74,7 @@ for experiment in experiments:
     data_list = (twocomponent_traces["DeltaH"], DeltaH1, DeltaH2)
     labels = ("$\Delta H$ (TwoComponent)", "$\Delta H_1$", "$\Delta H_2$")
     xlabel = "$\Delta H$ (kcal/mol)"
-    out = experiment + "_deltaH" + ".pdf"
+    out = experiment + "_" + args.alternative_model + "_deltaH" + ".pdf"
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # Ls
@@ -89,7 +89,7 @@ for experiment in experiments:
     data_list = (twocomponent_traces["Ls"], Ls1, Ls2)
     labels = ("$[L]_s$ (TwoComponent)", "$[L_1]_s$", "$[L_2]_s$")
     xlabel = "$[L]_s$ (mM)"
-    out = experiment + "_Ls" + ".pdf"
+    out = experiment + "_" + args.alternative_model + "_Ls" + ".pdf"
     _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out)
 
     # P0
@@ -102,5 +102,5 @@ for experiment in experiments:
         labels = ("$[R]_0$ (TwoComponent)", "$[R]_0$ (Enantiomer)")
 
     xlabel = "$[R]_0$ (mM)"
-    out = experiment + "_P0" + ".pdf"
+    out = experiment + "_" + args.alternative_model + "_P0" + ".pdf"
     _plot_kde_hist(data_list, labels, colors[:-1], xlabel, ylabel, out)
