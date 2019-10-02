@@ -88,30 +88,26 @@ for experiment in experiments:
     # bf_rmbm_vs_2cbm
     fig, ax = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(6.4, 7.2))
     ax[0][0].plot(nsamples_list, bf_rmbm_vs_2cbm, c="k", marker="o")
-    ax[0][0].set_xlabel("# samples")
-    ax[0][0].set_ylabel("$\\{P(D|rmbm)}{P(D|2cbm)}$")
+    ax[0][0].set_ylabel("$\\frac{P(D|rmbm)}{P(D|2cbm)}$")
 
     ax[0][1].plot(nsamples_list, np.log10(bf_rmbm_vs_2cbm), c="k", marker="o")
-    ax[0][1].set_xlabel("# samples")
-    ax[0][1].set_ylabel("$log \\{P(D|rmbm)}{P(D|2cbm)}$")
+    ax[0][1].set_ylabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
 
     # bf_embm_vs_2cbm
     ax[1][0].plot(nsamples_list, bf_embm_vs_2cbm, c="k", marker="o")
-    ax[1][0].set_xlabel("# samples")
-    ax[1][0].set_ylabel("$\\{P(D|embm)}{P(D|2cbm)}$")
+    ax[1][0].set_ylabel("$\\frac{P(D|embm)}{P(D|2cbm)}$")
 
     ax[1][1].plot(nsamples_list, np.log10(bf_embm_vs_2cbm), c="k", marker="o")
-    ax[1][1].set_xlabel("# samples")
-    ax[1][1].set_ylabel("$log \\{P(D|embm)}{P(D|2cbm)}$")
+    ax[1][1].set_ylabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 
     # bf_embm_vs_rmbm
     ax[2][0].plot(nsamples_list, bf_embm_vs_rmbm, c="k", marker="o")
     ax[2][0].set_xlabel("# samples")
-    ax[2][0].set_ylabel("$\\{P(D|embm)}{P(D|rmbm)}$")
+    ax[2][0].set_ylabel("$\\frac{P(D|embm)}{P(D|rmbm)}$")
 
     ax[2][1].plot(nsamples_list, np.log10(bf_embm_vs_rmbm), c="k", marker="o")
     ax[2][1].set_xlabel("# samples")
-    ax[2][1].set_ylabel("$log \\{P(D|embm)}{P(D|rmbm)}$")
+    ax[2][1].set_ylabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 
     fig.tight_layout()
     out = experiment + ".pdf"
