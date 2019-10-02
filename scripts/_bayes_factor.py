@@ -140,8 +140,8 @@ def average_likelihood_EnantiomerBindingModel(q_actual, V0, DeltaVn, beta, n_inj
 
         aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
 
-    print("nsamples", nsamples)
-    print("total likelihood", aver_likelihood)
-    print("len(P0_trace)", len(P0_trace))
+    #print("nsamples", nsamples)
+    #print("total likelihood", aver_likelihood)
+    #print("len(P0_trace)", len(P0_trace))
 
     return aver_likelihood / len(P0_trace)
