@@ -44,10 +44,6 @@ def average_likelihood_TwoComponentBindingModel(q_actual, V0, DeltaVn, beta, n_i
 
         aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
 
-    print("nsamples", nsamples)
-    print("total likelihood", aver_likelihood)
-    print("len(P0_trace)", len(P0_trace))
-
     return aver_likelihood / len(P0_trace)
 
 
@@ -83,16 +79,21 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
                                                                                    DeltaH_0_trace, log_sigma_trace):
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
+        if np.isnan(q_model_cal):
+            print("q_model_cal = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
+            print(V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+
         q_model_micro_cal = q_model_cal * 10. ** 6
 
         sigma_cal = np.exp(log_sigma)
         sigma_micro_cal = sigma_cal * 10 ** 6
 
-        aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
+        llh = normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
+        aver_likelihood += llh
 
-    print("nsamples", nsamples)
-    print("total likelihood", aver_likelihood)
-    print("len(P0_trace)", len(P0_trace))
+        if np.isnan(llh):
+            print("llh = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
+            print(V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
 
     return aver_likelihood / len(P0_trace)
 
