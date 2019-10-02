@@ -26,6 +26,8 @@ parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
+parser.add_argument("--nsamples", type=int, default=None)
+
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
@@ -53,21 +55,24 @@ for experiment in experiments:
                                                                        DeltaVn=exper_info.get_injection_volumes_liter(),
                                                                        beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                                                        n_injections=exper_info.get_number_injections(),
-                                                                       mcmc_trace=traces)
+                                                                       mcmc_trace=traces,
+                                                                       nsamples=args.nsamples)
 
     aver_likelihood_rmbm = average_likelihood_RacemicMixtureBindingModel(actual_heat_micro_cal,
                                                                          V0=exper_info.get_cell_volume_liter(),
                                                                          DeltaVn=exper_info.get_injection_volumes_liter(),
                                                                          beta=1/KB/exper_info.get_target_temperature_kelvin(),
                                                                          n_injections=exper_info.get_number_injections(),
-                                                                         mcmc_trace=traces)
+                                                                         mcmc_trace=traces,
+                                                                         nsamples=args.nsamples)
 
     aver_likelihood_embm = average_likelihood_EnantiomerBindingModel(actual_heat_micro_cal,
                                                                      V0=exper_info.get_cell_volume_liter(),
                                                                      DeltaVn=exper_info.get_injection_volumes_liter(),
                                                                      beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                                                      n_injections=exper_info.get_number_injections(),
-                                                                     mcmc_trace=traces)
+                                                                     mcmc_trace=traces,
+                                                                     nsamples=args.nsamples)
 
     bf_rmbm_vs_2cbm[experiment] = aver_likelihood_rmbm / aver_likelihood_2cbm
     bf_embm_vs_2cbm[experiment] = aver_likelihood_embm / aver_likelihood_2cbm
