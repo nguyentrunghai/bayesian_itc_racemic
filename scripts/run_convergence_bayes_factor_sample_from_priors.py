@@ -56,6 +56,7 @@ for experiment in experiments:
     bf_embm_vs_rmbm = []
 
     for nsamples in nsamples_list:
+        print("nsamples", nsamples)
         llh_2cbm = average_likelihood_TwoComponentBindingModel(actual_heat_micro_cal,
                                                                V0=exper_info.get_cell_volume_liter(),
                                                                DeltaVn=exper_info.get_injection_volumes_liter(),
