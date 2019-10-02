@@ -100,10 +100,12 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
 
     d = np.sqrt(a*a - 3*b)
 
-    theta = np.arccos((-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3))
+    e = np.clip((-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3), a_min=-1, a_max=1)
+
+    theta = np.arccos(e)
     if np.isnan(theta):
         print("Theta is NAN")
-        print("Arg of np.accos:", (-2. * a ** 3 + 9. * a * b - 27. * c) / (2. * d ** 3))
+        #print("Arg of np.accos:", (-2. * a ** 3 + 9. * a * b - 27. * c) / (2. * d ** 3))
     #else:
     #    print("Theta is NOT NAN")
     #print("Arg of np.accos:", (-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3))
@@ -112,13 +114,13 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
     RL2 = C0_L2*(2.*d*np.cos(theta/3.) - a) / (3.*Kd2 + (2.*d*np.cos(theta/3.) - a))
 
     # TODO
-    #assert not np.isnan(a), "a is nan"
-    #assert not np.isnan(b), "b is nan"
-    #assert not np.isnan(c), "c is nan"
-    #assert not np.isnan(d), "d is nan"
-    #assert not np.isnan(theta), "theta is nan"
-    #assert not np.isnan(RL1), "RL1 is nan"
-    #assert not np.isnan(RL2), "RL2 is nan"
+    assert not np.isnan(a), "a is nan"
+    assert not np.isnan(b), "b is nan"
+    assert not np.isnan(c), "c is nan"
+    assert not np.isnan(d), "d is nan"
+    assert not np.isnan(theta), "theta is nan"
+    assert not np.isnan(RL1), "RL1 is nan"
+    assert not np.isnan(RL2), "RL2 is nan"
 
     return RL1, RL2
 
