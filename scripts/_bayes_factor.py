@@ -73,7 +73,7 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
     log_sigma_trace = mcmc_trace["log_sigma"][: nsamples]
 
     aver_likelihood = 0.
-    nan_count = 0
+    #nan_count = 0
     for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
                                                                                    DeltaG1_trace, DeltaDeltaG_trace,
                                                                                    DeltaH1_trace, DeltaH2_trace,
@@ -96,7 +96,7 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
 
         aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
 
-    print("nan_count", nan_count)
+    #print("nan_count", nan_count)
 
     return aver_likelihood / len(P0_trace)
 
