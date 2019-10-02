@@ -29,8 +29,6 @@ parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
-parser.add_argument("--xlabel", type=str, default="log[Bayes factor]")
-parser.add_argument("--out", type=str, default="bayes_factor.pdf")
 
 args = parser.parse_args()
 
@@ -85,16 +83,38 @@ for experiment in experiments:
     print("")
 
 
-bayes_factors = pd.Series(bayes_factors)
-bayes_factors.sort_values(ascending=True, inplace=True)
-bayes_factors_log = np.log10(bayes_factors)
+bf_rmbm_vs_2cbm = pd.Series(bf_rmbm_vs_2cbm)
+bf_rmbm_vs_2cbm.sort_values(ascending=True, inplace=True)
+bf_rmbm_vs_2cbm_log = np.log10(bf_rmbm_vs_2cbm)
+
+bf_embm_vs_2cbm = pd.Series(bf_embm_vs_2cbm)
+bf_embm_vs_2cbm.sort_values(ascending=True, inplace=True)
+bf_embm_vs_2cbm_log = np.log10(bf_embm_vs_2cbm)
+
+bf_embm_vs_rmbm = pd.Series(bf_embm_vs_rmbm)
+bf_embm_vs_rmbm.sort_values(ascending=True, inplace=True)
+bf_embm_vs_rmbm_log = np.log10(bf_embm_vs_rmbm)
 
 # plot
 sns.set(font_scale=args.font_scale)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-bayes_factors_log.plot(kind="barh")
-ax.set_xlabel(args.xlabel)
-plt.tight_layout()
-plt.savefig(args.out, dpi=300)
+bf_rmbm_vs_2cbm_log.plot(kind="barh", ax=ax)
+ax.set_xlabel("log $\frac{P(D|rmbm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig(bf_rmbm_vs_2cbm + ".pdf", dpi=300)
+
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+bf_embm_vs_2cbm_log.plot(kind="barh", ax=ax)
+ax.set_xlabel("log $\frac{P(D|embm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig(bf_embm_vs_2cbm + ".pdf", dpi=300)
+
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+bf_embm_vs_rmbm_log.plot(kind="barh", ax=ax)
+ax.set_xlabel("log $\frac{P(D|embm)}{P(D|rmbm)}$")
+fig.tight_layout()
+fig.savefig(bf_embm_vs_rmbm + ".pdf", dpi=300)
 
 print("DONE!")
