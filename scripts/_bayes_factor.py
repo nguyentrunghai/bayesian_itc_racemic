@@ -81,21 +81,20 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
         if np.any(np.isnan(q_model_cal)):
-            print("q_model_cal = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
-            print(V0, DeltaVn[0], P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+            print("V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
+            print("NAN", V0, DeltaVn[0], P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
             nan_count += 1
+        else:
+            print("NOT NAN", V0, DeltaVn[0], P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma,
+                  n_injections)
+        print("")
 
         q_model_micro_cal = q_model_cal * 10. ** 6
 
         sigma_cal = np.exp(log_sigma)
         sigma_micro_cal = sigma_cal * 10 ** 6
 
-        llh = normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
-        aver_likelihood += llh
-
-        #if np.isnan(llh):
-        #    print("llh = nan with V0, DeltaVn, P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections")
-        #    print(V0, DeltaVn[0], P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma, n_injections)
+        aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
 
     print("nan_count", nan_count)
 
