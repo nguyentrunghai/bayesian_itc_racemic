@@ -101,6 +101,8 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
     d = np.sqrt(a*a - 3*b)
 
     theta = np.arccos((-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3))
+    if np.isnan(theta):
+        print("Theta is nan, d", d, "numerator:",  (-2.*a**3 + 9.*a*b - 27.*c))
 
     RL1 = C0_L1*(2.*d*np.cos(theta/3.) - a) / (3.*Kd1 + (2.*d*np.cos(theta/3.) - a))
     RL2 = C0_L2*(2.*d*np.cos(theta/3.) - a) / (3.*Kd2 + (2.*d*np.cos(theta/3.) - a))
