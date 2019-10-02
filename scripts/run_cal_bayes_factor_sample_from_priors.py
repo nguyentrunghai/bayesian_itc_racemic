@@ -106,20 +106,20 @@ fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 bf_rmbm_vs_2cbm_log.plot(kind="barh", ax=ax)
 ax.set_xlabel("log $\\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
-plt.savefig(bf_rmbm_vs_2cbm + ".pdf", dpi=300)
+fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 bf_embm_vs_2cbm_log.plot(kind="barh", ax=ax)
 ax.set_xlabel("log $\\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
-plt.savefig(bf_embm_vs_2cbm + ".pdf", dpi=300)
+fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 bf_embm_vs_rmbm_log.plot(kind="barh", ax=ax)
 ax.set_xlabel("log $\\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
-plt.savefig(bf_embm_vs_rmbm + ".pdf", dpi=300)
+fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
 
 print("DONE!")
