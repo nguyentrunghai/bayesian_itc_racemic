@@ -35,8 +35,6 @@ parser.add_argument("--experiments_with_unif_prior", type=str, default="Fokkens_
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
 parser.add_argument("--font_scale", type=float, default=0.75)
-parser.add_argument("--xlabel", type=str, default="injection #")
-parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
 
