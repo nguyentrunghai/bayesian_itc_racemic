@@ -148,6 +148,7 @@ fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 g = sns.barplot(ax=ax, data=q2_df, x="experiment", y="r-squared", hue="model")
 ax.set_xticklabels(labels=q2_df["experiment"], rotation=45)
 ax.legend(loc="best")
+fig.tight_layout()
 out = "r2.pdf"
 fig.savefig(out, dpi=300)
 
