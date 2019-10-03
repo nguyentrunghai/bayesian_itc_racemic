@@ -50,8 +50,18 @@ sns.set(font_scale=args.font_scale)
 
 
 q2_list = []
+
 for experiment in experiments:
     print(experiment)
+    if experiment in experiments_with_unif_prior:
+        print("Use uniform prior for concentrations")
+        uniform_P0 = True
+        uniform_Ls = True
+    else:
+        uniform_P0 = False
+        uniform_Ls = False
+        print("Use lognormal prior for concentrations")
+
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
     actual_q_cal = actual_q_micro_cal * 10**(-6)
 
@@ -65,19 +75,19 @@ for experiment in experiments:
 
     (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
      map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
-                                                       uniform_P0=args.uniform_P0,
-                                                       uniform_Ls=args.uniform_Ls,
+                                                       uniform_P0=uniform_P0,
+                                                       uniform_Ls=uniform_Ls,
                                                        concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_rmbm, map_Ls_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm, map_DeltaH1_rmbm, map_DeltaH2_rmbm,
      map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(actual_q_cal, exper_info_rmbm, trace_rmbm,
-                                                         uniform_P0=args.uniform_P0,
-                                                         uniform_Ls=args.uniform_Ls,
+                                                         uniform_P0=uniform_P0,
+                                                         uniform_Ls=uniform_Ls,
                                                          concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_embm, map_Ls_embm, map_rho_embm, map_DeltaG1_embm, map_DeltaDeltaG_embm, map_DeltaH1_embm, map_DeltaH2_embm,
      map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info_embm, trace_embm,
-                                                     uniform_P0=args.uniform_P0, uniform_Ls=args.uniform_Ls,
+                                                     uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                      concentration_range_factor=args.concentration_range_factor)
 
     # heat calculation using map parameters
