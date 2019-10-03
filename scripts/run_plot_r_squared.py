@@ -10,7 +10,7 @@ import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error, r2_score
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
@@ -140,7 +140,7 @@ for experiment in experiments:
 
 q2_df = pd.DataFrame(q2_list)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-sns.barplot(ax=ax, data=q2_df, x="r-squared", y="experiment", hue="model")
+sns.barplot(ax=ax, data=q2_df, x="experiment", y="r-squared", hue="model")
 out = "r2.pdf"
 fig.savefig(out, dpi=300)
 
