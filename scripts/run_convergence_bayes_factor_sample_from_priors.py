@@ -1,5 +1,5 @@
 """
-calculate bayes factor
+plot convergence of bayes factor with respect to number of samples
 """
 from __future__ import print_function
 
@@ -87,32 +87,32 @@ for experiment in experiments:
 
     # bf_rmbm_vs_2cbm
     fig, ax = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(6.4, 6.0))
-    ax[0][0].plot(nsamples_list, bf_rmbm_vs_2cbm, c="k")
+    ax[0][0].plot(nsamples_list, bf_rmbm_vs_2cbm, c="k", marker=".")
     ax[0][0].set_ylabel("$\\frac{P(D|rmbm)}{P(D|2cbm)}$")
     ax[0][0].locator_params(axis='y', nbins=7)
 
-    ax[0][1].plot(nsamples_list, np.log10(bf_rmbm_vs_2cbm), c="k")
+    ax[0][1].plot(nsamples_list, np.log10(bf_rmbm_vs_2cbm), c="k", marker=".")
     ax[0][1].set_ylabel("$log \\left[ \\frac{P(D|rmbm)}{P(D|2cbm)} \\right]$")
     ax[0][1].locator_params(axis='y', nbins=7)
 
     # bf_embm_vs_2cbm
-    ax[1][0].plot(nsamples_list, bf_embm_vs_2cbm, c="k")
+    ax[1][0].plot(nsamples_list, bf_embm_vs_2cbm, c="k", marker=".")
     ax[1][0].set_ylabel("$\\frac{P(D|embm)}{P(D|2cbm)}$")
     ax[1][0].locator_params(axis='y', nbins=7)
 
-    ax[1][1].plot(nsamples_list, np.log10(bf_embm_vs_2cbm), c="k")
+    ax[1][1].plot(nsamples_list, np.log10(bf_embm_vs_2cbm), c="k", marker=".")
     ax[1][1].set_ylabel("$log \\left[ \\frac{P(D|embm)}{P(D|2cbm)} \\right]$")
     ax[1][1].locator_params(axis='y', nbins=7)
 
     # bf_embm_vs_rmbm
-    ax[2][0].plot(nsamples_list, bf_embm_vs_rmbm, c="k")
+    ax[2][0].plot(nsamples_list, bf_embm_vs_rmbm, c="k", marker=".")
     ax[2][0].set_xlabel("# samples")
     ax[2][0].xaxis.get_major_formatter().set_powerlimits((0, 1))
     ax[2][0].set_ylabel("$\\frac{P(D|embm)}{P(D|rmbm)}$")
     ax[2][0].locator_params(axis='x', nbins=7)
     ax[2][0].locator_params(axis='y', nbins=7)
 
-    ax[2][1].plot(nsamples_list, np.log10(bf_embm_vs_rmbm), c="k")
+    ax[2][1].plot(nsamples_list, np.log10(bf_embm_vs_rmbm), c="k", marker=".")
     ax[2][1].set_xlabel("# samples")
     ax[2][1].xaxis.get_major_formatter().set_powerlimits((0, 1))
     ax[2][1].set_ylabel("$log \\left[ \\frac{P(D|embm)}{P(D|rmbm)} \\right]$")
