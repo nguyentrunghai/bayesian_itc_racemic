@@ -7,6 +7,7 @@ import os
 import argparse
 import pickle
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -50,6 +51,7 @@ sns.set(font_scale=args.font_scale)
 
 
 q2_list = []
+rmse_list = []
 
 for experiment in experiments:
     print(experiment)
@@ -138,9 +140,14 @@ for experiment in experiments:
     print("r2 of rmbm is %0.5f" % r2_score(actual_q_micro_cal, q_rmbm_micro_cal))
     print("r2 of embm is %0.5f" % r2_score(actual_q_micro_cal, q_embm_micro_cal))
 
+    #rmse_data = {"experiment": experiment, "model": "2cbm",
+    #             "rmse": np.sqrt(mean_squared_error(actual_q_micro_cal, q_2cbm_micro_cal))}
+
 q2_df = pd.DataFrame(q2_list)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-sns.barplot(ax=ax, data=q2_df, x="experiment", y="r-squared", hue="model")
+sns.barplot(ax=ax, data=q2_df, x="experiment", y="r-squared", hue="model", legend=False)
+ax.set_xticklabels(rotation=45)
+ax.legend(loc="best")
 out = "r2.pdf"
 fig.savefig(out, dpi=300)
 
