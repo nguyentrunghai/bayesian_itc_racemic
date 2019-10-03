@@ -145,8 +145,8 @@ for experiment in experiments:
 
 q2_df = pd.DataFrame(q2_list)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-sns.barplot(ax=ax, data=q2_df, x="experiment", y="r-squared", hue="model")
-ax.set_xticklabels(rotation=45)
+g = sns.barplot(ax=ax, data=q2_df, x="experiment", y="r-squared", hue="model")
+g.set_xticklabels(rotation=45)
 ax.legend(loc="best")
 out = "r2.pdf"
 fig.savefig(out, dpi=300)
