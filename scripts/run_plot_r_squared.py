@@ -154,7 +154,7 @@ for experiment in experiments:
 
 
 q2_df = pd.DataFrame(q2_list)
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6.4, 2.4))
 sns.barplot(ax=ax, data=q2_df, x="r-squared", y="experiment", hue="model")
 ax.set_xlim([0, 1.5])
 ax.legend(loc="best")
@@ -164,7 +164,7 @@ fig.savefig(out, dpi=300)
 
 
 rmse_df = pd.DataFrame(rmse_list)
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6.4, 2.4))
 sns.barplot(ax=ax, data=rmse_df, x="rmse", y="experiment", hue="model")
 ax.legend(loc="best")
 fig.tight_layout()
