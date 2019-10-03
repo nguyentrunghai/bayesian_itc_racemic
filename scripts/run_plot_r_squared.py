@@ -125,19 +125,22 @@ for experiment in experiments:
     assert len(actual_q_micro_cal) == len(q_2cbm_micro_cal) == len(q_rmbm_micro_cal) == len(q_embm_micro_cal), "heats do not have the same len"
     n_inj = len(actual_q_micro_cal)
 
-    q2_data = {"experiment": experiment, "model": "2cbm", "r2": r2_score(actual_q_micro_cal, q_2cbm_micro_cal)}
+    q2_data = {"experiment": experiment, "model": "2cbm", "r-squared": r2_score(actual_q_micro_cal, q_2cbm_micro_cal)}
     q2_list.append(q2_data)
 
-    q2_data = {"experiment": experiment, "model": "rmbm", "r2": r2_score(actual_q_micro_cal, q_rmbm_micro_cal)}
+    q2_data = {"experiment": experiment, "model": "rmbm", "r-squared": r2_score(actual_q_micro_cal, q_rmbm_micro_cal)}
     q2_list.append(q2_data)
 
-    q2_data = {"experiment": experiment, "model": "embm", "r2": r2_score(actual_q_micro_cal, q_embm_micro_cal)}
+    q2_data = {"experiment": experiment, "model": "embm", "r-squared": r2_score(actual_q_micro_cal, q_embm_micro_cal)}
     q2_list.append(q2_data)
+
+    print("r2 of 2cbm is %0.5f" % r2_score(actual_q_micro_cal, q_2cbm_micro_cal))
+    print("r2 of rmbm is %0.5f" % r2_score(actual_q_micro_cal, q_rmbm_micro_cal))
+    print("r2 of embm is %0.5f" % r2_score(actual_q_micro_cal, q_embm_micro_cal))
 
 q2_df = pd.DataFrame(q2_list)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-sns.barplot(ax=ax, data=q2_df, x="r2", y="experiment", hue="model")
-fig.tight_layout()
+sns.barplot(ax=ax, data=q2_df, x="r-squared", y="experiment", hue="model")
 out = "r2.pdf"
 fig.savefig(out, dpi=300)
 
