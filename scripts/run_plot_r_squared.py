@@ -140,16 +140,35 @@ for experiment in experiments:
     print("r2 of rmbm is %0.5f" % r2_score(actual_q_micro_cal, q_rmbm_micro_cal))
     print("r2 of embm is %0.5f" % r2_score(actual_q_micro_cal, q_embm_micro_cal))
 
-    #rmse_data = {"experiment": experiment, "model": "2cbm",
-    #             "rmse": np.sqrt(mean_squared_error(actual_q_micro_cal, q_2cbm_micro_cal))}
+    rmse_data = {"experiment": experiment, "model": "2cbm",
+                 "rmse": np.sqrt(mean_squared_error(actual_q_micro_cal, q_2cbm_micro_cal))}
+    rmse_list.append(rmse_data)
+
+    rmse_data = {"experiment": experiment, "model": "rmbm",
+                 "rmse": np.sqrt(mean_squared_error(actual_q_micro_cal, q_rmbm_micro_cal))}
+    rmse_list.append(rmse_data)
+
+    rmse_data = {"experiment": experiment, "model": "embm",
+                 "rmse": np.sqrt(mean_squared_error(actual_q_micro_cal, q_embm_micro_cal))}
+    rmse_list.append(rmse_data)
+
 
 q2_df = pd.DataFrame(q2_list)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-g = sns.barplot(ax=ax, data=q2_df, x="r-squared", y="experiment", hue="model")
-ax.set_xlim([0, 1.2])
+sns.barplot(ax=ax, data=q2_df, x="r-squared", y="experiment", hue="model")
+ax.set_xlim([0, 1.5])
 ax.legend(loc="best")
 fig.tight_layout()
 out = "r2.pdf"
+fig.savefig(out, dpi=300)
+
+
+rmse_df = pd.DataFrame(rmse_list)
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+sns.barplot(ax=ax, data=rmse_df, x="rmse", y="experiment", hue="model")
+ax.legend(loc="best")
+fig.tight_layout()
+out = "rmse.pdf"
 fig.savefig(out, dpi=300)
 
 print("DONE!")
