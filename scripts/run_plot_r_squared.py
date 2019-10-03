@@ -29,8 +29,8 @@ parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 
-parser.add_argument("--uniform_P0", action="store_true", default=False)
-parser.add_argument("--uniform_Ls", action="store_true", default=False)
+parser.add_argument("--experiments_with_unif_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
+
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
 parser.add_argument("--font_scale", type=float, default=0.75)
@@ -42,6 +42,9 @@ args = parser.parse_args()
 KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
+print("experiments", experiments)
+experiments_with_unif_prior = args.experiments_with_unif_prior.split()
+print("experiments_with_unif_prior", experiments_with_unif_prior)
 
 sns.set(font_scale=args.font_scale)
 
