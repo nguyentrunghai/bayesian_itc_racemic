@@ -146,6 +146,7 @@ for experiment in experiments:
 q2_df = pd.DataFrame(q2_list)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 g = sns.barplot(ax=ax, data=q2_df, x="r-squared", y="experiment", hue="model")
+ax.set_xlim([0, 1.2])
 ax.legend(loc="best")
 fig.tight_layout()
 out = "r2.pdf"
