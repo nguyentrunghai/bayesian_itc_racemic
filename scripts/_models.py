@@ -308,7 +308,6 @@ def log_unnormalized_posterior_2cbm(q_actual_cal, exper_info, mcmc_trace,
             P0_max = stated_P0 * concentration_range_factor
             log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
 
-
         stated_Ls = exper_info.get_syringe_concentration_milli_molar()
         if not uniform_Ls:
             log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
@@ -390,7 +389,6 @@ def log_unnormalized_posterior_rmbm(q_actual_cal, exper_info, mcmc_trace,
             Ls_max = stated_Ls * concentration_range_factor
             log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
-
         log_prob += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
         log_prob += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
 
@@ -467,9 +465,7 @@ def log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
             Ls_max = stated_Ls * concentration_range_factor
             log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
-
         log_prob += np.log(uniform_pdf(rho, lower=0., upper=1.))
-
 
         log_prob += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
         log_prob += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
