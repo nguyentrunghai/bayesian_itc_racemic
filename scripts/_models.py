@@ -444,6 +444,16 @@ def log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
     DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
     logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
 
+    stated_P0 = exper_info.get_cell_concentration_milli_molar()
+    uncertainty_P0 = dcell * stated_P0
+    P0_min = stated_P0 / concentration_range_factor
+    P0_max = stated_P0 * concentration_range_factor
+
+    stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+    uncertainty_Ls = dsyringe * stated_Ls
+    Ls_min = stated_Ls / concentration_range_factor
+    Ls_max = stated_Ls * concentration_range_factor
+
     log_probs = []
 
     for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, rho_trace,
@@ -457,20 +467,14 @@ def log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
         sigma_cal = np.exp(log_sigma)
         log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
-        stated_P0 = exper_info.get_cell_concentration_milli_molar()
         if not uniform_P0:
-            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=dcell * stated_P0))
+            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=uncertainty_P0))
         else:
-            P0_min = stated_P0 / concentration_range_factor
-            P0_max = stated_P0 * concentration_range_factor
             log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
 
-        stated_Ls = exper_info.get_syringe_concentration_milli_molar()
         if not uniform_Ls:
-            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
+            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=uncertainty_Ls))
         else:
-            Ls_min = stated_Ls / concentration_range_factor
-            Ls_max = stated_Ls * concentration_range_factor
             log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
         log_prob += np.log(uniform_pdf(rho, lower=0., upper=1.))
