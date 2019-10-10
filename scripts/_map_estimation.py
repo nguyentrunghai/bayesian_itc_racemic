@@ -8,6 +8,7 @@ import numpy as np
 
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 from _models import normal_likelihood, lognormal_pdf, uniform_pdf, deltaH0_guesses, logsigma_guesses
+from _models import log_unnormalized_posterior_2cbm
 
 
 KB = 0.0019872041      # in kcal/mol/K
@@ -33,50 +34,11 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
     DeltaG_trace = mcmc_trace["DeltaG"]
     DeltaH_trace = mcmc_trace["DeltaH"]
     DeltaH_0_trace = mcmc_trace["DeltaH_0"]
-    log_sigma_trace = mcmc_trace["log_sigma"]
 
-    V0 = exper_info.get_cell_volume_liter()
-    DeltaVn = exper_info.get_injection_volumes_liter()
-    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
-    n_injections = exper_info.get_number_injections()
-
-    DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
-    logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
-
-    log_probs = []
-    for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
-                                                           DeltaH_0_trace, log_sigma_trace):
-        q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
-                                                     DeltaH_0, beta, n_injections)
-
-        sigma_cal = np.exp(log_sigma)
-        log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
-
-        stated_P0 = exper_info.get_cell_concentration_milli_molar()
-        if not uniform_P0:
-            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=dcell * stated_P0))
-        else:
-            P0_min = stated_P0 / concentration_range_factor
-            P0_max = stated_P0 * concentration_range_factor
-            log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
-
-
-        stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-        if not uniform_Ls:
-            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=dsyringe * stated_Ls))
-        else:
-            Ls_min = stated_Ls / concentration_range_factor
-            Ls_max = stated_Ls * concentration_range_factor
-            log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
-
-        log_prob += np.log(uniform_pdf(DeltaG, lower=-40., upper=40.))
-        log_prob += np.log(uniform_pdf(DeltaH, lower=-100., upper=100.))
-
-        log_prob += np.log(uniform_pdf(DeltaH_0, lower=DeltaH_0_min, upper=DeltaH_0_max))
-        log_prob += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
-
-        log_probs.append(log_prob)
-
+    log_probs = log_unnormalized_posterior_2cbm(q_actual_cal, exper_info, mcmc_trace,
+                                                dcell=dcell, dsyringe=dsyringe,
+                                                uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                concentration_range_factor=concentration_range_factor)
     map_idx = np.argmax(log_probs)
     print("Map index: %d" % map_idx)
 
