@@ -66,7 +66,6 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
     """
     P0_trace = mcmc_trace["P0"]
     Ls_trace = mcmc_trace["Ls"]
-    rho = 0.5
     DeltaG1_trace = mcmc_trace["DeltaG1"]
     DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"]
     DeltaH1_trace = mcmc_trace["DeltaH1"]
