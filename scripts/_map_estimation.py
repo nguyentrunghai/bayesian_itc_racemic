@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import numpy as np
 
-from _models import log_unnormalized_posterior_2cbm, log_unnormalized_posterior_rmbm, log_unnormalized_posterior_embm
+from _models import log_prior_likelihood_2cbm, log_prior_likelihood_rmbm, log_prior_likelihood_embm
 
 
 KB = 0.0019872041      # in kcal/mol/K
@@ -33,10 +33,11 @@ def map_TwoComponentBindingModel(q_actual_cal, exper_info, mcmc_trace,
     DeltaH_trace = mcmc_trace["DeltaH"]
     DeltaH_0_trace = mcmc_trace["DeltaH_0"]
 
-    log_probs = log_unnormalized_posterior_2cbm(q_actual_cal, exper_info, mcmc_trace,
-                                                dcell=dcell, dsyringe=dsyringe,
-                                                uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                concentration_range_factor=concentration_range_factor)
+    log_priors, log_likelihoods = log_prior_likelihood_2cbm(q_actual_cal, exper_info, mcmc_trace,
+                                                            dcell=dcell, dsyringe=dsyringe,
+                                                            uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                            concentration_range_factor=concentration_range_factor)
+    log_probs = log_priors + log_likelihoods
     map_idx = np.argmax(log_probs)
     print("Map index: %d" % map_idx)
 
@@ -72,10 +73,11 @@ def map_RacemicMixtureBindingModel(q_actual_cal, exper_info, mcmc_trace,
     DeltaH2_trace = mcmc_trace["DeltaH2"]
     DeltaH_0_trace = mcmc_trace["DeltaH_0"]
 
-    log_probs = log_unnormalized_posterior_rmbm(q_actual_cal, exper_info, mcmc_trace,
-                                                dcell=dcell, dsyringe=dsyringe,
-                                                uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                concentration_range_factor=concentration_range_factor)
+    log_priors, log_likelihoods = log_prior_likelihood_rmbm(q_actual_cal, exper_info, mcmc_trace,
+                                                           dcell=dcell, dsyringe=dsyringe,
+                                                           uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                           concentration_range_factor=concentration_range_factor)
+    log_probs = log_priors + log_likelihoods
     map_idx = np.argmax(log_probs)
     print("Map index: %d" % map_idx)
 
@@ -114,10 +116,11 @@ def map_EnantiomerBindingModel(q_actual_cal, exper_info, mcmc_trace,
     DeltaH2_trace = mcmc_trace["DeltaH2"]
     DeltaH_0_trace = mcmc_trace["DeltaH_0"]
 
-    log_probs = log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
-                                                dcell=dcell, dsyringe=dsyringe,
-                                                uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                concentration_range_factor=concentration_range_factor)
+    log_priors, log_likelihoods = log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
+                                                            dcell=dcell, dsyringe=dsyringe,
+                                                            uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                            concentration_range_factor=concentration_range_factor)
+    log_probs = log_priors + log_likelihoods
     map_idx = np.argmax(log_probs)
     print("Map index: %d" % map_idx)
 
