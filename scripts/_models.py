@@ -335,9 +335,9 @@ def log_prior_likelihood_2cbm(q_actual_cal, exper_info, mcmc_trace,
     return np.array(log_priors), np.array(log_likelihoods)
 
 
-def log_prior_unnormalized_posterior_rmbm(q_actual_cal, exper_info, mcmc_trace,
-                                          dcell=0.1, dsyringe=0.1,
-                                          uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
+def log_prior_likelihood_rmbm(q_actual_cal, exper_info, mcmc_trace,
+                              dcell=0.1, dsyringe=0.1,
+                              uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
     """
     maximum a posterior
     :param q_actual_cal: observed heats in calorie
@@ -379,7 +379,7 @@ def log_prior_unnormalized_posterior_rmbm(q_actual_cal, exper_info, mcmc_trace,
     Ls_max = stated_Ls * concentration_range_factor
 
     log_priors = []
-    log_posteriors = []
+    log_likelihoods = []
 
     for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
                                                                                    DeltaG1_trace,
@@ -413,9 +413,9 @@ def log_prior_unnormalized_posterior_rmbm(q_actual_cal, exper_info, mcmc_trace,
         prior += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
 
         log_priors.append(prior)
-        log_posteriors.append(prior + likelihood)
+        log_likelihoods.append(likelihood)
 
-    return np.array(log_priors), np.array(log_posteriors)
+    return np.array(log_priors), np.array(log_likelihoods)
 
 
 def log_prior_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
