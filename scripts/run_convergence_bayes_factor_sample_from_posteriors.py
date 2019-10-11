@@ -74,6 +74,7 @@ for experiment in experiments:
     bf_embm_vs_rmbm = []
 
     for nsamples in nsamples_list:
+        print("nsamples = %d" % nsamples)
 
         llh_mean_2cbm, llh_max_log_2cbm = average_likelihood_from_posterior("2cbm", q_actual_cal, exper_info_2cbm,
                                                                         trace_2cbm,
