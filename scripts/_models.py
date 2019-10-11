@@ -462,7 +462,7 @@ def log_prior_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
     Ls_max = stated_Ls * concentration_range_factor
 
     log_priors = []
-    log_posteriors = []
+    log_likelihoods = []
 
     for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, rho_trace,
                                                                                         DeltaG1_trace,
@@ -498,9 +498,9 @@ def log_prior_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
         prior += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
 
         log_priors.append(prior)
-        log_posteriors.append(prior + likelihood)
+        log_likelihoods.append(likelihood)
 
-    return np.array(log_priors), np.array(log_posteriors)
+    return np.array(log_priors), np.array(log_likelihoods)
 
 
 class PyMCLogNormal(object):
