@@ -4,6 +4,8 @@ define function to calculate bayes factor
 
 from __future__ import print_function
 
+import copy
+
 import numpy as np
 
 from _models import normal_likelihood
@@ -179,3 +181,56 @@ def average_likelihood_from_posterior(model, q_actual_cal, exper_info, mcmc_trac
 
     # the final result will be llh_mean * np.exp(llh_max_log)
     return llh_mean, llh_max_log
+
+
+def shuffle_trace(mcmc_trace):
+    """
+    :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :return:
+    """
+    new_trace = copy.deepcopy(mcmc_trace)
+    nsamples = len(new_trace["P0"])
+
+    idx = np.arange(nsamples)
+    np.random.shuffle(idx)
+
+    for param in new_trace:
+        new_trace[param] = new_trace[param][idx]
+
+    return new_trace
+
+
+def average_likelihood_from_posterior_bootstrap(model, q_actual_cal, exper_info, mcmc_trace,
+                                                dcell=0.1, dsyringe=0.1,
+                                                uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                                nsamples=None,
+                                                repeats=1):
+    """
+    :param model: str
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :param dcell: float, relative uncertainty in cell concentration
+    :param dsyringe: float, relative uncertainty in syringe concentration
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
+    :param nsamples: int
+    :param repeats: int
+    :return: values of parameters that maximize the posterior
+    """
+    llh_means = []
+    llh_max_logs = []
+    for _ in range(repeats):
+        random_shuffle_trace = shuffle_trace(mcmc_trace)
+
+        llh_mean, llh_max_log = average_likelihood_from_posterior(model, q_actual_cal, exper_info, random_shuffle_trace,
+                                                                  dcell=dcell, dsyringe=dsyringe,
+                                                                  uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                                  concentration_range_factor=concentration_range_factor,
+                                                                  nsamples=nsamples)
+
+        llh_means.append(llh_mean)
+        llh_max_logs.append(llh_max_log)
+
+    return np.array(llh_means), np.array(llh_max_logs)
