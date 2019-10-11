@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _bayes_factor import average_likelihood_TwoComponentBindingModel
-from _bayes_factor import average_likelihood_RacemicMixtureBindingModel
-from _bayes_factor import average_likelihood_EnantiomerBindingModel
+from _bayes_factor import average_likelihood_from_prior_2cbm
+from _bayes_factor import average_likelihood_from_prior_rmbm
+from _bayes_factor import average_likelihood_from_prior_embm
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--prior_mcmc_dir", type=str, default="8.prior_mcmc")
@@ -56,29 +56,29 @@ for experiment in experiments:
 
     for nsamples in nsamples_list:
         print("nsamples", nsamples)
-        llh_2cbm = average_likelihood_TwoComponentBindingModel(actual_heat_micro_cal,
-                                                               V0=exper_info.get_cell_volume_liter(),
-                                                               DeltaVn=exper_info.get_injection_volumes_liter(),
-                                                               beta=1 / KB / exper_info.get_target_temperature_kelvin(),
-                                                               n_injections=exper_info.get_number_injections(),
-                                                               mcmc_trace=traces,
-                                                               nsamples=nsamples)
+        llh_2cbm = average_likelihood_from_prior_2cbm(actual_heat_micro_cal,
+                                                      V0=exper_info.get_cell_volume_liter(),
+                                                      DeltaVn=exper_info.get_injection_volumes_liter(),
+                                                      beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                      n_injections=exper_info.get_number_injections(),
+                                                      mcmc_trace=traces,
+                                                      nsamples=nsamples)
 
-        llh_rmbm = average_likelihood_RacemicMixtureBindingModel(actual_heat_micro_cal,
-                                                                 V0=exper_info.get_cell_volume_liter(),
-                                                                 DeltaVn=exper_info.get_injection_volumes_liter(),
-                                                                 beta=1/KB/exper_info.get_target_temperature_kelvin(),
-                                                                 n_injections=exper_info.get_number_injections(),
-                                                                 mcmc_trace=traces,
-                                                                 nsamples=nsamples)
+        llh_rmbm = average_likelihood_from_prior_rmbm(actual_heat_micro_cal,
+                                                      V0=exper_info.get_cell_volume_liter(),
+                                                      DeltaVn=exper_info.get_injection_volumes_liter(),
+                                                      beta=1/KB/exper_info.get_target_temperature_kelvin(),
+                                                      n_injections=exper_info.get_number_injections(),
+                                                      mcmc_trace=traces,
+                                                      nsamples=nsamples)
 
-        llh_embm = average_likelihood_EnantiomerBindingModel(actual_heat_micro_cal,
-                                                             V0=exper_info.get_cell_volume_liter(),
-                                                             DeltaVn=exper_info.get_injection_volumes_liter(),
-                                                             beta=1 / KB / exper_info.get_target_temperature_kelvin(),
-                                                             n_injections=exper_info.get_number_injections(),
-                                                             mcmc_trace=traces,
-                                                             nsamples=nsamples)
+        llh_embm = average_likelihood_from_prior_embm(actual_heat_micro_cal,
+                                                      V0=exper_info.get_cell_volume_liter(),
+                                                      DeltaVn=exper_info.get_injection_volumes_liter(),
+                                                      beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                      n_injections=exper_info.get_number_injections(),
+                                                      mcmc_trace=traces,
+                                                      nsamples=nsamples)
 
         bf_rmbm_vs_2cbm.append(llh_rmbm / llh_2cbm)
         bf_embm_vs_2cbm.append(llh_embm / llh_2cbm)
