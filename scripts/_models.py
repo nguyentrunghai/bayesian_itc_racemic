@@ -418,7 +418,7 @@ def log_prior_likelihood_rmbm(q_actual_cal, exper_info, mcmc_trace,
     return np.array(log_priors), np.array(log_likelihoods)
 
 
-def log_prior_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
+def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
                                           dcell=0.1, dsyringe=0.1,
                                           uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
     """
