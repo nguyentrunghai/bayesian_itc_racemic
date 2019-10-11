@@ -8,6 +8,7 @@ import numpy as np
 
 from _models import normal_likelihood
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
+from _models import log_prior_likelihood_2cbm
 
 
 def average_likelihood_from_prior_2cbm(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
@@ -130,3 +131,37 @@ def average_likelihood_from_prior_embm(q_actual, V0, DeltaVn, beta, n_injections
         aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
 
     return aver_likelihood / len(P0_trace)
+
+
+def average_likelihood_from_posterior_2cbm(q_actual_cal, exper_info, mcmc_trace,
+                                           dcell=0.1, dsyringe=0.1,
+                                           uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                           nsamples=None):
+    """
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param mcmc_trace: dict, "parameter" --> 1d ndarray
+    :param dcell: float, relative uncertainty in cell concentration
+    :param dsyringe: float, relative uncertainty in syringe concentration
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
+    :param nsamples: int
+    :return: values of parameters that maximize the posterior
+    """
+    log_priors, log_likelihoods = log_prior_likelihood_2cbm(q_actual_cal, exper_info, mcmc_trace,
+                                                            dcell=dcell, dsyringe=dsyringe,
+                                                            uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                            concentration_range_factor=concentration_range_factor,
+                                                            nsamples=nsamples)
+
+    log_weights = -log_likelihoods
+    weights = np.exp(log_weights)
+    weights_sum = np.sum(weights)
+
+    likelihoods = np.exp(log_likelihoods)
+    likelihood_mean_1 = np.sum(likelihoods * weights) / weights_sum
+
+    likelihood_mean_2 = 1 / weights.mean()
+
+    return likelihood_mean_1, likelihood_mean_2
