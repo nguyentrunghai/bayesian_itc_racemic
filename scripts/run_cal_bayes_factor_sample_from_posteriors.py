@@ -56,37 +56,37 @@ for experiment in experiments:
     trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
 
-    llh_mean_v1_2cbm, llh_mean_v2_2cbm = average_likelihood_from_posterior("2cbm", q_actual_cal, exper_info_2cbm,
-                                                                           trace_2cbm,
-                                                                           dcell=0.1, dsyringe=0.1,
-                                                                           uniform_P0=args.uniform_P0,
-                                                                           uniform_Ls=args.uniform_Ls,
-                                                                           concentration_range_factor=args.concentration_range_factor,
-                                                                           nsamples=None)
+    llh_mean_2cbm, llh_max_log_2cbm = average_likelihood_from_posterior("2cbm", q_actual_cal, exper_info_2cbm,
+                                                                        trace_2cbm,
+                                                                        dcell=0.1, dsyringe=0.1,
+                                                                        uniform_P0=args.uniform_P0,
+                                                                        uniform_Ls=args.uniform_Ls,
+                                                                        concentration_range_factor=args.concentration_range_factor,
+                                                                        nsamples=None)
 
-    llh_mean_v1_rmbm, llh_mean_v2_rmbm = average_likelihood_from_posterior("rmbm", q_actual_cal, exper_info_rmbm,
-                                                                           trace_rmbm,
-                                                                           dcell=0.1, dsyringe=0.1,
-                                                                           uniform_P0=args.uniform_P0,
-                                                                           uniform_Ls=args.uniform_Ls,
-                                                                           concentration_range_factor=args.concentration_range_factor,
-                                                                           nsamples=None)
+    llh_mean_rmbm, llh_max_log_rmbm = average_likelihood_from_posterior("rmbm", q_actual_cal, exper_info_rmbm,
+                                                                        trace_rmbm,
+                                                                        dcell=0.1, dsyringe=0.1,
+                                                                        uniform_P0=args.uniform_P0,
+                                                                        uniform_Ls=args.uniform_Ls,
+                                                                        concentration_range_factor=args.concentration_range_factor,
+                                                                        nsamples=None)
 
-    llh_mean_v1_embm, llh_mean_v2_embm = average_likelihood_from_posterior("embm", q_actual_cal, exper_info_embm,
-                                                                           trace_embm,
-                                                                           dcell=0.1, dsyringe=0.1,
-                                                                           uniform_P0=args.uniform_P0,
-                                                                           uniform_Ls=args.uniform_Ls,
-                                                                           concentration_range_factor=args.concentration_range_factor,
-                                                                           nsamples=None)
+    llh_mean_embm, llh_max_log_embm = average_likelihood_from_posterior("embm", q_actual_cal, exper_info_embm,
+                                                                        trace_embm,
+                                                                        dcell=0.1, dsyringe=0.1,
+                                                                        uniform_P0=args.uniform_P0,
+                                                                        uniform_Ls=args.uniform_Ls,
+                                                                        concentration_range_factor=args.concentration_range_factor,
+                                                                        nsamples=None)
 
-    bf_rmbm_vs_2cbm[experiment] = llh_mean_v1_rmbm / llh_mean_v1_2cbm
-    bf_embm_vs_2cbm[experiment] = llh_mean_v1_embm / llh_mean_v1_2cbm
-    bf_embm_vs_rmbm[experiment] = llh_mean_v1_embm / llh_mean_v1_rmbm
+    bf_rmbm_vs_2cbm[experiment] = llh_mean_rmbm / llh_mean_2cbm * np.exp(llh_max_log_rmbm - llh_max_log_2cbm)
+    bf_embm_vs_2cbm[experiment] = llh_mean_embm / llh_mean_2cbm * np.exp(llh_max_log_embm - llh_max_log_2cbm)
+    bf_embm_vs_rmbm[experiment] = llh_mean_embm / llh_mean_rmbm * np.exp(llh_max_log_embm - llh_max_log_rmbm)
 
-    print("aver_likelihood_2cbm: v1 = %0.5e, v2 = %0.5e" % (llh_mean_v1_2cbm, llh_mean_v2_2cbm))
-    print("aver_likelihood_rmbm: v1 = %0.5e, v2 = %0.5e" % (llh_mean_v1_rmbm, llh_mean_v2_rmbm))
-    print("aver_likelihood_embm: v1 = %0.5e, v2 = %0.5e" % (llh_mean_v1_rmbm, llh_mean_v2_rmbm))
+    print("aver_likelihood_2cbm: %0.5e" % llh_mean_2cbm * np.exp(llh_max_log_2cbm))
+    print("aver_likelihood_rmbm: %0.5e" % llh_mean_rmbm * np.exp(llh_max_log_rmbm))
+    print("aver_likelihood_embm: %0.5e" % llh_mean_embm * np.exp(llh_max_log_embm))
     print("Bayes factor rmbm vs 2cbm: %0.5e" % bf_rmbm_vs_2cbm[experiment])
     print("Bayes factor embm vs 2cbm: %0.5e" % bf_embm_vs_2cbm[experiment])
     print("Bayes factor embm vs rmbm: %0.5e" % bf_embm_vs_rmbm[experiment])
