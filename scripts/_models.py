@@ -418,9 +418,9 @@ def log_prior_unnormalized_posterior_rmbm(q_actual_cal, exper_info, mcmc_trace,
     return np.array(log_priors), np.array(log_posteriors)
 
 
-def log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
-                                    dcell=0.1, dsyringe=0.1,
-                                    uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
+def log_prior_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
+                                          dcell=0.1, dsyringe=0.1,
+                                          uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
     """
     maximum a posterior
     :param q_actual_cal: observed heats in calorie
@@ -461,7 +461,8 @@ def log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
     Ls_min = stated_Ls / concentration_range_factor
     Ls_max = stated_Ls * concentration_range_factor
 
-    log_probs = []
+    log_priors = []
+    log_posteriors = []
 
     for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, rho_trace,
                                                                                         DeltaG1_trace,
@@ -472,106 +473,34 @@ def log_unnormalized_posterior_embm(q_actual_cal, exper_info, mcmc_trace,
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
         sigma_cal = np.exp(log_sigma)
-        log_prob = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+        likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
+        prior = 0.
         if not uniform_P0:
-            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=uncertainty_P0))
+            prior += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=uncertainty_P0))
         else:
-            log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
+            prior += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
 
         if not uniform_Ls:
-            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=uncertainty_Ls))
+            prior += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=uncertainty_Ls))
         else:
-            log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
+            prior += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
 
-        log_prob += np.log(uniform_pdf(rho, lower=0., upper=1.))
+        prior += np.log(uniform_pdf(rho, lower=0., upper=1.))
 
-        log_prob += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
-        log_prob += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
+        prior += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
+        prior += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
 
-        log_prob += np.log(uniform_pdf(DeltaH1, lower=-100., upper=100.))
-        log_prob += np.log(uniform_pdf(DeltaH2, lower=-100., upper=100.))
+        prior += np.log(uniform_pdf(DeltaH1, lower=-100., upper=100.))
+        prior += np.log(uniform_pdf(DeltaH2, lower=-100., upper=100.))
 
-        log_prob += np.log(uniform_pdf(DeltaH_0, lower=DeltaH_0_min, upper=DeltaH_0_max))
-        log_prob += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
+        prior += np.log(uniform_pdf(DeltaH_0, lower=DeltaH_0_min, upper=DeltaH_0_max))
+        prior += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
 
-        log_probs.append(log_prob)
+        log_priors.append(prior)
+        log_posteriors.append(prior + likelihood)
 
-    return np.array(log_probs)
-
-
-def log_prior_embm(q_actual_cal, exper_info, mcmc_trace,
-                   dcell=0.1, dsyringe=0.1,
-                   uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
-    """
-    maximum a posterior
-    :param q_actual_cal: observed heats in calorie
-    :param exper_info: an object of _data_io.ITCExperiment class
-    :param mcmc_trace: dict, "parameter" --> 1d ndarray
-    :param dcell: float, relative uncertainty in cell concentration
-    :param dsyringe: float, relative uncertainty in syringe concentration
-    :param uniform_P0: bool
-    :param uniform_Ls: bool
-    :param concentration_range_factor: float
-    :return: values of parameters that maximize the posterior
-    """
-    P0_trace = mcmc_trace["P0"]
-    Ls_trace = mcmc_trace["Ls"]
-    rho_trace = mcmc_trace["rho"]
-    DeltaG1_trace = mcmc_trace["DeltaG1"]
-    DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"]
-    DeltaH1_trace = mcmc_trace["DeltaH1"]
-    DeltaH2_trace = mcmc_trace["DeltaH2"]
-    DeltaH_0_trace = mcmc_trace["DeltaH_0"]
-    log_sigma_trace = mcmc_trace["log_sigma"]
-
-    DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
-    logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
-
-    stated_P0 = exper_info.get_cell_concentration_milli_molar()
-    uncertainty_P0 = dcell * stated_P0
-    P0_min = stated_P0 / concentration_range_factor
-    P0_max = stated_P0 * concentration_range_factor
-
-    stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-    uncertainty_Ls = dsyringe * stated_Ls
-    Ls_min = stated_Ls / concentration_range_factor
-    Ls_max = stated_Ls * concentration_range_factor
-
-    log_probs = []
-
-    for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, rho_trace,
-                                                                                        DeltaG1_trace,
-                                                                                        DeltaDeltaG_trace,
-                                                                                        DeltaH1_trace, DeltaH2_trace,
-                                                                                        DeltaH_0_trace,
-                                                                                        log_sigma_trace):
-        log_prob = 0.
-
-        if not uniform_P0:
-            log_prob += np.log(lognormal_pdf(P0, stated_center=stated_P0, uncertainty=uncertainty_P0))
-        else:
-            log_prob += np.log(uniform_pdf(P0, lower=P0_min, upper=P0_max))
-
-        if not uniform_Ls:
-            log_prob += np.log(lognormal_pdf(Ls, stated_center=stated_Ls, uncertainty=uncertainty_Ls))
-        else:
-            log_prob += np.log(uniform_pdf(Ls, lower=Ls_min, upper=Ls_max))
-
-        log_prob += np.log(uniform_pdf(rho, lower=0., upper=1.))
-
-        log_prob += np.log(uniform_pdf(DeltaG1, lower=-40., upper=40.))
-        log_prob += np.log(uniform_pdf(DeltaDeltaG, lower=0., upper=40.))
-
-        log_prob += np.log(uniform_pdf(DeltaH1, lower=-100., upper=100.))
-        log_prob += np.log(uniform_pdf(DeltaH2, lower=-100., upper=100.))
-
-        log_prob += np.log(uniform_pdf(DeltaH_0, lower=DeltaH_0_min, upper=DeltaH_0_max))
-        log_prob += np.log(uniform_pdf(log_sigma, lower=logsigma_min, upper=logsigma_max))
-
-        log_probs.append(log_prob)
-
-    return np.array(log_probs)
+    return np.array(log_priors), np.array(log_posteriors)
 
 
 class PyMCLogNormal(object):
