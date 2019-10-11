@@ -171,7 +171,9 @@ def average_likelihood_from_posterior(model, q_actual_cal, exper_info, mcmc_trac
 
     llhs = np.exp(log_likelihoods)
     llhs_weighted = llhs * weights
+
     llh_weighted_max = llhs_weighted.max()
+
     llh_mean = np.sum(llhs_weighted / llh_weighted_max)
     llh_max_log = np.log(llh_weighted_max)
 
