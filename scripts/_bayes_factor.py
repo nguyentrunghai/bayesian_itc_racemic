@@ -170,8 +170,9 @@ def average_likelihood_from_posterior(model, q_actual_cal, exper_info, mcmc_trac
     weights_sum = np.sum(weights)
 
     likelihoods = np.exp(log_likelihoods)
-    likelihood_mean_1 = np.sum(likelihoods * weights) / weights_sum
+    #likelihood_mean_1 = np.sum(likelihoods * weights) / weights_sum
 
+    likelihood_mean_1 = np.mean(np.exp(log_likelihoods))
     likelihood_mean_2 = 1. / weights.mean()
 
     return likelihood_mean_1, likelihood_mean_2
