@@ -84,9 +84,9 @@ for experiment in experiments:
     bf_embm_vs_2cbm[experiment] = llh_mean_embm / llh_mean_2cbm * np.exp(llh_max_log_embm - llh_max_log_2cbm)
     bf_embm_vs_rmbm[experiment] = llh_mean_embm / llh_mean_rmbm * np.exp(llh_max_log_embm - llh_max_log_rmbm)
 
-    print("aver_likelihood_2cbm: %0.5e" % llh_mean_2cbm * np.exp(llh_max_log_2cbm))
-    print("aver_likelihood_rmbm: %0.5e" % llh_mean_rmbm * np.exp(llh_max_log_rmbm))
-    print("aver_likelihood_embm: %0.5e" % llh_mean_embm * np.exp(llh_max_log_embm))
+    print("aver_likelihood_2cbm: %0.5e" % (llh_mean_2cbm * np.exp(llh_max_log_2cbm)))
+    print("aver_likelihood_rmbm: %0.5e" % (llh_mean_rmbm * np.exp(llh_max_log_rmbm)))
+    print("aver_likelihood_embm: %0.5e" % (llh_mean_embm * np.exp(llh_max_log_embm)))
     print("Bayes factor rmbm vs 2cbm: %0.5e" % bf_rmbm_vs_2cbm[experiment])
     print("Bayes factor embm vs 2cbm: %0.5e" % bf_embm_vs_2cbm[experiment])
     print("Bayes factor embm vs rmbm: %0.5e" % bf_embm_vs_rmbm[experiment])
