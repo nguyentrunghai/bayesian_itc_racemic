@@ -257,7 +257,6 @@ def log_prior_likelihood_2cbm(q_actual_cal, exper_info, mcmc_trace,
                               uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
                               nsamples=None):
     """
-    maximum a posterior
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param mcmc_trace: dict, "parameter" --> 1d ndarray
@@ -337,7 +336,6 @@ def log_prior_likelihood_rmbm(q_actual_cal, exper_info, mcmc_trace,
                               uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
                               nsamples=None):
     """
-    maximum a posterior
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param mcmc_trace: dict, "parameter" --> 1d ndarray
@@ -422,7 +420,6 @@ def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
                               uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
                               nsamples=None):
     """
-    maximum a posterior
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param mcmc_trace: dict, "parameter" --> 1d ndarray
