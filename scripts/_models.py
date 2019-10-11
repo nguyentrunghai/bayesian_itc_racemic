@@ -107,15 +107,6 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
     RL1 = C0_L1*(2.*d*np.cos(theta/3.) - a) / (3.*Kd1 + (2.*d*np.cos(theta/3.) - a))
     RL2 = C0_L2*(2.*d*np.cos(theta/3.) - a) / (3.*Kd2 + (2.*d*np.cos(theta/3.) - a))
 
-    # TODO
-    #assert not np.isnan(a), "a is nan"
-    #assert not np.isnan(b), "b is nan"
-    #assert not np.isnan(c), "c is nan"
-    #assert not np.isnan(d), "d is nan"
-    #assert not np.isnan(theta), "theta is nan"
-    #assert not np.isnan(RL1), "RL1 is nan"
-    #assert not np.isnan(RL2), "RL2 is nan"
-
     return RL1, RL2
 
 
