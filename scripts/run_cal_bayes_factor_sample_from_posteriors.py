@@ -29,8 +29,6 @@ parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
-parser.add_argument("--nsamples", type=int, default=None)
-
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
