@@ -10,7 +10,7 @@ from _models import normal_likelihood
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 
 
-def average_likelihood_TwoComponentBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
+def average_likelihood_from_prior_2cbm(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
     """
     :param q_actual: observed heats, (micro calorie)
     :param V0: cell volume (liter)
@@ -47,7 +47,7 @@ def average_likelihood_TwoComponentBindingModel(q_actual, V0, DeltaVn, beta, n_i
     return aver_likelihood / len(P0_trace)
 
 
-def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
+def average_likelihood_from_prior_rmbm(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
     """
     :param q_actual: observed heats, (micro calorie)
     :param V0: cell volume (liter)
@@ -90,7 +90,7 @@ def average_likelihood_RacemicMixtureBindingModel(q_actual, V0, DeltaVn, beta, n
     return aver_likelihood / len(P0_trace)
 
 
-def average_likelihood_EnantiomerBindingModel(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
+def average_likelihood_from_prior_embm(q_actual, V0, DeltaVn, beta, n_injections, mcmc_trace, nsamples=None):
     """
     :param q_actual: observed heats, (micro calorie)
     :param V0: cell volume (liter)
