@@ -419,7 +419,8 @@ def log_prior_likelihood_rmbm(q_actual_cal, exper_info, mcmc_trace,
 
 def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
                               dcell=0.1, dsyringe=0.1,
-                              uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
+                              uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                              nsamples=None):
     """
     maximum a posterior
     :param q_actual_cal: observed heats in calorie
@@ -430,17 +431,18 @@ def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
     :param uniform_P0: bool
     :param uniform_Ls: bool
     :param concentration_range_factor: float
+    :param nsamples: int
     :return: values of parameters that maximize the posterior
     """
-    P0_trace = mcmc_trace["P0"]
-    Ls_trace = mcmc_trace["Ls"]
-    rho_trace = mcmc_trace["rho"]
-    DeltaG1_trace = mcmc_trace["DeltaG1"]
-    DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"]
-    DeltaH1_trace = mcmc_trace["DeltaH1"]
-    DeltaH2_trace = mcmc_trace["DeltaH2"]
-    DeltaH_0_trace = mcmc_trace["DeltaH_0"]
-    log_sigma_trace = mcmc_trace["log_sigma"]
+    P0_trace = mcmc_trace["P0"][: nsamples]
+    Ls_trace = mcmc_trace["Ls"][: nsamples]
+    rho_trace = mcmc_trace["rho"][: nsamples]
+    DeltaG1_trace = mcmc_trace["DeltaG1"][: nsamples]
+    DeltaDeltaG_trace = mcmc_trace["DeltaDeltaG"][: nsamples]
+    DeltaH1_trace = mcmc_trace["DeltaH1"][: nsamples]
+    DeltaH2_trace = mcmc_trace["DeltaH2"][: nsamples]
+    DeltaH_0_trace = mcmc_trace["DeltaH_0"][: nsamples]
+    log_sigma_trace = mcmc_trace["log_sigma"][: nsamples]
 
     V0 = exper_info.get_cell_volume_liter()
     DeltaVn = exper_info.get_injection_volumes_liter()
