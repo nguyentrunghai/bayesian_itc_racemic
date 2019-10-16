@@ -109,7 +109,7 @@ for experiment in experiments:
         bf_embm_vs_rmbm.append(np.mean(llh_mean_embm / llh_mean_rmbm * np.exp(llh_max_log_embm - llh_max_log_rmbm)))
 
     # bf_rmbm_vs_2cbm
-    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(3.2, 6.0))
+    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(4.0, 6.0))
 
     ax[0].plot(nsamples_list, np.log10(bf_rmbm_vs_2cbm), c="k", marker=".")
     ax[0].set_ylabel("$log \\left[ \\frac{P(D|rmbm)}{P(D|2cbm)} \\right]$")
