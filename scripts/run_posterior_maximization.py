@@ -10,6 +10,7 @@ import pickle
 import numpy as np
 
 from _optimization import posterior_maximizer
+from _optimization import generate_bound
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mcmc_dir", type=str, default="5.twocomponent_mcmc")
@@ -104,6 +105,9 @@ else:
     maxiter = args.maxiter
     repeats = args.repeats
 
+    bounds = generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=concentration_range_factor)
+    print("Bounds: ", bounds)
+    
     best_result = posterior_maximizer(model, q_actual_cal, exper_info,
                                       dcell=dcell, dsyringe=dsyringe,
                                       uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
