@@ -11,7 +11,7 @@ import numpy as np
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _optimization import posterior_maximizer
-from _optimization import generate_bound
+from _optimization import generate_bounds
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mcmc_dir", type=str, default="5.twocomponent_mcmc")
@@ -22,68 +22,28 @@ parser.add_argument("--heat_file", type=str, default="/home/tnguye46/bayesian_it
 
 parser.add_argument("--exper_info_file", type=str, default="/home/tnguye46/bayesian_itc_racemic/5.twocomponent_mcmc/nsamples_5k/Baum_59/experimental_information.pickle")
 
+parser.add_argument("--DeltaG_bound", type=str, default="-20 0")
+parser.add_argument("--DeltaDeltaG_bound", type=str, default="0 15")
+parser.add_argument("--DeltaH_bound", type=str, default="-40 40")
+parser.add_argument("--rho_bound", type=str, default="0.45 0.55")
+
 parser.add_argument("--dP0", type=float, default=0.1)      # cell concentration relative uncertainty
 parser.add_argument("--dLs", type=float, default=0.1)      # syringe concentration relative uncertainty
 
 parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
-parser.add_argument("--concentration_range_factor", type=float, default=50.)
 
 parser.add_argument("--maxiter", type=int, default=1000)
-parser.add_argument("--repeats", type=int, default=100)
+parser.add_argument("--repeats", type=int, default=10)
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 
+parser.add_argument("--write_qsub_script",   action="store_true", default=False)
 parser.add_argument("--submit",   action="store_true", default=False)
 
 args = parser.parse_args()
 
-
-def _load_heat_micro_cal(origin_heat_file):
-    """
-    :param origin_heat_file: str, name of heat file
-    :return: 1d ndarray, heats in micro calorie
-    """
-
-    heats = []
-    with open(origin_heat_file) as handle:
-        handle.readline()
-        for line in handle:
-            if len(line.split()) == 6:
-                heats.append(np.float(line.split()[0]))
-
-    return np.array(heats)
-
-
-class _ITCExperiment:
-    """ store experimental design parameter """
-
-    def __init__(self, experimental_info_pickle):
-        """
-        :param experimental_info_pickle: str, name of the pickle file
-        """
-        self._exper_info = pickle.load(open(experimental_info_pickle))
-
-    def get_target_temperature_kelvin(self):
-        return self._exper_info["target_temperature"].m
-
-    def get_number_injections(self):
-        return self._exper_info["number_of_injections"]
-
-    def get_cell_volume_liter(self):
-        return self._exper_info["cell_volume"].m_as("liter")
-
-    def get_injection_volumes_liter(self):
-        return [inj.volume.m_as("liter") for inj in self._exper_info["injections"]]
-
-    def get_syringe_concentration_milli_molar(self):
-        return self._exper_info["syringe_concentration"]["ligand"].m
-
-    def get_cell_concentration_milli_molar(self):
-        return self._exper_info["cell_concentration"]["macromolecule"].m
-
-
-if args.submit:
+if args.write_qsub_script:
     pass
     #TODO
 
@@ -97,6 +57,11 @@ else:
 
     exper_info = ITCExperiment(exper_info_file)
 
+    DeltaG_bound = [np.float(s) for s in args.DeltaG_bound.split()]
+    DeltaDeltaG_bound = [np.float(s) for s in args.DeltaDeltaG_bound.split()]
+    DeltaH_bound = [np.float(s) for s in args.DeltaH_bound.split()]
+    rho_bound = [np.float(s) for s in args.rho_bound.split()]
+
     dcell = args.dP0
     dsyringe = args.dLs
     uniform_P0 = args.uniform_P0
@@ -106,11 +71,12 @@ else:
     maxiter = args.maxiter
     repeats = args.repeats
 
-    bounds = generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=concentration_range_factor)
+    bounds = generate_bounds(model, q_actual_cal, exper_info,
+                             DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
+                             dcell=dcell, dsyringe=dsyringe)
     print("Bounds: ", bounds)
 
-    best_result = posterior_maximizer(model, q_actual_cal, exper_info,
-                                      dcell=dcell, dsyringe=dsyringe,
-                                      uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
-                                      concentration_range_factor=concentration_range_factor,
-                                      maxiter=maxiter, repeats=repeats)
+    results = posterior_maximizer(model, q_actual_cal, exper_info,
+                                  dcell=dcell, dsyringe=dsyringe,
+                                  uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
+                                  maxiter=maxiter, repeats=repeats)
