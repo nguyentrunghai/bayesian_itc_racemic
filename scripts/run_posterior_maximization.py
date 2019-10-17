@@ -9,7 +9,7 @@ import pickle
 
 import numpy as np
 
-from _data_io import, ITCExperiment, load_heat_micro_cal
+from _data_io import ITCExperiment, load_heat_micro_cal
 from _optimization import posterior_maximizer
 from _optimization import generate_bound
 
