@@ -5,7 +5,7 @@ define function to optimize the posterior
 import numpy as np
 
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
-
+from _models import logsigma_guesses, deltaH0_guesses
 
 KB = 0.0019872041      # in kcal/mol/K
 
@@ -75,8 +75,7 @@ def minus_log_posterior_2cbm(q_actual_cal, exper_info,
     beta = 1 / KB / exper_info.get_target_temperature_kelvin()
     n_injections = exper_info.get_number_injections()
 
-    q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
-                                                 DeltaH_0, beta, n_injections)
+    q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
     sigma_cal = np.exp(log_sigma)
 
@@ -240,4 +239,41 @@ def generate_objective(model, q_actual_cal, exper_info,
     else:
         raise ValueError("Unknown model: %s" % model)
 
+
+def generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=50.):
+    """
+    :param model: str, one of the values ["2cbm", "rmbm", "embm"]
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param concentration_range_factor: float
+    :return: list of tuples
+    """
+    DeltaG = (-40., -40.)
+    DeltaDeltaG = (0., 40.)
+    DeltaH = (-100., 100.)
+
+    stated_P0 = exper_info.get_cell_concentration_milli_molar()
+    P0 = (stated_P0 / concentration_range_factor, stated_P0 * concentration_range_factor)
+
+    stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+    Ls = (stated_Ls / concentration_range_factor, stated_Ls * concentration_range_factor)
+
+    rho = (0., 1.)
+
+    log_sigma_min, log_sigma_max = logsigma_guesses(q_actual_cal)
+    log_sigma = (log_sigma_min, log_sigma_max)
+
+    DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
+    DeltaH_0 = (DeltaH_0_min, DeltaH_0_max)
+
+    if model == "2cbm":
+        bounds = [DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma]
+    elif model == "rmbm":
+        bounds = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, DeltaH_0, log_sigma]
+    elif model == "embm":
+        bounds = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, rho, DeltaH_0, log_sigma]
+    else:
+        raise ValueError("Unknown model: %s" % model)
+
+    return bounds
 
