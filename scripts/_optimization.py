@@ -283,7 +283,7 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
                         dcell=0.1, dsyringe=0.1,
                         uniform_P0=False, uniform_Ls=False,
                         concentration_range_factor=50.,
-                        maxiter=10000, repeats=100):
+                        maxiter=1000, repeats=100):
     """
     :param model:
     :param q_actual_cal:
