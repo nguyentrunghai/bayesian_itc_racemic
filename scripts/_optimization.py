@@ -301,21 +301,22 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     bounds = generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=concentration_range_factor)
 
     results = []
-    for _ in range(repeats):
-        result = optimize.shgo(objective_func, bounds)
-        results.append(result)
-
     #for _ in range(repeats):
-    #    result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
+    #    result = optimize.shgo(objective_func, bounds)
     #    results.append(result)
+
+    for _ in range(repeats):
+        print(_)
+        result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
+        results.append(result)
 
     #for _ in range(repeats):
     #    result = optimize.differential_evolution(objective_func, bounds, maxiter=maxiter)
     #    results.append(result)
 
     results.sort(key=lambda item: item.fun)
-    best_result = results[0]
-    return best_result
+    #best_result = results[0]
+    return results
 
 
 
