@@ -193,11 +193,11 @@ def minus_log_posterior_embm(q_actual_cal, exper_info,
     return -log_posterior
 
 
-
-def generate_objective_2cbm(q_actual_cal, exper_info,
-                             dcell=0.1, dsyringe=0.1,
-                             uniform_P0=False, uniform_Ls=False):
+def generate_objective(model, q_actual_cal, exper_info,
+                       dcell=0.1, dsyringe=0.1,
+                       uniform_P0=False, uniform_Ls=False):
     """
+    :param model: str, one of the values ["2cbm", "rmbm", "embm"]
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param dcell: float, relative uncertainty in cell concentration (0 < dcell < 1)
@@ -207,13 +207,37 @@ def generate_objective_2cbm(q_actual_cal, exper_info,
     :return: the objective function to be optimized
     """
 
-    def objective(x):
+    def objective_2cbm(x):
         DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = x
         m_log_posterior = minus_log_posterior_2cbm(q_actual_cal, exper_info,
-                             DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma,
-                             dcell=dcell, dsyringe=dsyringe,
-                             uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
+                                                   DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
         return m_log_posterior
 
-    return objective
+    def objective_rmbm(x):
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma = x
+        m_log_posterior = minus_log_posterior_rmbm(q_actual_cal, exper_info,
+                                                   DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
+        return m_log_posterior
+
+    def objective_embm(x):
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma = x
+        m_log_posterior = minus_log_posterior_embm(q_actual_cal, exper_info,
+                                                   DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
+        return m_log_posterior
+
+    if model == "2cbm":
+        return objective_2cbm
+    elif model == "rmbm":
+        return objective_rmbm
+    elif model == "embm":
+        return objective_embm
+    else:
+        raise ValueError("Unknown model: %s" % model)
+
 
