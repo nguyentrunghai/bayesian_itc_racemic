@@ -24,9 +24,9 @@ def log_likelihood(q_actual, q_model, sigma):
 
     n_injections = len(q_actual)
     sigma_2 = sigma**2
-    log_likelihood = - n_injections / 2. * np.log(2 * np.pi * sigma_2) - sum_e_squared / 2. / sigma_2
+    log_llh = - n_injections / 2. * np.log(2 * np.pi * sigma_2) - sum_e_squared / 2. / sigma_2
 
-    return log_likelihood
+    return log_llh
 
 
 def log_lognormal(x, stated_center, uncertainty):
