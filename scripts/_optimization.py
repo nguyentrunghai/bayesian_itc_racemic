@@ -243,7 +243,7 @@ def generate_objective(model, q_actual_cal, exper_info,
 
 def generate_bounds(model, q_actual_cal, exper_info,
                     DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
-                    concentration_range_factor=50.):
+                    dcell=0.1, dsyringe=0.1):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
     :param q_actual_cal: observed heats in calorie
@@ -259,11 +259,17 @@ def generate_bounds(model, q_actual_cal, exper_info,
     DeltaDeltaG = DeltaDeltaG_bound
     DeltaH = DeltaH_bound
 
+    assert dcell < 1., "dcell must be less than one"
     stated_P0 = exper_info.get_cell_concentration_milli_molar()
-    P0 = (stated_P0 / concentration_range_factor, stated_P0 * concentration_range_factor)
+    P0_lower = stated_P0 * (1. - dcell)
+    P0_upper = stated_P0 * (1. + dcell)
+    P0 = (P0_lower, P0_upper)
 
+    assert dsyringe < 1., "dsyringe must be less than one"
     stated_Ls = exper_info.get_syringe_concentration_milli_molar()
-    Ls = (stated_Ls / concentration_range_factor, stated_Ls * concentration_range_factor)
+    Ls_lower = stated_Ls * (1. - dsyringe)
+    Ls_upper = stated_Ls * (1. + dsyringe)
+    Ls = (Ls_lower, Ls_upper)
 
     rho = rho_bound
 
@@ -289,7 +295,6 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
                         DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                         dcell=0.1, dsyringe=0.1,
                         uniform_P0=False, uniform_Ls=False,
-                        concentration_range_factor=50.,
                         maxiter=1000, repeats=100):
     """
     :param model:
@@ -309,10 +314,10 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     objective_func = generate_objective(model, q_actual_cal, exper_info,
                                         dcell=dcell, dsyringe=dsyringe,
                                         uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
-    
+
     bounds = generate_bounds(model, q_actual_cal, exper_info,
                              DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
-                             concentration_range_factor=concentration_range_factor)
+                             dcell=dcell, dsyringe=dsyringe)
 
     results = []
     #for _ in range(repeats):
