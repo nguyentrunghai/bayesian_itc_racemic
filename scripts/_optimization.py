@@ -241,17 +241,23 @@ def generate_objective(model, q_actual_cal, exper_info,
         raise ValueError("Unknown model: %s" % model)
 
 
-def generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=50.):
+def generate_bounds(model, q_actual_cal, exper_info,
+                    DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
+                    concentration_range_factor=50.):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
+    :param DeltaG_bound: tuple of two floats, (lower, upper)
+    :param DeltaDeltaG_bound: tuple of two floats, (lower, upper)
+    :param DeltaH_bound: tuple of two floats, (lower, upper)
+    :param rho_bound: tuple of two floats, (lower, upper)
     :param concentration_range_factor: float
     :return: list of tuples
     """
-    DeltaG = (-40., 40.)
-    DeltaDeltaG = (0., 40.)
-    DeltaH = (-100., 100.)
+    DeltaG = DeltaG_bound
+    DeltaDeltaG = DeltaDeltaG_bound
+    DeltaH = DeltaH_bound
 
     stated_P0 = exper_info.get_cell_concentration_milli_molar()
     P0 = (stated_P0 / concentration_range_factor, stated_P0 * concentration_range_factor)
@@ -259,7 +265,7 @@ def generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=5
     stated_Ls = exper_info.get_syringe_concentration_milli_molar()
     Ls = (stated_Ls / concentration_range_factor, stated_Ls * concentration_range_factor)
 
-    rho = (0., 1.)
+    rho = rho_bound
 
     log_sigma_min, log_sigma_max = logsigma_guesses(q_actual_cal)
     log_sigma = (log_sigma_min, log_sigma_max)
@@ -305,18 +311,16 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     #    result = optimize.shgo(objective_func, bounds)
     #    results.append(result)
 
-    #for _ in range(repeats):
-    #    print(_)
-    #    result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
-    #    results.append(result)
+    for _ in range(repeats):
+        print(_)
+        result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
+        results.append(result)
 
     for _ in range(repeats):
         print(_)
         result = optimize.differential_evolution(objective_func, bounds, maxiter=maxiter)
         results.append(result)
 
-    results.sort(key=lambda item: item.fun)
-    #best_result = results[0]
     return results
 
 
