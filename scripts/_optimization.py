@@ -4,7 +4,7 @@ define function to optimize the posterior
 
 import numpy as np
 
-from _models import heats_TwoComponentBindingModel
+from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 
 
 KB = 0.0019872041      # in kcal/mol/K
@@ -93,6 +93,56 @@ def minus_log_posterior_2cbm(q_actual_cal, exper_info,
         log_posterior += log_lognormal(Ls, stated_Ls, uncertainty_Ls)
 
     return -log_posterior
+
+
+def minus_log_posterior_rmbm(q_actual_cal, exper_info,
+                             DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma,
+                             dcell=0.1, dsyringe=0.1,
+                             uniform_P0=False, uniform_Ls=False):
+    """
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param DeltaG1: float, free energy of binding of ligand1 (kcal/mol)
+    :param DeltaDeltaG: float, difference in binding free energy between ligand2 and ligand1: DeltaDeltaG = DeltaG2 - DeltaG1 > 0
+                        DeltaDeltaG is always positive
+    :param DeltaH1: float, enthalpy of binding of ligand1 (kcal/mol)
+    :param DeltaH2: enthalpies of binding of ligand2 (kcal/mol)
+    :param P0: float, Cell concentration (millimolar)
+    :param Ls: float, Syringe concentration (millimolar)
+    :param DeltaH_0: float, heat of injection (cal)
+    :param log_sigma: float, log of sigma, sigma is in cal
+    :param dcell: float, relative uncertainty in cell concentration (0 < dcell < 1)
+    :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :return: values of parameters that maximize the posterior
+    """
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+    rho = 0.5
+
+    q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                   DeltaG1, DeltaDeltaG, beta, n_injections)
+
+    sigma_cal = np.exp(log_sigma)
+
+    log_posterior = log_likelihood(q_actual_cal, q_model_cal, sigma_cal)
+
+    if not uniform_P0:
+        stated_P0 = exper_info.get_cell_concentration_milli_molar()
+        uncertainty_P0 = dcell * stated_P0
+        log_posterior += log_lognormal(P0, stated_P0, uncertainty_P0)
+
+    if not uniform_Ls:
+        stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+        uncertainty_Ls = dsyringe * stated_Ls
+        log_posterior += log_lognormal(Ls, stated_Ls, uncertainty_Ls)
+
+    return -log_posterior
+
 
 
 def generate_objective_2cbm(q_actual_cal, exper_info,
