@@ -249,7 +249,7 @@ def generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=5
     :param concentration_range_factor: float
     :return: list of tuples
     """
-    DeltaG = (-40., -40.)
+    DeltaG = (-40., 40.)
     DeltaDeltaG = (0., 40.)
     DeltaH = (-100., 100.)
 
