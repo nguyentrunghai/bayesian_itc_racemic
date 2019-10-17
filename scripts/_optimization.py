@@ -286,6 +286,7 @@ def generate_bounds(model, q_actual_cal, exper_info,
 
 
 def posterior_maximizer(model, q_actual_cal, exper_info,
+                        DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                         dcell=0.1, dsyringe=0.1,
                         uniform_P0=False, uniform_Ls=False,
                         concentration_range_factor=50.,
@@ -294,6 +295,10 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     :param model:
     :param q_actual_cal:
     :param exper_info:
+    :param DeltaG_bound: tuple of two floats, (lower, upper)
+    :param DeltaDeltaG_bound: tuple of two floats, (lower, upper)
+    :param DeltaH_bound: tuple of two floats, (lower, upper)
+    :param rho_bound: tuple of two floats, (lower, upper)
     :param dcell:
     :param dsyringe:
     :param uniform_P0:
@@ -304,7 +309,10 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     objective_func = generate_objective(model, q_actual_cal, exper_info,
                                         dcell=dcell, dsyringe=dsyringe,
                                         uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
-    bounds = generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=concentration_range_factor)
+    
+    bounds = generate_bounds(model, q_actual_cal, exper_info,
+                             DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
+                             concentration_range_factor=concentration_range_factor)
 
     results = []
     #for _ in range(repeats):
@@ -312,12 +320,10 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     #    results.append(result)
 
     for _ in range(repeats):
-        print(_)
         result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
         results.append(result)
 
     for _ in range(repeats):
-        print(_)
         result = optimize.differential_evolution(objective_func, bounds, maxiter=maxiter)
         results.append(result)
 
