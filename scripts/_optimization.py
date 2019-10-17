@@ -95,4 +95,26 @@ def minus_log_posterior_2cbm(q_actual_cal, exper_info,
     return -log_posterior
 
 
+def generate_objective_2cbm(q_actual_cal, exper_info,
+                             dcell=0.1, dsyringe=0.1,
+                             uniform_P0=False, uniform_Ls=False):
+    """
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param dcell: float, relative uncertainty in cell concentration (0 < dcell < 1)
+    :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
+    :param uniform_P0: float, Cell concentration (millimolar)
+    :param uniform_Ls: float, Syringe concentration (millimolar)
+    :return: the objective function to be optimized
+    """
+
+    def objective(x):
+        DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = x
+        m_log_posterior = minus_log_posterior_2cbm(q_actual_cal, exper_info,
+                             DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma,
+                             dcell=dcell, dsyringe=dsyringe,
+                             uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
+        return m_log_posterior
+
+    return objective
 
