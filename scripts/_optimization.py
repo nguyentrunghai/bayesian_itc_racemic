@@ -252,7 +252,6 @@ def generate_bounds(model, q_actual_cal, exper_info,
     :param DeltaDeltaG_bound: tuple of two floats, (lower, upper)
     :param DeltaH_bound: tuple of two floats, (lower, upper)
     :param rho_bound: tuple of two floats, (lower, upper)
-    :param concentration_range_factor: float
     :return: list of tuples
     """
     DeltaG = DeltaG_bound
