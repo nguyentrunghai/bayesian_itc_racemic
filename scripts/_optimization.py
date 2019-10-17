@@ -3,6 +3,7 @@ define function to optimize the posterior
 """
 
 import numpy as np
+from scipy import optimize
 
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 from _models import logsigma_guesses, deltaH0_guesses
@@ -276,4 +277,45 @@ def generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=5
         raise ValueError("Unknown model: %s" % model)
 
     return bounds
+
+
+def posterior_maximizer(model, q_actual_cal, exper_info,
+                        dcell=0.1, dsyringe=0.1,
+                        uniform_P0=False, uniform_Ls=False,
+                        concentration_range_factor=50.,
+                        maxiter=10000, repeats=100):
+    """
+    :param model:
+    :param q_actual_cal:
+    :param exper_info:
+    :param dcell:
+    :param dsyringe:
+    :param uniform_P0:
+    :param uniform_Ls:
+    :param concentration_range_factor:
+    :return:
+    """
+    objective_func = generate_objective(model, q_actual_cal, exper_info,
+                                        dcell=dcell, dsyringe=dsyringe,
+                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
+    bounds = generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=concentration_range_factor)
+
+    results = []
+    for _ in range(repeats):
+        result = optimize.shgo(objective_func, bounds)
+        results.append(result)
+
+    for _ in range(repeats):
+        result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
+        results.append(result)
+
+    for _ in range(repeats):
+        result = optimize.differential_evolution(objective_func, bounds, maxiter=maxiter)
+        results.append(result)
+
+    results.sort(key=lambda item: item.fun)
+    best_result = results[0]
+    return best_result
+
+
 
