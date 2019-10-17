@@ -9,6 +9,7 @@ import pickle
 
 import numpy as np
 
+from _data_io import, ITCExperiment, load_heat_micro_cal
 from _optimization import posterior_maximizer
 from _optimization import generate_bound
 
@@ -91,13 +92,13 @@ else:
     heat_file = args.heat_file
     exper_info_file = args.exper_info_file
 
-    q_actual_micro_cal = _load_heat_micro_cal(heat_file)
+    q_actual_micro_cal = load_heat_micro_cal(heat_file)
     q_actual_cal = q_actual_micro_cal * 10 ** (-6)
 
-    exper_info = _ITCExperiment(exper_info_file)
+    exper_info = ITCExperiment(exper_info_file)
 
-    dcell = args.dcell
-    dsyringe = args.dsyringe
+    dcell = args.dP0
+    dsyringe = args.dLs
     uniform_P0 = args.uniform_P0
     uniform_Ls = args.uniform_Ls
     concentration_range_factor = args.concentration_range_factor
@@ -107,7 +108,7 @@ else:
 
     bounds = generate_bound(model, q_actual_cal, exper_info, concentration_range_factor=concentration_range_factor)
     print("Bounds: ", bounds)
-    
+
     best_result = posterior_maximizer(model, q_actual_cal, exper_info,
                                       dcell=dcell, dsyringe=dsyringe,
                                       uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
