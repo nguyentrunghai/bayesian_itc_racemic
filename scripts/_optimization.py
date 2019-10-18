@@ -277,9 +277,9 @@ def mse_embm(q_actual_cal, exper_info,
     return mse
 
 
-def generate_objective(model, q_actual_cal, exper_info,
-                       dcell=0.1, dsyringe=0.1,
-                       uniform_P0=False, uniform_Ls=False):
+def generate_objective_posterior(model, q_actual_cal, exper_info,
+                                 dcell=0.1, dsyringe=0.1,
+                                 uniform_P0=False, uniform_Ls=False):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
     :param q_actual_cal: observed heats in calorie
