@@ -56,7 +56,7 @@ if args.write_qsub_script:
     experiments = args.experiments.split()
 
     model = args.model
-    
+
     DeltaG_bound = '"%s"' % args.DeltaG_bound
     DeltaDeltaG_bound = '"%s"' % args.DeltaDeltaG_bound
     DeltaH_bound = '"%s"' % args.DeltaH_bound
@@ -115,6 +115,7 @@ python ''' + this_script + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
+        print("Writing " + qsub_script)
         open(qsub_file, "w").write(qsub_script)
 
         if args.submit:
