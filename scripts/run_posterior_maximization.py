@@ -123,10 +123,10 @@ else:
 
     exper_info = ITCExperiment(exper_info_file)
 
-    DeltaG_bound = [np.float(s) for s in args.DeltaG_bound.split()]
-    DeltaDeltaG_bound = [np.float(s) for s in args.DeltaDeltaG_bound.split()]
-    DeltaH_bound = [np.float(s) for s in args.DeltaH_bound.split()]
-    rho_bound = [np.float(s) for s in args.rho_bound.split()]
+    DeltaG_bound = tuple([np.float(s) for s in args.DeltaG_bound.split()])
+    DeltaDeltaG_bound = tuple([np.float(s) for s in args.DeltaDeltaG_bound.split()])
+    DeltaH_bound = tuple([np.float(s) for s in args.DeltaH_bound.split()])
+    rho_bound = tuple([np.float(s) for s in args.rho_bound.split()])
 
     dcell = args.dP0
     dsyringe = args.dLs
@@ -141,13 +141,17 @@ else:
     bounds = generate_bounds(model, q_actual_cal, exper_info,
                              DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                              dcell=dcell, dsyringe=dsyringe)
-    print("Bounds: ", bounds)
+
+    bounds_str = [("%0.5e" % lower, "%0.5e" % upper) for lower, upper in bounds]
+    print("Bounds: ", bounds_str)
 
     results = posterior_maximizer(model, q_actual_cal, exper_info,
                                   DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                                   dcell=dcell, dsyringe=dsyringe,
                                   uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
                                   maxiter=maxiter, repeats=repeats)
+
+    results.sort(key=lambda item: item.fun)
 
     results_out_file = os.path.join(out_dir, "results.pickle")
     pickle.dump(results, open(results_out_file, "w"))
