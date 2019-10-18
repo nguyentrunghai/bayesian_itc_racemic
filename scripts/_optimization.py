@@ -260,6 +260,36 @@ def minus_log_posterior_embm(q_actual_cal, exper_info,
     return -log_posterior
 
 
+def mse_embm(q_actual_cal, exper_info,
+             DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0):
+    """
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param DeltaG1: float, free energy of binding of ligand1 (kcal/mol)
+    :param DeltaDeltaG: float, difference in binding free energy between ligand2 and ligand1: DeltaDeltaG = DeltaG2 - DeltaG1 > 0
+                        DeltaDeltaG is always positive
+    :param DeltaH1: float, enthalpy of binding of ligand1 (kcal/mol)
+    :param DeltaH2: enthalpies of binding of ligand2 (kcal/mol)
+    :param P0: float, Cell concentration (millimolar)
+    :param Ls: float, Syringe concentration (millimolar)
+    :param rho: ratio between concentration of ligand1 and the total concentration of the syringe
+    :param DeltaH_0: float, heat of injection (cal)
+    :return: mse
+    """
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+
+    q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                   DeltaG1, DeltaDeltaG, beta, n_injections)
+
+    mse = mean_square_error(q_actual_cal, q_model_cal) * 10.**12
+
+    return mse
+
+
 def generate_objective(model, q_actual_cal, exper_info,
                        dcell=0.1, dsyringe=0.1,
                        uniform_P0=False, uniform_Ls=False):
