@@ -462,14 +462,25 @@ def maximizer(model, objective, q_actual_cal, exper_info,
     return results
 
 
-def create_dict_from_optimize_results(results):
+def create_dict_from_optimize_results(results, objective):
     """
     :param results: is a list of  OptimizeResult objects
+    :param objective: str, one of the values ["posterior", "mse"]
     :return: dict
     """
+    assert objective in ["posterior", "mse"], "unknown objective: " + objective
+
     results.sort(key=lambda item: item.fun)
     best_result = results[0]
-    results_dict = {"global": {"fun": best_result.fun, "x": best_result.x}}
+    best_fun = best_result.fun
+
+    best_x = best_result.x
+    if objective == "mse":
+        sigma = np.sqrt(best_fun) * 10**(-6)
+        log_sigma = np.log(sigma)
+        best_x = np.append(best_x, log_sigma)
+
+    results_dict = {"global": {"fun": best_fun , "x": best_x}}
     results_dict["all_locals"] = results
 
     return results_dict
