@@ -5,6 +5,9 @@ define function to optimize the posterior
 import numpy as np
 from scipy import optimize
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 from _models import logsigma_guesses, deltaH0_guesses
 
@@ -349,7 +352,8 @@ def create_dict_from_optimize_results(results):
 
 
 def plot_heat_actual_vs_model(q_actual_micro_cal, model, exper_info, global_minimizer, out,
-                              xlabel="injection #", ylabel="heat ($\mu$cal)"):
+                              xlabel="injection #", ylabel="heat ($\mu$cal)",
+                              font_scale=1.0):
     """
     :param q_actual_micro_cal: 1d array, actual heats in micro calorie
     :param model: str, abbreviated name of model
@@ -358,7 +362,8 @@ def plot_heat_actual_vs_model(q_actual_micro_cal, model, exper_info, global_mini
     :param out: str
     :param xlabel: str
     :param ylabel: str
-    :return: none
+    :param font_scale: float
+    :return: None
     """
     if model == "2cbm":
         DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = global_minimizer
@@ -384,6 +389,25 @@ def plot_heat_actual_vs_model(q_actual_micro_cal, model, exper_info, global_mini
     else:
         raise ValueError("Unknown model:" + model)
 
-    q_model_micro_cal = q_model_cal * 10.**(6)
+    q_model_micro_cal = q_model_cal * 10.**6
 
-    
+    print("q_actual_micro_cal:", q_actual_micro_cal)
+    print("q_model_micro_cal:", q_model_micro_cal)
+
+    n_inj = len(q_actual_micro_cal)
+
+    sns.set(font_scale=font_scale)
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+    ax.scatter(range(1, n_inj + 1), q_actual_micro_cal, s=20, c="k", marker="o", label="actual")
+    ax.plot(range(1, n_inj + 1), q_model_micro_cal, c="r", linestyle="-", label="model: " + model)
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.legend(loc="lower right")
+
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
+
+    return None
+
+
