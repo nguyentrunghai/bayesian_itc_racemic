@@ -32,16 +32,6 @@ def log_likelihood(q_actual, q_model, sigma):
     return log_llh
 
 
-def mean_square_error(q_actual, q_model):
-    """
-    :param q_actual: 1d ndarray, actual or observed values of heats
-    :param q_model: heat calculated from a model
-    :return mse: float
-    """
-    mse = np.mean((q_model - q_actual)**2)
-    return mse
-
-
 def log_lognormal(x, stated_center, uncertainty):
     """
     :param x: float
@@ -127,8 +117,7 @@ def mse_2cbm(q_actual_cal, exper_info,
 
     q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
-    mse = mean_square_error(q_actual_cal, q_model_cal) * 10.**12
-
+    mse = np.mean((q_actual_cal - q_model_cal) ** 2) * 10.**12
     return mse
 
 
@@ -206,8 +195,7 @@ def mse_rmbm(q_actual_cal, exper_info,
     q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                    DeltaG1, DeltaDeltaG, beta, n_injections)
 
-    mse = mean_square_error(q_actual_cal, q_model_cal) * 10.**12
-
+    mse = np.mean((q_actual_cal - q_model_cal) ** 2) * 10.**12
     return mse
 
 
@@ -285,8 +273,7 @@ def mse_embm(q_actual_cal, exper_info,
     q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                    DeltaG1, DeltaDeltaG, beta, n_injections)
 
-    mse = mean_square_error(q_actual_cal, q_model_cal) * 10.**12
-
+    mse = np.mean((q_actual_cal - q_model_cal) ** 2) * 10.**12
     return mse
 
 
