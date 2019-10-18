@@ -12,13 +12,14 @@ import pickle
 import numpy as np
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _optimization import posterior_maximizer
+from _optimization import maximizer
 from _optimization import generate_bounds
 from _optimization import create_dict_from_optimize_results
 from _optimization import plot_heat_actual_vs_model
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="2cbm")
+parser.add_argument("--objective", type=str, default="posterior")
 
 parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
 parser.add_argument("--heat_file", type=str, default="heat.DAT")
@@ -51,11 +52,15 @@ parser.add_argument("--submit",   action="store_true", default=False)
 
 args = parser.parse_args()
 
+assert args.model in ["2cbm", "rmbm", "embm"], "unkown model: " + args.model
+assert args.objective in ["posterior", "mse"], "unknown objective: " + args.objective
+
 if args.write_qsub_script:
     this_script = os.path.abspath(sys.argv[0])
     experiments = args.experiments.split()
 
     model = args.model
+    objective = args.objective
 
     DeltaG_bound = '"%s"' % args.DeltaG_bound
     DeltaDeltaG_bound = '"%s"' % args.DeltaDeltaG_bound
@@ -100,6 +105,7 @@ source /home/tnguye46/opt/module/anaconda2019.10.sh
 date
 python ''' + this_script + \
         ''' --model ''' + model + \
+        ''' --objective ''' + objective + \
         ''' --exper_info_file ''' + exper_info_file + \
         ''' --heat_file ''' + heat_file + \
         ''' --DeltaG_bound ''' + DeltaG_bound + \
@@ -125,6 +131,9 @@ python ''' + this_script + \
 else:
     model = args.model
     print("model:", model)
+
+    objective = args.objective
+    print("objective:", objective)
 
     heat_file = args.heat_file
     print("heat_file:", heat_file)
@@ -154,21 +163,21 @@ else:
 
     out_dir = args.out_dir
 
-    bounds = generate_bounds(model, q_actual_cal, exper_info,
+    bounds = generate_bounds(model, objective, q_actual_cal, exper_info,
                              DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                              dcell=dcell, dsyringe=dsyringe)
 
     bounds_str = [("%0.5e" % lower, "%0.5e" % upper) for lower, upper in bounds]
     print("Bounds: ", bounds_str)
 
-    results = posterior_maximizer(model, q_actual_cal, exper_info,
-                                  DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
-                                  dcell=dcell, dsyringe=dsyringe,
-                                  uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
-                                  maxiter=maxiter, repeats=repeats)
+    results = maximizer(model, objective, q_actual_cal, exper_info,
+                        DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
+                        dcell=dcell, dsyringe=dsyringe,
+                        uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
+                        maxiter=maxiter, repeats=repeats)
 
     # write out results
-    results_dict = create_dict_from_optimize_results(results)
+    results_dict = create_dict_from_optimize_results(results, objective)
     print("Lowest function value %0.5e" % results_dict["global"]["fun"])
     print("Global minimizer: ", results_dict["global"]["x"])
 
