@@ -415,13 +415,14 @@ def generate_bounds(model, objective, q_actual_cal, exper_info,
     return bounds[model][objective]
 
 
-def posterior_maximizer(model, q_actual_cal, exper_info,
-                        DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
-                        dcell=0.1, dsyringe=0.1,
-                        uniform_P0=False, uniform_Ls=False,
-                        maxiter=1000, repeats=100):
+def maximizer(model, objective, q_actual_cal, exper_info,
+              DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
+              dcell=0.1, dsyringe=0.1,
+              uniform_P0=False, uniform_Ls=False,
+              maxiter=1000, repeats=100):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
+    :param objective: str, one of the values ["posterior", "mse"]
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param DeltaG_bound: tuple of two floats, (lower, upper)
@@ -434,18 +435,15 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     :param uniform_Ls: bool
     :return: list of OptimizeResult objects
     """
-    objective_func = generate_objective(model, q_actual_cal, exper_info,
+    objective_func = generate_objective(model, objective, q_actual_cal, exper_info,
                                         dcell=dcell, dsyringe=dsyringe,
                                         uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
 
-    bounds = generate_bounds(model, q_actual_cal, exper_info,
+    bounds = generate_bounds(model, objective, q_actual_cal, exper_info,
                              DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                              dcell=dcell, dsyringe=dsyringe)
 
     results = []
-    #for _ in range(repeats):
-    #    result = optimize.shgo(objective_func, bounds)
-    #    results.append(result)
 
     for _ in range(repeats):
         result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
