@@ -45,8 +45,6 @@ parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d"
 parser.add_argument("--out_dir", type=str, default="./")
 
 parser.add_argument("--font_scale", type=float, default=1.)
-parser.add_argument("--xlabel", type=str, default="# injections")
-parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 parser.add_argument("--write_qsub_script",   action="store_true", default=False)
 parser.add_argument("--submit",   action="store_true", default=False)
@@ -78,8 +76,6 @@ if args.write_qsub_script:
     repeats = args.repeats
 
     font_scale = args.font_scale
-    xlabel = args.xlabel
-    ylabel = args.ylabel
 
     for experiment in experiments:
         exper_info_file = os.path.join(args.exper_info_dir, experiment, args.exper_info_file)
@@ -115,8 +111,6 @@ python ''' + this_script + \
         ''' --maxiter %d ''' % maxiter + \
         ''' --repeats %d ''' % repeats + \
         ''' --font_scale %0.2f ''' % font_scale + \
-        ''' --xlabel ''' + xlabel + \
-        ''' --ylabel ''' + ylabel + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -155,8 +149,6 @@ else:
     repeats = args.repeats
 
     font_scale = args.font_scale
-    xlabel = args.xlabel
-    ylabel = args.ylabel
 
     out_dir = args.out_dir
 
@@ -183,6 +175,8 @@ else:
 
     # plot
     fig_file_name = os.path.join(out_dir, "heat.pdf")
+    xlabel = "# injections"
+    ylabel = "heat ($\mu$cal)"
     plot_heat_actual_vs_model(q_actual_micro_cal, model, exper_info, results_dict["global"]["x"], fig_file_name,
                               xlabel=xlabel, ylabel=ylabel, font_scale=font_scale)
 
