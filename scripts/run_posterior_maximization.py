@@ -7,6 +7,7 @@ from __future__ import print_function
 import argparse
 import os
 import sys
+import pickle
 
 import numpy as np
 
@@ -38,6 +39,8 @@ parser.add_argument("--maxiter", type=int, default=1000)
 parser.add_argument("--repeats", type=int, default=10)
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
+
+parser.add_argument("--out_dir", type=str, default="./")
 
 parser.add_argument("--write_qsub_script",   action="store_true", default=False)
 parser.add_argument("--submit",   action="store_true", default=False)
@@ -101,6 +104,7 @@ python ''' + this_script + \
         uniform_P0 + uniform_Ls + \
         ''' --maxiter %d ''' % maxiter + \
         ''' --repeats %d ''' % repeats + \
+        ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
         open(qsub_file, "w").write(qsub_script)
@@ -132,6 +136,8 @@ else:
     maxiter = args.maxiter
     repeats = args.repeats
 
+    out_dir = args.out_dir
+
     bounds = generate_bounds(model, q_actual_cal, exper_info,
                              DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                              dcell=dcell, dsyringe=dsyringe)
@@ -142,3 +148,8 @@ else:
                                   dcell=dcell, dsyringe=dsyringe,
                                   uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
                                   maxiter=maxiter, repeats=repeats)
+
+    results_out_file = os.path.join(out_dir, "results.pickle")
+    pickle.dump(results, open(results_out_file, "w"))
+
+print("DONE!")
