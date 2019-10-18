@@ -79,7 +79,35 @@ if args.write_qsub_script:
 
         qsub_file = os.path.join(out_dir, experiment + "_optimize.job")
         log_file = os.path.join(out_dir, experiment + "_optimize.log")
-        
+
+        qsub_script = '''#!/bin/bash
+#PBS -S /bin/bash
+#PBS -o %s ''' % log_file + '''
+#PBS -j oe
+#PBS -l nodes=1:ppn=4,walltime=300:00:00
+
+source /home/tnguye46/opt/module/anaconda.sh
+date
+python ''' + this_script + \
+        ''' --model ''' + model + \
+        ''' --exper_info_file ''' + exper_info_file + \
+        ''' --heat_file ''' + heat_file + \
+        ''' --DeltaG_bound ''' + DeltaG_bound + \
+        ''' --DeltaDeltaG_bound ''' + DeltaDeltaG_bound + \
+        ''' --DeltaH_bound ''' + DeltaH_bound + \
+        ''' --rho_bound ''' + rho_bound + \
+        ''' --dP0 %0.5f ''' % dP0 + \
+        ''' --dLs %0.5f ''' % dLs + \
+        uniform_P0 + uniform_Ls + \
+        ''' --maxiter %d ''' % maxiter + \
+        ''' --repeats %d ''' % repeats + \
+        '''\ndate\n'''
+
+        open(qsub_file, "w").write(qsub_script)
+
+        if args.submit:
+            print("Submitting " + experiment)
+            os.system("qsub %s" % qsub_file)
 
 else:
     model = args.model
