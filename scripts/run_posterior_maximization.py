@@ -5,7 +5,8 @@ run this script to maximize the posterior
 from __future__ import print_function
 
 import argparse
-import pickle
+import os
+import sys
 
 import numpy as np
 
@@ -44,8 +45,41 @@ parser.add_argument("--submit",   action="store_true", default=False)
 args = parser.parse_args()
 
 if args.write_qsub_script:
-    pass
-    #TODO
+    this_script = os.path.abspath(sys.argv[0])
+    experiments = args.experiments.split()
+
+    model = args.model
+    DeltaG_bound = args.DeltaG_bound
+    DeltaDeltaG_bound = args.DeltaDeltaG_bound
+    DeltaH_bound = args.DeltaH_bound
+    rho_bound = args.rho_bound
+
+    dP0 = args.dP0
+    dLs = args.dLs
+
+    uniform_P0 = " "
+    if args.uniform_P0:
+        uniform_P0 = " --uniform_P0 "
+
+    uniform_Ls = " "
+    if args.uniform_Ls:
+        uniform_Ls = " --uniform_Ls "
+
+    maxiter = args.maxiter
+    repeats = args.repeats
+
+    for experiment in experiments:
+        exper_info_file = os.path.join(args.exper_info_dir, experiment, args.exper_info_file)
+        heat_file = os.path.join(args.heat_dir, experiment + ".DAT")
+
+        out_dir = experiment
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        out_dir = os.path.abspath(out_dir)
+
+        qsub_file = os.path.join(out_dir, experiment + "_optimize.job")
+        log_file = os.path.join(out_dir, experiment + "_optimize.log")
+        
 
 else:
     model = args.model
