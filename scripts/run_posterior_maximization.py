@@ -152,6 +152,8 @@ else:
                                   maxiter=maxiter, repeats=repeats)
 
     results.sort(key=lambda item: item.fun)
+    print("Lowest function value %0.5e" % results[0].fun)
+    print("Global minimizer: ", results[0].x)
 
     results_out_file = os.path.join(out_dir, "results.pickle")
     pickle.dump(results, open(results_out_file, "w"))
