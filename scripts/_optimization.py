@@ -355,11 +355,12 @@ def generate_objective(model, objective, q_actual_cal, exper_info,
     return funcs[model][objective]
 
 
-def generate_bounds(model, q_actual_cal, exper_info,
+def generate_bounds(model, objective, q_actual_cal, exper_info,
                     DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                     dcell=0.1, dsyringe=0.1):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
+    :param objective: str, one of the values ["posterior", "mse"]
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param DeltaG_bound: tuple of two floats, (lower, upper)
@@ -370,6 +371,9 @@ def generate_bounds(model, q_actual_cal, exper_info,
     :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
     :return: list of tuples
     """
+    assert model in ["2cbm", "rmbm", "embm"], "unkown model: " + model
+    assert objective in ["posterior", "mse"], "unknown objective: " + objective
+
     DeltaG = DeltaG_bound
     DeltaDeltaG = DeltaDeltaG_bound
     DeltaH = DeltaH_bound
@@ -394,16 +398,21 @@ def generate_bounds(model, q_actual_cal, exper_info,
     DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
     DeltaH_0 = (DeltaH_0_min, DeltaH_0_max)
 
-    if model == "2cbm":
-        bounds = [DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma]
-    elif model == "rmbm":
-        bounds = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, DeltaH_0, log_sigma]
-    elif model == "embm":
-        bounds = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, rho, DeltaH_0, log_sigma]
-    else:
-        raise ValueError("Unknown model: %s" % model)
+    bounds = dict()
+    bounds["2cbm"] = {}
+    bounds["rmbm"] = {}
+    bounds["embm"] = {}
 
-    return bounds
+    bounds["2cbm"]["posterior"] = [DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma]
+    bounds["2cbm"]["mse"] = [DeltaG, DeltaH, P0, Ls, DeltaH_0]
+
+    bounds["rmbm"]["posterior"] = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, DeltaH_0, log_sigma]
+    bounds["rmbm"]["mse"] = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, DeltaH_0]
+
+    bounds["embm"]["posterior"] = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, rho, DeltaH_0, log_sigma]
+    bounds["embm"]["mse"] = [DeltaG, DeltaDeltaG, DeltaH, DeltaH, P0, Ls, rho, DeltaH_0]
+
+    return bounds[model][objective]
 
 
 def posterior_maximizer(model, q_actual_cal, exper_info,
