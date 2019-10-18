@@ -116,8 +116,13 @@ python ''' + this_script + \
 
 else:
     model = args.model
+    print("model:", model)
+
     heat_file = args.heat_file
+    print("heat_file:", heat_file)
+    
     exper_info_file = args.exper_info_file
+    print("exper_info_file:", exper_info_file)
 
     q_actual_micro_cal = load_heat_micro_cal(heat_file)
     q_actual_cal = q_actual_micro_cal * 10 ** (-6)
