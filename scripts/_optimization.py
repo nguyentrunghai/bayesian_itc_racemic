@@ -334,4 +334,14 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
     return results
 
 
+def create_dict_from_optimize_results(results):
+    """
+    :param results: is a list of  OptimizeResult objects
+    :return: dict
+    """
+    results.sort(key=lambda item: item.fun)
+    best_result = results[0]
+    results_dict = {"global": {"fun": best_result.fun, "x": best_result.x}}
+    results_dict["all_locals": results]
 
+    return results_dict
