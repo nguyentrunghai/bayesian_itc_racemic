@@ -97,8 +97,8 @@ def minus_log_posterior_2cbm(q_actual_cal, exper_info,
     return -log_posterior
 
 
-def mse_2cbm(q_actual_cal, exper_info,
-             DeltaG, DeltaH, P0, Ls, DeltaH_0):
+def mean_square_error_2cbm(q_actual_cal, exper_info,
+                           DeltaG, DeltaH, P0, Ls, DeltaH_0):
     """
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
@@ -170,7 +170,7 @@ def minus_log_posterior_rmbm(q_actual_cal, exper_info,
     return -log_posterior
 
 
-def mse_rmbm(q_actual_cal, exper_info,
+def mean_square_error_rmbm(q_actual_cal, exper_info,
              DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0):
     """
     :param q_actual_cal: observed heats in calorie
@@ -248,7 +248,7 @@ def minus_log_posterior_embm(q_actual_cal, exper_info,
     return -log_posterior
 
 
-def mse_embm(q_actual_cal, exper_info,
+def mean_square_error_embm(q_actual_cal, exper_info,
              DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0):
     """
     :param q_actual_cal: observed heats in calorie
@@ -277,9 +277,9 @@ def mse_embm(q_actual_cal, exper_info,
     return mse
 
 
-def generate_objective_posterior(model, q_actual_cal, exper_info,
-                                 dcell=0.1, dsyringe=0.1,
-                                 uniform_P0=False, uniform_Ls=False):
+def generate_objective(model, q_actual_cal, exper_info,
+                       dcell=0.1, dsyringe=0.1,
+                       uniform_P0=False, uniform_Ls=False):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
     :param q_actual_cal: observed heats in calorie
