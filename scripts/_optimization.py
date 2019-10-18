@@ -310,7 +310,7 @@ def generate_objective(model, objective, q_actual_cal, exper_info,
     funcs["2cbm"]["posterior"] = posterior_2cbm
 
     def mse_2cbm(x):
-        DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = x
+        DeltaG, DeltaH, P0, Ls, DeltaH_0 = x
         mse = mean_square_error_2cbm(q_actual_cal, exper_info, DeltaG, DeltaH, P0, Ls, DeltaH_0)
         return mse
 
@@ -327,7 +327,7 @@ def generate_objective(model, objective, q_actual_cal, exper_info,
     funcs["rmbm"]["posterior"] = posterior_rmbm
 
     def mse_rmbm(x):
-        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma = x
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0 = x
         mse = mean_square_error_rmbm(q_actual_cal, exper_info,
                                      DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0)
         return mse
@@ -345,7 +345,7 @@ def generate_objective(model, objective, q_actual_cal, exper_info,
     funcs["embm"]["posterior"] = posterior_embm
 
     def mse_embm(x):
-        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma = x
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0 = x
         mse = mean_square_error_embm(q_actual_cal, exper_info,
                                      DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0)
         return mse
