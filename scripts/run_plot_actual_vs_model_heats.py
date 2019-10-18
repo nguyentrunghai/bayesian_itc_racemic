@@ -33,7 +33,7 @@ parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
 parser.add_argument("--font_scale", type=float, default=0.75)
-parser.add_argument("--xlabel", type=str, default="injection #")
+parser.add_argument("--xlabel", type=str, default="# injections")
 parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
