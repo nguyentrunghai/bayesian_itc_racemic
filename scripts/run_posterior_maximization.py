@@ -45,7 +45,7 @@ parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d"
 parser.add_argument("--out_dir", type=str, default="./")
 
 parser.add_argument("--font_scale", type=float, default=1.)
-parser.add_argument("--xlabel", type=str, default="injection #")
+parser.add_argument("--xlabel", type=str, default="# injections")
 parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 parser.add_argument("--write_qsub_script",   action="store_true", default=False)
