@@ -14,6 +14,7 @@ import numpy as np
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _optimization import posterior_maximizer
 from _optimization import generate_bounds
+from _optimization import create_dict_from_optimize_results
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mcmc_dir", type=str, default="5.twocomponent_mcmc")
@@ -151,11 +152,11 @@ else:
                                   uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
                                   maxiter=maxiter, repeats=repeats)
 
-    results.sort(key=lambda item: item.fun)
-    print("Lowest function value %0.5e" % results[0].fun)
-    print("Global minimizer: ", results[0].x)
+    results_dict = create_dict_from_optimize_results(results)
+    print("Lowest function value %0.5e" % results_dict["global"]["fun"])
+    print("Global minimizer: ", results_dict["global"]["x"])
 
     results_out_file = os.path.join(out_dir, "results.pickle")
-    pickle.dump(results, open(results_out_file, "w"))
+    pickle.dump(results_dict, open(results_out_file, "w"))
 
 print("DONE!")
