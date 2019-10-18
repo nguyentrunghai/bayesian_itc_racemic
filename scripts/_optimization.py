@@ -329,12 +329,14 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
 
     for _ in range(repeats):
         result = optimize.dual_annealing(objective_func, bounds, maxiter=maxiter)
-        print(len(results), " (DA): ", result.fun, result.x, "\n")
+        print(len(results), " (DA): ", result.fun, result.x)
+        print("\n")
         results.append(result)
 
     for _ in range(repeats):
         result = optimize.differential_evolution(objective_func, bounds, maxiter=maxiter)
-        print(len(results), " (DE): ", result.fun, result.x, "\n")
+        print(len(results), " (DE): ", result.fun, result.x)
+        print("\n")
         results.append(result)
 
     return results
