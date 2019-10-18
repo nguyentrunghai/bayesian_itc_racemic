@@ -56,10 +56,11 @@ if args.write_qsub_script:
     experiments = args.experiments.split()
 
     model = args.model
-    DeltaG_bound = args.DeltaG_bound
-    DeltaDeltaG_bound = args.DeltaDeltaG_bound
-    DeltaH_bound = args.DeltaH_bound
-    rho_bound = args.rho_bound
+    
+    DeltaG_bound = '"%s"' % args.DeltaG_bound
+    DeltaDeltaG_bound = '"%s"' % args.DeltaDeltaG_bound
+    DeltaH_bound = '"%s"' % args.DeltaH_bound
+    rho_bound = '"%s"' % args.rho_bound
 
     dP0 = args.dP0
     dLs = args.dLs
