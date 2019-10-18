@@ -342,6 +342,6 @@ def create_dict_from_optimize_results(results):
     results.sort(key=lambda item: item.fun)
     best_result = results[0]
     results_dict = {"global": {"fun": best_result.fun, "x": best_result.x}}
-    results_dict["all_locals": results]
+    results_dict["all_locals"] = results
 
     return results_dict
