@@ -252,6 +252,8 @@ def generate_bounds(model, q_actual_cal, exper_info,
     :param DeltaDeltaG_bound: tuple of two floats, (lower, upper)
     :param DeltaH_bound: tuple of two floats, (lower, upper)
     :param rho_bound: tuple of two floats, (lower, upper)
+    :param dcell: float, relative uncertainty in cell concentration (0 < dcell < 1)
+    :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
     :return: list of tuples
     """
     DeltaG = DeltaG_bound
@@ -296,19 +298,18 @@ def posterior_maximizer(model, q_actual_cal, exper_info,
                         uniform_P0=False, uniform_Ls=False,
                         maxiter=1000, repeats=100):
     """
-    :param model:
-    :param q_actual_cal:
-    :param exper_info:
+    :param model: str, one of the values ["2cbm", "rmbm", "embm"]
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
     :param DeltaG_bound: tuple of two floats, (lower, upper)
     :param DeltaDeltaG_bound: tuple of two floats, (lower, upper)
     :param DeltaH_bound: tuple of two floats, (lower, upper)
     :param rho_bound: tuple of two floats, (lower, upper)
-    :param dcell:
-    :param dsyringe:
-    :param uniform_P0:
-    :param uniform_Ls:
-    :param concentration_range_factor:
-    :return:
+    :param dcell: float, relative uncertainty in cell concentration (0 < dcell < 1)
+    :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :return: list of OptimizeResult objects
     """
     objective_func = generate_objective(model, q_actual_cal, exper_info,
                                         dcell=dcell, dsyringe=dsyringe,
@@ -345,3 +346,44 @@ def create_dict_from_optimize_results(results):
     results_dict["all_locals"] = results
 
     return results_dict
+
+
+def plot_heat_actual_vs_model(q_actual_micro_cal, model, exper_info, global_minimizer, out,
+                              xlabel="injection #", ylabel="heat ($\mu$cal)"):
+    """
+    :param q_actual_micro_cal: 1d array, actual heats in micro calorie
+    :param model: str, abbreviated name of model
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param global_minimizer: 1d array of optimized parameters
+    :param out: str
+    :param xlabel: str
+    :param ylabel: str
+    :return: none
+    """
+    if model == "2cbm":
+        DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = global_minimizer
+        q_model_cal = heats_TwoComponentBindingModel(exper_info.get_cell_volume_liter(),
+                                                     exper_info.get_injection_volumes_liter(),
+                                                     P0, Ls, DeltaG, DeltaH, DeltaH_0,
+                                                     beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                     N=exper_info.get_number_injections())
+    elif model == "rmbm":
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma = global_minimizer
+        q_model_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                       exper_info.get_injection_volumes_liter(),
+                                                       P0, Ls, 0.5, DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
+                                                       beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                       N=exper_info.get_number_injections())
+    elif model == "embm":
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma = global_minimizer
+        q_model_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                       exper_info.get_injection_volumes_liter(),
+                                                       P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
+                                                       beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                       N=exper_info.get_number_injections())
+    else:
+        raise ValueError("Unknown model:" + model)
+
+    q_model_micro_cal = q_model_cal * 10.**(6)
+
+    
