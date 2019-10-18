@@ -128,7 +128,6 @@ else:
     dsyringe = args.dLs
     uniform_P0 = args.uniform_P0
     uniform_Ls = args.uniform_Ls
-    concentration_range_factor = args.concentration_range_factor
 
     maxiter = args.maxiter
     repeats = args.repeats
@@ -139,6 +138,7 @@ else:
     print("Bounds: ", bounds)
 
     results = posterior_maximizer(model, q_actual_cal, exper_info,
+                                  DeltaG_bound, DeltaDeltaG_bound, DeltaH_bound, rho_bound,
                                   dcell=dcell, dsyringe=dsyringe,
                                   uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
                                   maxiter=maxiter, repeats=repeats)
