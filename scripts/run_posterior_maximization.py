@@ -99,7 +99,7 @@ if args.write_qsub_script:
 #PBS -j oe
 #PBS -l nodes=1:ppn=4,walltime=300:00:00
 
-source /home/tnguye46/opt/module/anaconda.sh
+source /home/tnguye46/opt/module/anaconda2019.10.sh
 date
 python ''' + this_script + \
         ''' --model ''' + model + \
