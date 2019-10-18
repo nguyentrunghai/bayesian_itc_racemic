@@ -15,15 +15,16 @@ from _data_io import ITCExperiment, load_heat_micro_cal
 from _optimization import posterior_maximizer
 from _optimization import generate_bounds
 from _optimization import create_dict_from_optimize_results
+from _optimization import plot_heat_actual_vs_model
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--mcmc_dir", type=str, default="5.twocomponent_mcmc")
 parser.add_argument("--model", type=str, default="2cbm")
 
 parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
-parser.add_argument("--heat_file", type=str, default="/home/tnguye46/bayesian_itc_racemic/4.heat_in_origin_format/Baum_59.DAT")
+parser.add_argument("--heat_file", type=str, default="heat.DAT")
 
-parser.add_argument("--exper_info_file", type=str, default="/home/tnguye46/bayesian_itc_racemic/5.twocomponent_mcmc/nsamples_5k/Baum_59/experimental_information.pickle")
+parser.add_argument("--exper_info_dir", type=str, default="5.exper_info")
+parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
 parser.add_argument("--DeltaG_bound", type=str, default="-20 0")
 parser.add_argument("--DeltaDeltaG_bound", type=str, default="0 15")
@@ -42,6 +43,10 @@ parser.add_argument("--repeats", type=int, default=10)
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 
 parser.add_argument("--out_dir", type=str, default="./")
+
+parser.add_argument("--font_scale", type=float, default=1.)
+parser.add_argument("--xlabel", type=str, default="injection #")
+parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 parser.add_argument("--write_qsub_script",   action="store_true", default=False)
 parser.add_argument("--submit",   action="store_true", default=False)
@@ -71,6 +76,10 @@ if args.write_qsub_script:
 
     maxiter = args.maxiter
     repeats = args.repeats
+
+    font_scale = args.font_scale
+    xlabel = args.xlabel
+    ylabel = args.ylabel
 
     for experiment in experiments:
         exper_info_file = os.path.join(args.exper_info_dir, experiment, args.exper_info_file)
@@ -105,6 +114,9 @@ python ''' + this_script + \
         uniform_P0 + uniform_Ls + \
         ''' --maxiter %d ''' % maxiter + \
         ''' --repeats %d ''' % repeats + \
+        ''' --font_scale %0.2f ''' % font_scale + \
+        ''' --xlabel ''' + xlabel + \
+        ''' --ylabel ''' + ylabel + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -120,7 +132,7 @@ else:
 
     heat_file = args.heat_file
     print("heat_file:", heat_file)
-    
+
     exper_info_file = args.exper_info_file
     print("exper_info_file:", exper_info_file)
 
@@ -142,6 +154,10 @@ else:
     maxiter = args.maxiter
     repeats = args.repeats
 
+    font_scale = args.font_scale
+    xlabel = args.xlabel
+    ylabel = args.ylabel
+
     out_dir = args.out_dir
 
     bounds = generate_bounds(model, q_actual_cal, exper_info,
@@ -157,11 +173,17 @@ else:
                                   uniform_P0=uniform_P0, uniform_Ls=uniform_P0,
                                   maxiter=maxiter, repeats=repeats)
 
+    # write out results
     results_dict = create_dict_from_optimize_results(results)
     print("Lowest function value %0.5e" % results_dict["global"]["fun"])
     print("Global minimizer: ", results_dict["global"]["x"])
 
     results_out_file = os.path.join(out_dir, "results.pickle")
     pickle.dump(results_dict, open(results_out_file, "w"))
+
+    # plot
+    fig_file_name = os.path.join(out_dir, "heat.pdf")
+    plot_heat_actual_vs_model(q_actual_micro_cal, model, exper_info, results_dict["global"]["x"], fig_file_name,
+                              xlabel=xlabel, ylabel=ylabel, font_scale=font_scale)
 
 print("DONE!")
