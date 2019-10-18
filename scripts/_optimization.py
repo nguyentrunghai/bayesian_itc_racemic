@@ -171,7 +171,7 @@ def minus_log_posterior_rmbm(q_actual_cal, exper_info,
 
 
 def mean_square_error_rmbm(q_actual_cal, exper_info,
-             DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0):
+                           DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0):
     """
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
@@ -249,7 +249,7 @@ def minus_log_posterior_embm(q_actual_cal, exper_info,
 
 
 def mean_square_error_embm(q_actual_cal, exper_info,
-             DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0):
+                           DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0):
     """
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
@@ -277,11 +277,12 @@ def mean_square_error_embm(q_actual_cal, exper_info,
     return mse
 
 
-def generate_objective(model, q_actual_cal, exper_info,
+def generate_objective(model, objective, q_actual_cal, exper_info,
                        dcell=0.1, dsyringe=0.1,
                        uniform_P0=False, uniform_Ls=False):
     """
     :param model: str, one of the values ["2cbm", "rmbm", "embm"]
+    :param objective: str, one of the values ["posterior", "mse"]
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
     :param dcell: float, relative uncertainty in cell concentration (0 < dcell < 1)
@@ -290,8 +291,15 @@ def generate_objective(model, q_actual_cal, exper_info,
     :param uniform_Ls: float, Syringe concentration (millimolar)
     :return: the objective function to be optimized
     """
+    assert model in ["2cbm", "rmbm", "embm"], "unkown model: " + model
+    assert objective in ["posterior", "mse"], "unknown objective: " + objective
 
-    def objective_2cbm(x):
+    funcs = dict()
+    funcs["2cbm"] = {}
+    funcs["rmbm"] = {}
+    funcs["embm"] = {}
+
+    def posterior_2cbm(x):
         DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = x
         m_log_posterior = minus_log_posterior_2cbm(q_actual_cal, exper_info,
                                                    DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma,
@@ -299,7 +307,16 @@ def generate_objective(model, q_actual_cal, exper_info,
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
         return m_log_posterior
 
-    def objective_rmbm(x):
+    funcs["2cbm"]["posterior"] = posterior_2cbm
+
+    def mse_2cbm(x):
+        DeltaG, DeltaH, P0, Ls, DeltaH_0, log_sigma = x
+        mse = mean_square_error_2cbm(q_actual_cal, exper_info, DeltaG, DeltaH, P0, Ls, DeltaH_0)
+        return mse
+
+    funcs["2cbm"]["mse"] = mse_2cbm
+
+    def posterior_rmbm(x):
         DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma = x
         m_log_posterior = minus_log_posterior_rmbm(q_actual_cal, exper_info,
                                                    DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma,
@@ -307,7 +324,17 @@ def generate_objective(model, q_actual_cal, exper_info,
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
         return m_log_posterior
 
-    def objective_embm(x):
+    funcs["rmbm"]["posterior"] = posterior_rmbm
+
+    def mse_rmbm(x):
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma = x
+        mse = mean_square_error_rmbm(q_actual_cal, exper_info,
+                                     DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0)
+        return mse
+
+    funcs["rmbm"]["mse"] = mse_rmbm
+
+    def posterior_embm(x):
         DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma = x
         m_log_posterior = minus_log_posterior_embm(q_actual_cal, exper_info,
                                                    DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma,
@@ -315,14 +342,17 @@ def generate_objective(model, q_actual_cal, exper_info,
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls)
         return m_log_posterior
 
-    if model == "2cbm":
-        return objective_2cbm
-    elif model == "rmbm":
-        return objective_rmbm
-    elif model == "embm":
-        return objective_embm
-    else:
-        raise ValueError("Unknown model: %s" % model)
+    funcs["embm"]["posterior"] = posterior_embm
+
+    def mse_embm(x):
+        DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma = x
+        mse = mean_square_error_embm(q_actual_cal, exper_info,
+                                     DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0)
+        return mse
+
+    funcs["embm"]["mse"] = mse_embm
+
+    return funcs[model][objective]
 
 
 def generate_bounds(model, q_actual_cal, exper_info,
