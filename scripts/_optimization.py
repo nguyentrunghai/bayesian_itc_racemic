@@ -80,7 +80,7 @@ def minus_log_posterior_2cbm(q_actual_cal, exper_info,
     :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
     :param uniform_P0: bool
     :param uniform_Ls: bool
-    :return: values of parameters that maximize the posterior
+    :return: minus log posterior
     """
 
     V0 = exper_info.get_cell_volume_liter()
@@ -107,6 +107,31 @@ def minus_log_posterior_2cbm(q_actual_cal, exper_info,
     return -log_posterior
 
 
+def mse_2cbm(q_actual_cal, exper_info,
+             DeltaG, DeltaH, P0, Ls, DeltaH_0):
+    """
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param DeltaG: float, free energy of binding (kcal/mol)
+    :param DeltaH: float, enthalpy of binding (kcal/mol)
+    :param P0: float, Cell concentration (millimolar)
+    :param Ls: float, Syringe concentration (millimolar)
+    :param DeltaH_0: float, heat of injection (cal)
+    :return: mse, float
+    """
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+
+    q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
+
+    mse = mean_square_error(q_actual_cal, q_model_cal) * 10.**12
+
+    return mse
+
+
 def minus_log_posterior_rmbm(q_actual_cal, exper_info,
                              DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0, log_sigma,
                              dcell=0.1, dsyringe=0.1,
@@ -127,7 +152,7 @@ def minus_log_posterior_rmbm(q_actual_cal, exper_info,
     :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
     :param uniform_P0: bool
     :param uniform_Ls: bool
-    :return: values of parameters that maximize the posterior
+    :return: minus log posterior
     """
 
     V0 = exper_info.get_cell_volume_liter()
@@ -156,6 +181,36 @@ def minus_log_posterior_rmbm(q_actual_cal, exper_info,
     return -log_posterior
 
 
+def mse_rmbm(q_actual_cal, exper_info,
+             DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, DeltaH_0):
+    """
+    :param q_actual_cal: observed heats in calorie
+    :param exper_info: an object of _data_io.ITCExperiment class
+    :param DeltaG1: float, free energy of binding of ligand1 (kcal/mol)
+    :param DeltaDeltaG: float, difference in binding free energy between ligand2 and ligand1: DeltaDeltaG = DeltaG2 - DeltaG1 > 0
+                        DeltaDeltaG is always positive
+    :param DeltaH1: float, enthalpy of binding of ligand1 (kcal/mol)
+    :param DeltaH2: enthalpies of binding of ligand2 (kcal/mol)
+    :param P0: float, Cell concentration (millimolar)
+    :param Ls: float, Syringe concentration (millimolar)
+    :param DeltaH_0: float, heat of injection (cal)
+    :return: mse
+    """
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+    rho = 0.5
+
+    q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                   DeltaG1, DeltaDeltaG, beta, n_injections)
+
+    mse = mean_square_error(q_actual_cal, q_model_cal) * 10.**12
+
+    return mse
+
+
 def minus_log_posterior_embm(q_actual_cal, exper_info,
                              DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, P0, Ls, rho, DeltaH_0, log_sigma,
                              dcell=0.1, dsyringe=0.1,
@@ -177,7 +232,7 @@ def minus_log_posterior_embm(q_actual_cal, exper_info,
     :param dsyringe: float, relative uncertainty in syringe concentration (0 < dcell < 1)
     :param uniform_P0: bool
     :param uniform_Ls: bool
-    :return: values of parameters that maximize the posterior
+    :return: minus log posterior
     """
 
     V0 = exper_info.get_cell_volume_liter()
