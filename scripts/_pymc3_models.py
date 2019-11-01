@@ -93,7 +93,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
         # prior for log_sigma
         log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max)
 
-        q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections) + DeltaH_0
+        q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
         sigma = np.exp(log_sigma)
 
