@@ -2,7 +2,7 @@
 includes function that create model and run MCMC sampling
 """
 
-import nump as np
+import numpy as np
 import pymc3
 
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
