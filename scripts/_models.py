@@ -54,6 +54,10 @@ def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0
         # total quantity of ligand in sample cell after n injections (mol)
         L = V0 * Ls * 1.e-3 * (1. - dcum)
         # complex concentration (M)
+        print("V0", V0)
+        print("P", P)
+        print("L", L)
+        print("Kd", Kd)
         PLn[n] = (0.5 / V0 * ((P + L + Kd * V0) - ((P + L + Kd * V0) ** 2 - 4 * P * L) ** 0.5))
         # free protein concentration in sample cell after n injections (M)
         Pn[n] = P / V0 - PLn[n]
