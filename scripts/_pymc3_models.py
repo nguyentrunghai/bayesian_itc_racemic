@@ -24,6 +24,16 @@ def lognormal_prior(name, stated_value, uncertainty):
                            value=m)
 
 
+def uniform_prior(name, lower, upper):
+    """
+    :param name: str
+    :param lower: float
+    :param upper: float
+    :return: pymc3.Uniform
+    """
+    return pymc3.Uniform(name, lower=lower, upper=upper)
+
+
 def make_TwoComponentBindingModel(q_actual_cal, exper_info,
                                   dcell=0.1, dsyringe=0.1,
                                   uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
