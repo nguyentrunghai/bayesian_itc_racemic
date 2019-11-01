@@ -56,7 +56,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
     n_injections = exper_info.get_number_injections()
 
     DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
-    logsigma_min, logsigma_max = logsigma_guesses(q_actual_cal)
+    log_sigma_min, log_sigma_max = logsigma_guesses(q_actual_cal)
 
     stated_P0 = exper_info.get_cell_concentration_milli_molar()
     uncertainty_P0 = dcell * stated_P0
@@ -69,12 +69,36 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
     Ls_max = stated_Ls * concentration_range_factor
 
     with pymc3.Model() as model:
+
+        # prior for receptor concentration
         if uniform_P0:
             P0 = uniform_prior("P0", lower=P0_min, upper=P0_max)
         else:
             P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0)
 
+        # prior for ligand concentration
         if uniform_Ls:
             Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max)
         else:
             Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
+
+        # prior for DeltaG
+        DeltaG = uniform_prior("DeltaG", lower=-40., upper=40.)
+
+        # prior for DeltaH
+        DeltaH = uniform_prior("DeltaH", lower=-100., upper=100.)
+
+        # prior for DeltaH_0
+        DeltaH_0 = uniform_prior("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max)
+
+        # prior for log_sigma
+        log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max)
+
+        q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG,
+                                                     DeltaH, DeltaH_0, beta, n_injections) + DeltaH_0
+
+        sigma = np.exp(log_sigma)
+
+        q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_cal, sigma=sigma, observed=q_actual_cal)
+
+    return model
