@@ -67,3 +67,14 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
     uncertainty_Ls = dsyringe * stated_Ls
     Ls_min = stated_Ls / concentration_range_factor
     Ls_max = stated_Ls * concentration_range_factor
+
+    with pymc3.Model() as model:
+        if uniform_P0:
+            P0 = uniform_prior("P0", lower=P0_min, upper=P0_max)
+        else:
+            P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0)
+
+        if uniform_Ls:
+            Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max)
+        else:
+            Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
