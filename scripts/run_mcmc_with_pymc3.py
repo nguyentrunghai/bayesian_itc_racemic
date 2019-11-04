@@ -20,12 +20,15 @@ exper_info = ITCExperiment(exper_info_file)
 q_actual_micro_cal = load_heat_micro_cal(heat_file)
 q_actual_cal = q_actual_micro_cal * 10.**(-6)
 
+# TODO: uniform_P0=True, uniform_Ls=True
 model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
                                       dcell=0.1, dsyringe=0.1,
                                       uniform_P0=False, uniform_Ls=False, concentration_range_factor=10)
 
+# TODO: try steps: Metropolis, HamiltonianMC, NUTS, SMC
 with model:
-    trace = pymc3.sample()
+    step = pymc3.Metropolis()
+    trace = pymc3.sample(draws=500, tune=2000, step=step)
 
 pickle.dump(trace, open("trace_obj.pkl", "w"))
 
