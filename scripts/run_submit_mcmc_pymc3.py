@@ -35,6 +35,9 @@ parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=4)
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
+parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
+
+parser.add_argument("--out_dir", type=str, default="out")
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
@@ -44,21 +47,60 @@ args = parser.parse_args()
 if args.write_qsub_script:
     this_script = os.path.abspath(sys.argv[0])
     experiments = args.experiments.split()
+    experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
 
     dP0 = args.dP0
     dLs = args.dLs
-
-    uniform_P0 = " "
-    if args.uniform_P0:
-        uniform_P0 = " --uniform_P0 "
-
-    uniform_Ls = " "
-    if args.uniform_Ls:
-        uniform_Ls = " --uniform_Ls "
 
     concentration_range_factor = args.concentration_range_factor
 
     draws = args.draws
     tune = args.tune
     cores = args.cores
-    
+
+    for experiment in experiments:
+        exper_info_file = os.path.join(args.exper_info_dir, experiment, args.exper_info_file)
+        heat_file = os.path.join(args.heat_dir, experiment + ".DAT")
+
+        out_dir = experiment
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+
+        out_dir = os.path.abspath(out_dir)
+
+        if experiment in experiments_unif_conc_prior:
+            uniform_P0 = " --uniform_P0 "
+            uniform_Ls = " --uniform_Ls "
+        else:
+            uniform_P0 = " "
+            uniform_Ls = " "
+
+        qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
+        log_file = os.path.join(out_dir, experiment + "_mcmc.log")
+        qsub_script = '''#!/bin/bash
+#PBS -S /bin/bash
+#PBS -o %s ''' % log_file + '''
+#PBS -j oe
+#PBS -l nodes=1:ppn=1,walltime=300:00:00
+
+source /home/tnguye46/opt/module/anaconda2019.10.sh
+date
+python ''' + this_script + \
+        ''' --exper_info_file ''' + exper_info_file + \
+        ''' --heat_file ''' + heat_file + \
+        ''' --dP0 %0.5f''' % dP0 + \
+        ''' --dLs %0.5f''' % dLs + \
+        uniform_P0 + uniform_Ls + \
+        ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
+        ''' --draws %d''' % draws + \
+        ''' --tune %d''' % tune + \
+        ''' --cores %d''' % cores + \
+        ''' --out_dir ''' + out_dir + \
+        '''\ndate\n'''
+
+        open(qsub_file, "w").write(qsub_script)
+        if args.submit:
+            print("Submitting " + experiment)
+            os.system("qsub %s" % qsub_file)
+
+        
