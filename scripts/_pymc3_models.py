@@ -44,6 +44,7 @@ def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0
     # PLn[n] is the complex concentration in sample cell after n injections
     # (M)
     PLn = tt.zeros([N])
+
     dcum = 1.0  # cumulative dilution factor (dimensionless)
     for n in range(N):
         # Instantaneous injection model (perfusion)
