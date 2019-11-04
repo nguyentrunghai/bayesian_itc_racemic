@@ -103,4 +103,26 @@ python ''' + this_script + \
             print("Submitting " + experiment)
             os.system("qsub %s" % qsub_file)
 
-        
+
+else:
+    exper_info_file = args.exper_info_file
+    print(exper_info_file)
+    heat_file = args.heat_file
+    print(heat_file)
+
+    dcell = args.dP0
+    dsyringe = args.dLs
+    uniform_P0 = args.uniform_P0
+    uniform_Ls = args.uniform_Ls
+    concentration_range_factor = args.concentration_range_factor
+
+    draws = args.draws
+    tune = args.tune
+    cores = args.cores
+
+    out_dir = args.out_dir
+
+    exper_info = ITCExperiment(exper_info_file)
+    q_actual_micro_cal = load_heat_micro_cal(heat_file)
+    q_actual_cal = q_actual_micro_cal * 10. ** (-6)
+    
