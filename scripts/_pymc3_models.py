@@ -153,8 +153,8 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     # compute desociation constant (M)
     DeltaG2 = DeltaG1 + DeltaDeltaG
 
-    Kd1 = tt.exp(beta * DeltaG1)   # dissociation constant of ligand1 (M)
-    Kd2 = tt.exp(beta * DeltaG2)   # dissociation constant of ligand2 (M)
+    Kd1 = np.exp(beta * DeltaG1)   # dissociation constant of ligand1 (M)
+    Kd2 = np.exp(beta * DeltaG2)   # dissociation constant of ligand2 (M)
 
     # Compute complex concentrations in the sample after injection n.
     RL1n = tt.zeros([N])
@@ -211,8 +211,8 @@ def lognormal_prior(name, stated_value, uncertainty):
     m = stated_value
     v = uncertainty ** 2
     return pymc3.Lognormal(name,
-                           mu=tt.log(m / tt.sqrt(1 + (v / (m ** 2)))),
-                           tau=1.0 / tt.log(1 + (v / (m ** 2))),
+                           mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
+                           tau=1.0 / np.log(1 + (v / (m ** 2))),
                            testval=m)
 
 
@@ -292,7 +292,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 
         q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
-        sigma = tt.exp(log_sigma)
+        sigma = np.exp(log_sigma)
 
         q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_cal, sd=sigma, observed=q_actual_cal)
 
@@ -381,7 +381,7 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                                        DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
                                                        beta, n_injections)
 
-        sigma = tt.exp(log_sigma)
+        sigma = np.exp(log_sigma)
 
         q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_cal, sd=sigma, observed=q_actual_cal)
 
