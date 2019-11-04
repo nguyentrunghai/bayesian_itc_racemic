@@ -212,9 +212,7 @@ def lognormal_prior(name, stated_value, uncertainty):
     v = uncertainty ** 2
     return pymc3.Lognormal(name,
                            mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
-                           tau=1.0 / np.log(1 + (v / (m ** 2))),
-                           testval=m,
-                           transform=None)
+                           tau=1.0 / np.log(1 + (v / (m ** 2))))
 
 
 def uniform_prior(name, lower, upper):
@@ -224,7 +222,7 @@ def uniform_prior(name, lower, upper):
     :param upper: float
     :return: pymc3.Uniform
     """
-    return pymc3.Uniform(name, lower=lower, upper=upper, testval=(lower + upper)/2., transform=None)
+    return pymc3.Uniform(name, lower=lower, upper=upper)
 
 
 def make_TwoComponentBindingModel(q_actual_cal, exper_info,
