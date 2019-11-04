@@ -292,9 +292,13 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 
         q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
-        sigma = np.exp(log_sigma)
+        sigma_cal = np.exp(log_sigma)
 
-        q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_cal, sd=sigma, observed=q_actual_cal)
+        q_model_micro_cal = q_model_cal * 10.**6
+        q_actual_micro_cal = q_actual_cal * 10.**6
+        sigma_micro_cal = sigma_cal * 10.**6
+
+        q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
 
     return model
 
