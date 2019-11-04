@@ -4,10 +4,90 @@ includes function that create model and run MCMC sampling
 
 import numpy as np
 import pymc3
+import theano.tensor as tt
 
-from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 from _models import logsigma_guesses, deltaH0_guesses
 from _models import KB
+
+
+def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
+    """
+    Expected heats of injection for two-component binding model.
+
+    ARGUMENTS
+    V0 - cell volume (liter)
+    DeltaVn - injection volumes (liter)
+    P0 - Cell concentration (millimolar)
+    Ls - Syringe concentration (millimolar)
+    DeltaG - free energy of binding (kcal/mol)
+    DeltaH - enthalpy of binding (kcal/mol)
+    DeltaH_0 - heat of injection (cal)
+    beta - inverse temperature * gas constant (mole / kcal)
+    N - number of injections
+
+    Returns
+    -------
+    expected injection heats (calorie)
+
+    """
+
+    Kd = tt.exp(beta * DeltaG)   # dissociation constant (M)
+    N = N
+
+    # Compute complex concentrations.
+    # Pn[n] is the protein concentration in sample cell after n injections
+    # (M)
+    Pn = tt.zeros([N])
+    # Ln[n] is the ligand concentration in sample cell after n injections
+    # (M)
+    Ln = tt.zeros([N])
+    # PLn[n] is the complex concentration in sample cell after n injections
+    # (M)
+    PLn = tt.zeros([N])
+    dcum = 1.0  # cumulative dilution factor (dimensionless)
+    for n in range(N):
+        # Instantaneous injection model (perfusion)
+        # TODO: Allow injection volume to vary for each injection.
+        # dilution factor for this injection (dimensionless)
+        d = 1.0 - (DeltaVn[n] / V0)
+        dcum *= d  # cumulative dilution factor
+        # total quantity of protein in sample cell after n injections (mol)
+        P = V0 * P0 * 1.e-3 * dcum
+        # total quantity of ligand in sample cell after n injections (mol)
+        L = V0 * Ls * 1.e-3 * (1. - dcum)
+        # complex concentration (M)
+        # TODO look at this https://discourse.pymc.io/t/valueerror-setting-an-array-element-with-a-sequence/2309
+        #print("V0", V0)
+        #print("P", P)
+        #print("L", L)
+        #print("Kd", Kd)
+
+        #PLn[n] = (0.5 / V0 * ((P + L + Kd * V0) - ((P + L + Kd * V0) ** 2 - 4 * P * L) ** 0.5))
+        PLn = tt.set_subtensor(PLn[n], (0.5 / V0 * ((P + L + Kd * V0) - ((P + L + Kd * V0) ** 2 - 4 * P * L) ** 0.5)))
+
+        # free protein concentration in sample cell after n injections (M)
+        #Pn[n] = P / V0 - PLn[n]
+        Pn = tt.set_subtensor(Pn[n], P / V0 - PLn[n])
+
+        # free ligand concentration in sample cell after n injections (M)
+        #Ln[n] = L / V0 - PLn[n]
+        Ln = tt.set_subtensor(Ln[n], L / V0 - PLn[n])
+
+    # Compute expected injection heats.
+    # q_n_model[n] is the expected heat from injection n
+    q_n = tt.zeros([N])
+    # Instantaneous injection model (perfusion)
+    # first injection
+    #q_n[0] = (DeltaH * V0 * PLn[0])*1000 + DeltaH_0
+    q_n = tt.set_subtensor(q_n[0], (DeltaH * V0 * PLn[0])*1000 + DeltaH_0)
+
+    for n in range(1, N):
+        d = 1.0 - (DeltaVn[n] / V0)  # dilution factor (dimensionless)
+        # subsequent injections
+        #q_n[n] = (DeltaH * V0 * (PLn[n] - d * PLn[n - 1])) * 1000 + DeltaH_0
+        q_n = tt.set_subtensor(q_n[n], (DeltaH * V0 * (PLn[n] - d * PLn[n - 1])) * 1000 + DeltaH_0)
+
+    return q_n
 
 
 def lognormal_prior(name, stated_value, uncertainty):
