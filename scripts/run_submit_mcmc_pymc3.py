@@ -125,4 +125,3 @@ else:
     exper_info = ITCExperiment(exper_info_file)
     q_actual_micro_cal = load_heat_micro_cal(heat_file)
     q_actual_cal = q_actual_micro_cal * 10. ** (-6)
-    
