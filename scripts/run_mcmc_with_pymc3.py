@@ -2,6 +2,8 @@
 Run sampling of the posterior
 """
 
+import pickle
+
 import pymc3
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,8 +27,14 @@ model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
 with model:
     trace = pymc3.sample()
 
+pickle.dump(trace, open("trace_obj.pkl", "w"))
+
+free_vars = [name for name in trace.varnames if not name.endswith("__")]
+trace_vars = {name: trace.get_values(name) for name in free_vars}
+pickle.dump(trace_vars, open("trace.pkl", "w"))
 
 plt.figure()
 pymc3.traceplot(trace)
 plt.tight_layout()
 plt.savefig("test.pdf")
+
