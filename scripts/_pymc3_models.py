@@ -179,6 +179,6 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 
         sigma = np.exp(log_sigma)
 
-        q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_cal, sigma=sigma, observed=q_actual_cal)
+        q_obs_cal = pymc3.Normal("q_obs_cal", mu=q_model_cal, sd=sigma, observed=q_actual_cal)
 
     return model
