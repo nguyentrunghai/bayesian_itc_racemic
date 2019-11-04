@@ -264,14 +264,18 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 
         # prior for receptor concentration
         if uniform_P0:
+            print("Uniform prior for P0")
             P0 = uniform_prior("P0", lower=P0_min, upper=P0_max)
         else:
+            print("LogNormal prior for P0")
             P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0)
 
         # prior for ligand concentration
         if uniform_Ls:
+            print("Uniform prior for Ls")
             Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max)
         else:
+            print("LogNormal prior for Ls")
             Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
 
         # prior for DeltaG
