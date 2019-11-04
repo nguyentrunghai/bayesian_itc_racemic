@@ -30,9 +30,35 @@ parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
-parser.add_argument("--nsamples", type=int, default=1000000)
-parser.add_argument("--nburn", type=int, default=10000)
-parser.add_argument("--nthin", type=int, default=100)
+parser.add_argument("--draws", type=int, default=10000)
+parser.add_argument("--tune", type=int, default=2000)
+parser.add_argument("--cores", type=int, default=4)
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
+
+parser.add_argument("--write_qsub_script", action="store_true", default=False)
+parser.add_argument("--submit", action="store_true", default=False)
 args = parser.parse_args()
+
+
+if args.write_qsub_script:
+    this_script = os.path.abspath(sys.argv[0])
+    experiments = args.experiments.split()
+
+    dP0 = args.dP0
+    dLs = args.dLs
+
+    uniform_P0 = " "
+    if args.uniform_P0:
+        uniform_P0 = " --uniform_P0 "
+
+    uniform_Ls = " "
+    if args.uniform_Ls:
+        uniform_Ls = " --uniform_Ls "
+
+    concentration_range_factor = args.concentration_range_factor
+
+    draws = args.draws
+    tune = args.tune
+    cores = args.cores
+    
