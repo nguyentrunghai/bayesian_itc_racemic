@@ -119,9 +119,9 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
     #e = np.clip((-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3), a_min=-1, a_max=1)
 
     e = (-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3)
-    if e < -1:
+    if tt.lt(e, -1):
         e = -1
-    if e > 1:
+    if tt.gt(e, 1):
         e = 1
 
     theta = np.arccos(e)
