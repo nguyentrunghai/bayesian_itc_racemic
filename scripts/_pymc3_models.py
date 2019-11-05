@@ -358,14 +358,6 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
             print("LogNormal prior for Ls")
             Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
 
-        # prior for rho
-        if is_rho_free_param:
-            print("EnantiomerBindingModel")
-            rho = uniform_prior("rho", lower=0., upper=1.)
-        else:
-            print("RacemicMixtureBindingModel")
-            rho = 0.5
-
         # prior for DeltaG1, and DeltaDeltaG
         DeltaG1 = uniform_prior("DeltaG1", lower=-40., upper=40.)
         DeltaDeltaG = uniform_prior("DeltaDeltaG", lower=0., upper=40.)
@@ -380,9 +372,17 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
         # prior for log_sigma
         log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max)
 
-        q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho,
-                                                       DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
-                                                       beta, n_injections)
+        if is_rho_free_param:
+            print("EnantiomerBindingModel")
+            rho = uniform_prior("rho", lower=0., upper=1.)
+            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho,
+                                                           DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
+                                                           beta, n_injections)
+        else:
+            print("RacemicMixtureBindingModel")
+            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, 0.5,
+                                                           DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
+                                                           beta, n_injections)
 
         sigma = np.exp(log_sigma)
 
