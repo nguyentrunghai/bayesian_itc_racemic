@@ -114,20 +114,20 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
 
     c = -Kd1 * Kd2 * C0_R
 
-    d = np.sqrt(a*a - 3*b)
+    d = tt.sqrt(a*a - 3*b)
 
-    #e = np.clip((-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3), a_min=-1, a_max=1)
+    e = tt.clip((-2. * a**3 + 9. * a * b - 27. * c) / (2. * d**3), a_min=-1, a_max=1)
 
-    e = (-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3)
-    if tt.lt(e, -1):
-        e = -1
-    if tt.gt(e, 1):
-        e = 1
+    #e = (-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3)
+    #if tt.lt(e, -1):
+    #    e = -1
+    #if tt.gt(e, 1):
+    #    e = 1
 
-    theta = np.arccos(e)
+    theta = tt.arccos(e)
 
-    RL1 = C0_L1*(2.*d*np.cos(theta/3.) - a) / (3.*Kd1 + (2.*d*np.cos(theta/3.) - a))
-    RL2 = C0_L2*(2.*d*np.cos(theta/3.) - a) / (3.*Kd2 + (2.*d*np.cos(theta/3.) - a))
+    RL1 = C0_L1 * (2. * d * tt.cos(theta/3.) - a) / (3. * Kd1 + (2. * d * tt.cos(theta/3.) - a))
+    RL2 = C0_L2 * (2. * d * tt.cos(theta/3.) - a) / (3. * Kd2 + (2. * d * tt.cos(theta/3.) - a))
 
     return RL1, RL2
 
@@ -154,13 +154,11 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     :return: q_n - expected injection heat (calorie)
     """
 
-    assert 0 < rho < 1, "rho out of range: %0.5f" %rho
-
     # compute desociation constant (M)
     DeltaG2 = DeltaG1 + DeltaDeltaG
 
-    Kd1 = np.exp(beta * DeltaG1)   # dissociation constant of ligand1 (M)
-    Kd2 = np.exp(beta * DeltaG2)   # dissociation constant of ligand2 (M)
+    Kd1 = tt.exp(beta * DeltaG1)   # dissociation constant of ligand1 (M)
+    Kd2 = tt.exp(beta * DeltaG2)   # dissociation constant of ligand2 (M)
 
     # Compute complex concentrations in the sample after injection n.
     RL1n = tt.zeros([N])
