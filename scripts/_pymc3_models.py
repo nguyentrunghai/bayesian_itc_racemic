@@ -116,7 +116,7 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
 
     d = tt.sqrt(a*a - 3*b)
 
-    e = tt.clip((-2. * a**3 + 9. * a * b - 27. * c) / (2. * d**3), a_min=-1, a_max=1)
+    e = tt.clip((-2. * a**3 + 9. * a * b - 27. * c) / (2. * d**3), -1, 1)
 
     #e = (-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3)
     #if tt.lt(e, -1):
