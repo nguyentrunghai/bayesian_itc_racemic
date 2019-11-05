@@ -10,7 +10,7 @@ import seaborn as sns
 sns.set()
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _pymc3_models import make_TwoComponentBindingModel
+from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
 exper_info_file = "/home/tnguye46/bayesian_itc_racemic/5.exper_info/Baum_59/experimental_information.pickle"
 heat_file = "/home/tnguye46/bayesian_itc_racemic/4.heat_in_origin_format/Baum_59.DAT"
@@ -21,14 +21,25 @@ q_actual_micro_cal = load_heat_micro_cal(heat_file)
 q_actual_cal = q_actual_micro_cal * 10.**(-6)
 
 # TODO: uniform_P0=True, uniform_Ls=True
-model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
-                                      dcell=0.1, dsyringe=0.1,
-                                      uniform_P0=False, uniform_Ls=False, concentration_range_factor=10)
+model_2cbm = make_TwoComponentBindingModel(q_actual_cal, exper_info,
+                                           dcell=0.1, dsyringe=0.1,
+                                           uniform_P0=False, uniform_Ls=False, concentration_range_factor=10)
+
+model_rmbm = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                             dcell=0.1, dsyringe=0.1,
+                                             uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                             is_rho_free_param=False)
+
+model_embm = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                             dcell=0.1, dsyringe=0.1,
+                                             uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                             is_rho_free_param=True)
 
 # TODO: try steps: Metropolis, HamiltonianMC, NUTS, SMC
-with model:
-    step = pymc3.Metropolis()
+with model_rmbm:
+    step = pymc3.SMC()
     trace = pymc3.sample(draws=500, tune=2000, step=step)
+
 
 pickle.dump(trace, open("trace_obj.pkl", "w"))
 
