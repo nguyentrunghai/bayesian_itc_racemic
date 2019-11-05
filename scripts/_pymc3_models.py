@@ -118,12 +118,6 @@ def _equilibrium_concentrations(Kd1, Kd2, C0_R, C0_L1, C0_L2, V):
 
     e = tt.clip((-2. * a**3 + 9. * a * b - 27. * c) / (2. * d**3), -1, 1)
 
-    #e = (-2.*a**3 + 9.*a*b - 27.*c) / (2.*d**3)
-    #if tt.lt(e, -1):
-    #    e = -1
-    #if tt.gt(e, 1):
-    #    e = 1
-
     theta = tt.arccos(e)
 
     RL1 = C0_L1 * (2. * d * tt.cos(theta/3.) - a) / (3. * Kd1 + (2. * d * tt.cos(theta/3.) - a))
@@ -245,6 +239,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
     :return: an instance of pymc3.model.Model
     """
 
+    print("TwoComponentBindingModel")
     V0 = exper_info.get_cell_volume_liter()
     DeltaVn = exper_info.get_injection_volumes_liter()
     beta = 1 / KB / exper_info.get_target_temperature_kelvin()
@@ -346,6 +341,13 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
 
     with pymc3.Model() as model:
 
+        if is_rho_free_param:
+            print("EnantiomerBindingModel")
+            rho = uniform_prior("rho", lower=0., upper=1.)
+        else:
+            print("RacemicMixtureBindingModel")
+            rho = 0.5
+
         # prior for receptor concentration
         if uniform_P0:
             print("Uniform prior for P0")
@@ -361,13 +363,6 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
         else:
             print("LogNormal prior for Ls")
             Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
-
-        if is_rho_free_param:
-            print("EnantiomerBindingModel")
-            rho = uniform_prior("rho", lower=0., upper=1.)
-        else:
-            print("RacemicMixtureBindingModel")
-            rho = 0.5
 
         # prior for DeltaG1, and DeltaDeltaG
         DeltaG1 = uniform_prior("DeltaG1", lower=-40., upper=40.)
