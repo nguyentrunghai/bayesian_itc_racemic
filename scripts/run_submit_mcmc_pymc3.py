@@ -200,4 +200,22 @@ else:
 
         trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores)
 
+    out_trace_obj = os.path.join(out_dir, "trace_obj.pkl")
+    pickle.dump(trace, open(out_trace_obj, "w"))
+
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    trace_vars = {name: trace.get_values(name) for name in free_vars}
+    out_trace = os.path.join(out_dir, "trace.pkl")
+    pickle.dump(trace_vars, open(out_trace, "w"))
+
+    if step_method == "SMC":
+        marg_llh = pm_model.marginal_likelihood
+        out_marg_llh = os.path.join(out_dir, "marginal_likelihood.dat")
+        open(out_marg_llh, "w").write("%20.10e" % out_marg_llh)
+
+    plt.figure()
+    pymc3.traceplot(trace)
+    plt.tight_layout()
+    figure_out = os.path.join(out_dir, "trace_plot.pdf")
+    plt.savefig(figure_out)
 
