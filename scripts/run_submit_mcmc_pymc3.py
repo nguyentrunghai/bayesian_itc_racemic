@@ -198,4 +198,6 @@ else:
         else:
             raise ValueError("Unknown step method", step_method)
 
+        trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores)
+
 
