@@ -337,16 +337,12 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
     Ls_min = stated_Ls / concentration_range_factor
     Ls_max = stated_Ls * concentration_range_factor
 
-    # P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG
+    if is_rho_free_param:
+        print("EnantiomerBindingModel")
+    else:
+        print("RacemicMixtureBindingModel")
 
     with pymc3.Model() as model:
-
-        if is_rho_free_param:
-            print("EnantiomerBindingModel")
-            rho = uniform_prior("rho", lower=0., upper=1.)
-        else:
-            print("RacemicMixtureBindingModel")
-            rho = 0.5
 
         # prior for receptor concentration
         if uniform_P0:
@@ -363,6 +359,11 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
         else:
             print("LogNormal prior for Ls")
             Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
+
+        if is_rho_free_param:
+            rho = uniform_prior("rho", lower=0., upper=1.)
+        else:
+            rho = 0.5
 
         # prior for DeltaG1, and DeltaDeltaG
         DeltaG1 = uniform_prior("DeltaG1", lower=-40., upper=40.)
