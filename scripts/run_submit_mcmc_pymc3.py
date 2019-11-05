@@ -182,4 +182,20 @@ else:
         raise ValueError("Unknown model: " + model_name)
 
     with pm_model:
-        if
+        # Metropolis, HamiltonianMC, NUTS, SMC
+        if step_method == "Metropolis":
+            step = pymc3.Metropolis()
+
+        elif step_method == "HamiltonianMC":
+            step = pymc3.HamiltonianMC()
+
+        elif step_method == "NUTS":
+            step = pymc3.NUTS()
+
+        elif step_method == "SMC":
+            step = pymc3.SMC()
+
+        else:
+            raise ValueError("Unknown step method", step_method)
+
+
