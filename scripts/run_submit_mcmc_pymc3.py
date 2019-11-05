@@ -33,6 +33,8 @@ parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
+# Metropolis, HamiltonianMC, NUTS, SMC
+parser.add_argument("--step_method", type=str, default="SMC")
 parser.add_argument("--draws", type=int, default=10000)
 parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=1)
@@ -47,6 +49,7 @@ parser.add_argument("--submit", action="store_true", default=False)
 args = parser.parse_args()
 
 assert args.model in ["2cbm", "rmbm", "embm"], "Unknown model:" + args.model
+assert args.step_method in ["Metropolis", "HamiltonianMC", "NUTS", "SMC"], "Unknown step method: " + args.step_method
 
 if args.write_qsub_script:
     this_script = os.path.abspath(sys.argv[0])
@@ -60,6 +63,7 @@ if args.write_qsub_script:
 
     concentration_range_factor = args.concentration_range_factor
 
+    step_method = args.step_method
     draws = args.draws
     tune = args.tune
     cores = args.cores
@@ -99,6 +103,7 @@ python ''' + this_script + \
         ''' --dLs %0.5f''' % dLs + \
         uniform_P0 + uniform_Ls + \
         ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
+        ''' --step_method ''' + step_method + \
         ''' --draws %d''' % draws + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
@@ -157,4 +162,3 @@ else:
                                         is_rho_free_param=True)
     else:
         raise ValueError("Unknown model: " + model_name)
-    
