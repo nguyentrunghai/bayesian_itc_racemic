@@ -118,24 +118,42 @@ python ''' + this_script + \
 
 else:
     exper_info_file = args.exper_info_file
-    print(exper_info_file)
+    print("exper_info_file", exper_info_file)
     heat_file = args.heat_file
-    print(heat_file)
+    print("heat_file", heat_file)
 
     model_name = args.model
-    print(model_name)
+    print("model_name", model_name)
 
     dcell = args.dP0
+    print("dcell", dcell)
+
     dsyringe = args.dLs
+    print("dsyringe", dsyringe)
+
     uniform_P0 = args.uniform_P0
+    print("uniform_P0", uniform_P0)
+
     uniform_Ls = args.uniform_Ls
+    print("uniform_Ls", uniform_Ls)
+
     concentration_range_factor = args.concentration_range_factor
+    print("concentration_range_factor", concentration_range_factor)
+
+    step_method = args.step_method
+    print("step_method", step_method)
 
     draws = args.draws
+    print("draws", draws)
+
     tune = args.tune
+    print("tune", tune)
+
     cores = args.cores
+    print("cores", cores)
 
     out_dir = args.out_dir
+    print("out_dir", out_dir)
 
     exper_info = ITCExperiment(exper_info_file)
     q_actual_micro_cal = load_heat_micro_cal(heat_file)
@@ -148,17 +166,20 @@ else:
                                                  concentration_range_factor=concentration_range_factor)
 
     elif model_name == "rmbm":
-        make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
-                                        dcell=dcell, dsyringe=dsyringe,
-                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                        concentration_range_factor=concentration_range_factor,
-                                        is_rho_free_param=False)
+        pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                   concentration_range_factor=concentration_range_factor,
+                                                   is_rho_free_param=False)
 
     elif model_name == "embm":
-        make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
-                                        dcell=dcell, dsyringe=dsyringe,
-                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                        concentration_range_factor=concentration_range_factor,
-                                        is_rho_free_param=True)
+        pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                   concentration_range_factor=concentration_range_factor,
+                                                   is_rho_free_param=True)
     else:
         raise ValueError("Unknown model: " + model_name)
+
+    with pm_model:
+        if
