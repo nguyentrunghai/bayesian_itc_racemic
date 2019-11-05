@@ -20,6 +20,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--exper_info_dir", type=str, default="5.twocomponent_mcmc")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
+# models "2cbm", "rmbm", "embm"
+parser.add_argument("--model", type=str, default="2cbm")
+
 parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
 parser.add_argument("--heat_file", type=str, default="heat.DAT")
 
@@ -32,7 +35,7 @@ parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
 parser.add_argument("--draws", type=int, default=10000)
 parser.add_argument("--tune", type=int, default=2000)
-parser.add_argument("--cores", type=int, default=4)
+parser.add_argument("--cores", type=int, default=1)
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
@@ -43,11 +46,14 @@ parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
 args = parser.parse_args()
 
+assert args.model in ["2cbm", "rmbm", "embm"], "Unknown model:" + args.model
 
 if args.write_qsub_script:
     this_script = os.path.abspath(sys.argv[0])
     experiments = args.experiments.split()
     experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
+
+    model = args.model
 
     dP0 = args.dP0
     dLs = args.dLs
@@ -88,6 +94,7 @@ date
 python ''' + this_script + \
         ''' --exper_info_file ''' + exper_info_file + \
         ''' --heat_file ''' + heat_file + \
+        ''' --model ''' + model + \
         ''' --dP0 %0.5f''' % dP0 + \
         ''' --dLs %0.5f''' % dLs + \
         uniform_P0 + uniform_Ls + \
@@ -110,6 +117,9 @@ else:
     heat_file = args.heat_file
     print(heat_file)
 
+    model_name = args.model
+    print(model_name)
+
     dcell = args.dP0
     dsyringe = args.dLs
     uniform_P0 = args.uniform_P0
@@ -125,3 +135,26 @@ else:
     exper_info = ITCExperiment(exper_info_file)
     q_actual_micro_cal = load_heat_micro_cal(heat_file)
     q_actual_cal = q_actual_micro_cal * 10. ** (-6)
+
+    if model_name == "2cbm":
+        pm_model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
+                                                 dcell=dcell, dsyringe=dsyringe,
+                                                 uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                 concentration_range_factor=concentration_range_factor)
+
+    elif model_name == "rmbm":
+        make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                        dcell=dcell, dsyringe=dsyringe,
+                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                        concentration_range_factor=concentration_range_factor,
+                                        is_rho_free_param=False)
+
+    elif model_name == "embm":
+        make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                        dcell=dcell, dsyringe=dsyringe,
+                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                        concentration_range_factor=concentration_range_factor,
+                                        is_rho_free_param=True)
+    else:
+        raise ValueError("Unknown model: " + model_name)
+    
