@@ -18,13 +18,13 @@ from _data_io import ITCExperiment, load_heat_micro_cal
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--exper_info_dir", type=str, default="5.twocomponent_mcmc")
+parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
 # models "2cbm", "rmbm", "embm"
 parser.add_argument("--model", type=str, default="2cbm")
 
-parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
+parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 parser.add_argument("--heat_file", type=str, default="heat.DAT")
 
 parser.add_argument("--dP0", type=float, default=0.1)      # cell concentration relative uncertainty
@@ -53,6 +53,9 @@ assert args.model in ["2cbm", "rmbm", "embm"], "Unknown model:" + args.model
 assert args.step_method in ["Metropolis", "HamiltonianMC", "NUTS", "SMC"], "Unknown step method: " + args.step_method
 
 if args.write_qsub_script:
+    assert os.path.exists(args.exper_info_file), args.exper_info_file + " does not exist."
+    assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
+
     this_script = os.path.abspath(sys.argv[0])
     experiments = args.experiments.split()
     experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
