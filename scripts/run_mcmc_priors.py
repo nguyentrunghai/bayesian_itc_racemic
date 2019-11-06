@@ -13,10 +13,10 @@ from _models import sample_priors
 from _data_io import ITCExperiment, load_heat_micro_cal
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--exper_info_dir", type=str, default="5.twocomponent_mcmc")
+parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
-parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
+parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 parser.add_argument("--heat_file", type=str, default="heat.DAT")
 
 parser.add_argument("--dP0", type=float, default=0.1)      # cell concentration relative uncertainty
@@ -38,7 +38,8 @@ parser.add_argument("--submit",   action="store_true", default=False)
 
 args = parser.parse_args()
 
-
+assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
+assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
 if args.submit:
     this_script = os.path.abspath(sys.argv[0])
