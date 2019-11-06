@@ -27,9 +27,8 @@ parser.add_argument("--exper_info_file", type=str, default="experimental_informa
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
+parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
 
-parser.add_argument("--uniform_P0", action="store_true", default=False)
-parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
 parser.add_argument("--font_scale", type=float, default=0.75)
@@ -41,6 +40,7 @@ args = parser.parse_args()
 KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
+experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
 
 sns.set(font_scale=args.font_scale)
 
@@ -57,22 +57,29 @@ for experiment in experiments:
     trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
 
+    if experiment in experiments_unif_conc_prior:
+        uniform_P0 = True
+        uniform_Ls = True
+    else:
+        uniform_P0 = False
+        uniform_Ls = False
+
     (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
      map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
                                                        dcell=0.1, dsyringe=0.1,
-                                                       uniform_P0=args.uniform_P0, uniform_Ls=args.uniform_Ls,
+                                                       uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                        concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_rmbm, map_Ls_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm, map_DeltaH1_rmbm, map_DeltaH2_rmbm,
      map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(actual_q_cal, exper_info_rmbm, trace_rmbm,
                                                          dcell=0.1, dsyringe=0.1,
-                                                         uniform_P0=args.uniform_P0, uniform_Ls=args.uniform_Ls,
+                                                         uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                          concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_embm, map_Ls_embm, map_rho_embm, map_DeltaG1_embm, map_DeltaDeltaG_embm, map_DeltaH1_embm, map_DeltaH2_embm,
      map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info_embm, trace_embm,
                                                      dcell=0.1, dsyringe=0.1,
-                                                     uniform_P0=args.uniform_P0, uniform_Ls=args.uniform_Ls,
+                                                     uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                      concentration_range_factor=args.concentration_range_factor)
 
     # heat calculation using map parameters
