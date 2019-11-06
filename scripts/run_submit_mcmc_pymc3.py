@@ -1,6 +1,7 @@
 """
 to submit and run mcmc jobs
 """
+from __future__ import print_function
 
 import os
 import sys
