@@ -60,9 +60,11 @@ for experiment in experiments:
     if experiment in experiments_unif_conc_prior:
         uniform_P0 = True
         uniform_Ls = True
+        print("Uniform prior for concentration")
     else:
         uniform_P0 = False
         uniform_Ls = False
+        print("LogNormal prior for concentration")
 
     (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
      map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
