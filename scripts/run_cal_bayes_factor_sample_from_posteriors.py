@@ -16,11 +16,11 @@ from _data_io import ITCExperiment, load_heat_micro_cal
 from _bayes_factor import average_likelihood_from_posterior
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--two_component_mcmc_dir", type=str, default="5.twocomponent_mcmc")
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="6.racemicmixture_mcmc")
-parser.add_argument("--enantiomer_mcmc_dir", type=str, default="7.enantiomer")
+parser.add_argument("--two_component_mcmc_dir", type=str, default="twocomponent_mcmc")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="racemicmixture_mcmc")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="enantiomer_mcmc")
 
-parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
+parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
@@ -36,6 +36,10 @@ parser.add_argument("--font_scale", type=float, default=0.75)
 args = parser.parse_args()
 
 KB = 0.0019872041      # in kcal/mol/K
+
+assert os.path.exists(args.two_component_mcmc_dir), args.two_component_mcmc_dir + " does not exists."
+assert os.path.exists(args.racemic_mixture_mcmc_dir), args.racemic_mixture_mcmc_dir + " does not exists."
+assert os.path.exists(args.enantiomer_mcmc_dir), args.enantiomer_mcmc_dir + " does not exists."
 
 experiments = args.experiments.split()
 print("experiments", experiments)
