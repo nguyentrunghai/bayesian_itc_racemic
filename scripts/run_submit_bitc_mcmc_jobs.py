@@ -4,8 +4,8 @@ import glob
 import argparse
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--itc_data_dir", type=str, default="1.itc_origin_heat_files")
-parser.add_argument("--heat_data_dir", type=str, default="1.itc_origin_heat_files")
+parser.add_argument("--itc_data_dir", type=str, default="itc_origin_heat_files")
+parser.add_argument("--heat_data_dir", type=str, default="itc_origin_heat_files")
 
 parser.add_argument("--experiments", type=str, default="")
 
@@ -36,6 +36,8 @@ parser.add_argument("--submit_2_queue", action="store_true", default=False)
 args = parser.parse_args()
 
 assert args.binding_model in ["twocomponent", "enantiomer", "racemicmixture"], "Unsupported model"
+assert os.path.exists(args.itc_data_dir), args.itc_data_dir + " does not exist."
+assert os.path.exists(args.heat_data_dir), args.heat_data_dir + " does not exist."
 
 TRACES_FILE = "traces.pickle"
 
