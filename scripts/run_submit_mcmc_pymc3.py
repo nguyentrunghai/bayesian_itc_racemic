@@ -215,9 +215,9 @@ else:
         out_marg_llh = os.path.join(out_dir, "marginal_likelihood.dat")
         open(out_marg_llh, "w").write("%20.10e" % marg_llh)
 
-    fig, ax = plt.subplots()
-    pymc3.traceplot(trace, ax=ax)
+    plt.figure()
+    pymc3.traceplot(trace)
     plt.tight_layout()
     figure_out = os.path.join(out_dir, "trace_plot.pdf")
-    fig.savefig(figure_out)
+    plt.savefig(figure_out)
 
