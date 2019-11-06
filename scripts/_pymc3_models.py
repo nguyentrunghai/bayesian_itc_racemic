@@ -1,6 +1,7 @@
 """
 includes function that create model and run MCMC sampling
 """
+from __future__ import print_function
 
 import numpy as np
 import pymc3
@@ -241,23 +242,37 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
     """
 
     print("TwoComponentBindingModel")
+
     V0 = exper_info.get_cell_volume_liter()
+    print("V0", V0)
+
     DeltaVn = exper_info.get_injection_volumes_liter()
+    print("DeltaVn", DeltaVn)
+
     beta = 1 / KB / exper_info.get_target_temperature_kelvin()
     n_injections = exper_info.get_number_injections()
+    print("n_injections", n_injections)
 
     DeltaH_0_min, DeltaH_0_max = deltaH0_guesses(q_actual_cal)
+    print("DeltaH_0 [%0.5e, %0.5e]" % (DeltaH_0_min, DeltaH_0_max))
     log_sigma_min, log_sigma_max = logsigma_guesses(q_actual_cal)
+    print("log_sigma [%0.5e, %0.5e]" % (log_sigma_min, log_sigma_max))
 
     stated_P0 = exper_info.get_cell_concentration_milli_molar()
+    print("stated_P0", stated_P0)
     uncertainty_P0 = dcell * stated_P0
+    print("uncertainty_P0", uncertainty_P0)
     P0_min = stated_P0 / concentration_range_factor
     P0_max = stated_P0 * concentration_range_factor
+    print("P0 [%0.5e, %0.5e]" % (P0_min, P0_max))
 
     stated_Ls = exper_info.get_syringe_concentration_milli_molar()
+    print("stated_Ls", stated_Ls)
     uncertainty_Ls = dsyringe * stated_Ls
+    print("uncertainty_Ls", uncertainty_Ls)
     Ls_min = stated_Ls / concentration_range_factor
     Ls_max = stated_Ls * concentration_range_factor
+    print("Ls [%0.5e, %0.5e]" % (Ls_min, Ls_max))
 
     with pymc3.Model() as model:
 
