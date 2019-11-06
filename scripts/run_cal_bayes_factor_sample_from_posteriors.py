@@ -40,6 +40,7 @@ KB = 0.0019872041      # in kcal/mol/K
 assert os.path.exists(args.two_component_mcmc_dir), args.two_component_mcmc_dir + " does not exists."
 assert os.path.exists(args.racemic_mixture_mcmc_dir), args.racemic_mixture_mcmc_dir + " does not exists."
 assert os.path.exists(args.enantiomer_mcmc_dir), args.enantiomer_mcmc_dir + " does not exists."
+assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
 experiments = args.experiments.split()
 print("experiments", experiments)
