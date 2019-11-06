@@ -53,7 +53,7 @@ assert args.model in ["2cbm", "rmbm", "embm"], "Unknown model:" + args.model
 assert args.step_method in ["Metropolis", "HamiltonianMC", "NUTS", "SMC"], "Unknown step method: " + args.step_method
 
 if args.write_qsub_script:
-    assert os.path.exists(args.exper_info_file), args.exper_info_file + " does not exist."
+    assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
     assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
     this_script = os.path.abspath(sys.argv[0])
