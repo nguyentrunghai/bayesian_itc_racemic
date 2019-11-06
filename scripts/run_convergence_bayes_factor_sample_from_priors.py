@@ -17,10 +17,10 @@ from _bayes_factor import average_likelihood_from_prior_rmbm
 from _bayes_factor import average_likelihood_from_prior_embm
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--prior_mcmc_dir", type=str, default="8.prior_mcmc")
-parser.add_argument("--exper_info_dir", type=str, default="6.racemicmixture_mcmc")
+parser.add_argument("--prior_mcmc_dir", type=str, default="prior_mcmc")
+parser.add_argument("--exper_info_dir", type=str, default="racemicmixture_mcmc")
 
-parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
+parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
@@ -34,6 +34,10 @@ parser.add_argument("--font_scale", type=float, default=1)
 args = parser.parse_args()
 
 KB = 0.0019872041      # in kcal/mol/K
+
+assert os.path.exists(args.prior_mcmc_dir), args.prior_mcmc_dir + " does not exist"
+assert os.path.exists(args.exper_info_file), args.exper_info_file + " does not exist."
+assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
 experiments = args.experiments.split()
 
