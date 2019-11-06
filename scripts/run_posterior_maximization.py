@@ -21,10 +21,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="2cbm")
 parser.add_argument("--objective", type=str, default="posterior")
 
-parser.add_argument("--heat_dir", type=str, default="4.heat_in_origin_format")
+parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 parser.add_argument("--heat_file", type=str, default="heat.DAT")
 
-parser.add_argument("--exper_info_dir", type=str, default="5.exper_info")
+parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
 parser.add_argument("--DeltaG_bound", type=str, default="-20 0")
@@ -51,6 +51,9 @@ parser.add_argument("--write_qsub_script",   action="store_true", default=False)
 parser.add_argument("--submit",   action="store_true", default=False)
 
 args = parser.parse_args()
+
+assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
+assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
 assert args.model in ["2cbm", "rmbm", "embm"], "unkown model: " + args.model
 assert args.objective in ["posterior", "mse"], "unknown objective: " + args.objective
