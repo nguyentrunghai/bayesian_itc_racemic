@@ -111,6 +111,7 @@ python ''' + this_script + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
+        print("Writing qsub file", qsub_file)
         open(qsub_file, "w").write(qsub_script)
         if args.submit:
             print("Submitting " + experiment)
