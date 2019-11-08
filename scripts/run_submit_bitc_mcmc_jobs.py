@@ -6,9 +6,9 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--itc_data_dir", type=str, default="itc_origin_heat_files")
 parser.add_argument("--heat_data_dir", type=str, default="itc_origin_heat_files")
-parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 
 parser.add_argument("--experiments", type=str, default="")
+parser.add_argument("--experiments_unif_conc_prior", type=str, default="")
 
 parser.add_argument("--script", type=str, default="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
 
