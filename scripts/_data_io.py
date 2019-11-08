@@ -143,3 +143,24 @@ def load_heat_micro_cal(origin_heat_file):
                 heats.append(np.float(line.split()[0]))
 
     return np.array(heats)
+
+
+def down_sampling(pkl_in, pkl_out, stride=1):
+    """
+    :param pkl_in:
+    :param pkl_out:
+    :param stride:
+    :return:
+    """
+    assert stride >= 1, "stride must be positive"
+    data = pickle.load(open(pkl_in, "r"))
+    if stride == 1:
+        pickle.dump(data, open(pkl_out, "w"))
+        return None
+
+    for key in data:
+        data[key] = data[key][::stride]
+
+    pickle.dump(data, open(pkl_out, "w"))
+    return None
+
