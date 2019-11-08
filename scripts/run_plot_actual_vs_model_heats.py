@@ -25,7 +25,7 @@ parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
-parser.add_argument("--mcmc_trace_file", type=str, default="trace.pkl")
+parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
