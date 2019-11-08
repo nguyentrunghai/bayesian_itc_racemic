@@ -50,9 +50,7 @@ for experiment in experiments:
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
     actual_q_cal = actual_q_micro_cal * 10**(-6)
 
-    exper_info_2cbm = ITCExperiment(os.path.join(args.exper_info, experiment, args.exper_info_file))
-    exper_info_rmbm = ITCExperiment(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.exper_info_file))
-    exper_info_embm = ITCExperiment(os.path.join(args.enantiomer_mcmc_dir, experiment, args.exper_info_file))
+    exper_info = ITCExperiment(os.path.join(args.exper_info, experiment, args.exper_info_file))
 
     trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
@@ -68,48 +66,48 @@ for experiment in experiments:
         print("LogNormal prior for concentration")
 
     (map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
-     map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info_2cbm, trace_2cbm,
+     map_DeltaH_0_2cbm) = map_TwoComponentBindingModel(actual_q_cal, exper_info, trace_2cbm,
                                                        dcell=0.1, dsyringe=0.1,
                                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                        concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_rmbm, map_Ls_rmbm, map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm, map_DeltaH1_rmbm, map_DeltaH2_rmbm,
-     map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(actual_q_cal, exper_info_rmbm, trace_rmbm,
+     map_DeltaH_0_rmbm) = map_RacemicMixtureBindingModel(actual_q_cal, exper_info, trace_rmbm,
                                                          dcell=0.1, dsyringe=0.1,
                                                          uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                          concentration_range_factor=args.concentration_range_factor)
 
     (map_P0_embm, map_Ls_embm, map_rho_embm, map_DeltaG1_embm, map_DeltaDeltaG_embm, map_DeltaH1_embm, map_DeltaH2_embm,
-     map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info_embm, trace_embm,
+     map_DeltaH_0_embm) = map_EnantiomerBindingModel(actual_q_cal, exper_info, trace_embm,
                                                      dcell=0.1, dsyringe=0.1,
                                                      uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                      concentration_range_factor=args.concentration_range_factor)
 
     # heat calculation using map parameters
-    q_2cbm_cal = heats_TwoComponentBindingModel(exper_info_2cbm.get_cell_volume_liter(),
-                                                exper_info_2cbm.get_injection_volumes_liter(),
+    q_2cbm_cal = heats_TwoComponentBindingModel(exper_info.get_cell_volume_liter(),
+                                                exper_info.get_injection_volumes_liter(),
                                                 map_P0_2cbm, map_Ls_2cbm, map_DeltaG_2cbm, map_DeltaH_2cbm,
                                                 map_DeltaH_0_2cbm,
-                                                beta=1 / KB / exper_info_2cbm.get_target_temperature_kelvin(),
-                                                N=exper_info_2cbm.get_number_injections())
+                                                beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                N=exper_info.get_number_injections())
     q_2cbm_micro_cal = q_2cbm_cal * 10**6
 
-    q_rmbm_cal = heats_RacemicMixtureBindingModel(exper_info_rmbm.get_cell_volume_liter(),
-                                                  exper_info_rmbm.get_injection_volumes_liter(),
+    q_rmbm_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                  exper_info.get_injection_volumes_liter(),
                                                   map_P0_rmbm, map_Ls_rmbm, 0.5,
                                                   map_DeltaH1_rmbm, map_DeltaH2_rmbm, map_DeltaH_0_rmbm,
                                                   map_DeltaG1_rmbm, map_DeltaDeltaG_rmbm,
-                                                  beta=1 / KB / exper_info_rmbm.get_target_temperature_kelvin(),
-                                                  N=exper_info_rmbm.get_number_injections())
+                                                  beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                  N=exper_info.get_number_injections())
     q_rmbm_micro_cal = q_rmbm_cal * 10**6
 
-    q_embm_cal = heats_RacemicMixtureBindingModel(exper_info_embm.get_cell_volume_liter(),
-                                                  exper_info_embm.get_injection_volumes_liter(),
+    q_embm_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                  exper_info.get_injection_volumes_liter(),
                                                   map_P0_embm, map_Ls_embm, map_rho_embm,
                                                   map_DeltaH1_embm, map_DeltaH2_embm, map_DeltaH_0_embm,
                                                   map_DeltaG1_embm, map_DeltaDeltaG_embm,
-                                                  beta=1 / KB / exper_info_embm.get_target_temperature_kelvin(),
-                                                  N=exper_info_embm.get_number_injections())
+                                                  beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                  N=exper_info.get_number_injections())
     q_embm_micro_cal = q_embm_cal * 10 ** 6
 
     print("actual_q_micro_cal:", actual_q_micro_cal)
