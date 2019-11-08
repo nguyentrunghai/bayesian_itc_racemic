@@ -20,6 +20,7 @@ parser.add_argument("--two_component_mcmc_dir", type=str, default="twocomponent_
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="racemicmixture_mcmc")
 parser.add_argument("--enantiomer_mcmc_dir", type=str, default="enantiomer_mcmc")
 
+parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
@@ -40,6 +41,7 @@ KB = 0.0019872041      # in kcal/mol/K
 assert os.path.exists(args.two_component_mcmc_dir), args.two_component_mcmc_dir + " does not exists."
 assert os.path.exists(args.racemic_mixture_mcmc_dir), args.racemic_mixture_mcmc_dir + " does not exists."
 assert os.path.exists(args.enantiomer_mcmc_dir), args.enantiomer_mcmc_dir + " does not exists."
+assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
 assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
 experiments = args.experiments.split()
@@ -67,15 +69,13 @@ for experiment in experiments:
     q_actual_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
     q_actual_cal = q_actual_micro_cal * 10**(-6)
 
-    exper_info_2cbm = ITCExperiment(os.path.join(args.two_component_mcmc_dir, experiment, args.exper_info_file))
-    exper_info_rmbm = ITCExperiment(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.exper_info_file))
-    exper_info_embm = ITCExperiment(os.path.join(args.enantiomer_mcmc_dir, experiment, args.exper_info_file))
+    exper_info = ITCExperiment(os.path.join(args.exper_info_dir, experiment, args.exper_info_file))
 
     trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
 
-    llh_mean_2cbm, llh_max_log_2cbm = average_likelihood_from_posterior("2cbm", q_actual_cal, exper_info_2cbm,
+    llh_mean_2cbm, llh_max_log_2cbm = average_likelihood_from_posterior("2cbm", q_actual_cal, exper_info,
                                                                         trace_2cbm,
                                                                         dcell=0.1, dsyringe=0.1,
                                                                         uniform_P0=uniform_P0,
@@ -83,7 +83,7 @@ for experiment in experiments:
                                                                         concentration_range_factor=args.concentration_range_factor,
                                                                         nsamples=None)
 
-    llh_mean_rmbm, llh_max_log_rmbm = average_likelihood_from_posterior("rmbm", q_actual_cal, exper_info_rmbm,
+    llh_mean_rmbm, llh_max_log_rmbm = average_likelihood_from_posterior("rmbm", q_actual_cal, exper_info,
                                                                         trace_rmbm,
                                                                         dcell=0.1, dsyringe=0.1,
                                                                         uniform_P0=uniform_P0,
@@ -91,7 +91,7 @@ for experiment in experiments:
                                                                         concentration_range_factor=args.concentration_range_factor,
                                                                         nsamples=None)
 
-    llh_mean_embm, llh_max_log_embm = average_likelihood_from_posterior("embm", q_actual_cal, exper_info_embm,
+    llh_mean_embm, llh_max_log_embm = average_likelihood_from_posterior("embm", q_actual_cal, exper_info,
                                                                         trace_embm,
                                                                         dcell=0.1, dsyringe=0.1,
                                                                         uniform_P0=uniform_P0,
