@@ -205,12 +205,12 @@ else:
 
         trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, progressbar=False)
 
-    out_trace_obj = os.path.join(out_dir, "trace_obj.pkl")
+    out_trace_obj = os.path.join(out_dir, "trace_obj.pickle")
     pickle.dump(trace, open(out_trace_obj, "w"))
 
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     trace_vars = {name: trace.get_values(name) for name in free_vars}
-    out_trace = os.path.join(out_dir, "trace.pkl")
+    out_trace = os.path.join(out_dir, "traces.pickle")
     pickle.dump(trace_vars, open(out_trace, "w"))
 
     if step_method == "SMC":
