@@ -39,7 +39,6 @@ args = parser.parse_args()
 assert args.binding_model in ["twocomponent", "enantiomer", "racemicmixture"], "Unsupported model"
 assert os.path.exists(args.itc_data_dir), args.itc_data_dir + " does not exist."
 assert os.path.exists(args.heat_data_dir), args.heat_data_dir + " does not exist."
-assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
 
 TRACES_FILE = "traces.pickle"
 
