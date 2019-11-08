@@ -21,6 +21,7 @@ parser.add_argument("--two_component_mcmc_dir", type=str, default="twocomponent_
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="racemicmixture_mcmc")
 parser.add_argument("--enantiomer_mcmc_dir", type=str, default="enantiomer")
 
+parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
@@ -49,7 +50,7 @@ for experiment in experiments:
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
     actual_q_cal = actual_q_micro_cal * 10**(-6)
 
-    exper_info_2cbm = ITCExperiment(os.path.join(args.two_component_mcmc_dir, experiment, args.exper_info_file))
+    exper_info_2cbm = ITCExperiment(os.path.join(args.exper_info, experiment, args.exper_info_file))
     exper_info_rmbm = ITCExperiment(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.exper_info_file))
     exper_info_embm = ITCExperiment(os.path.join(args.enantiomer_mcmc_dir, experiment, args.exper_info_file))
 
