@@ -50,7 +50,7 @@ for experiment in experiments:
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
     actual_q_cal = actual_q_micro_cal * 10**(-6)
 
-    exper_info = ITCExperiment(os.path.join(args.exper_info, experiment, args.exper_info_file))
+    exper_info = ITCExperiment(os.path.join(args.exper_info_dir, experiment, args.exper_info_file))
 
     trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
     trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
