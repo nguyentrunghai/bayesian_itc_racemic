@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--itc_data_dir", type=str, default="itc_origin_heat_files")
 parser.add_argument("--heat_data_dir", type=str, default="itc_origin_heat_files")
+parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 
 parser.add_argument("--experiments", type=str, default="")
 
@@ -38,6 +39,7 @@ args = parser.parse_args()
 assert args.binding_model in ["twocomponent", "enantiomer", "racemicmixture"], "Unsupported model"
 assert os.path.exists(args.itc_data_dir), args.itc_data_dir + " does not exist."
 assert os.path.exists(args.heat_data_dir), args.heat_data_dir + " does not exist."
+assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
 
 TRACES_FILE = "traces.pickle"
 
@@ -58,6 +60,8 @@ for experiment in experiments_to_run:
 
 print("Will run these ", exper_names)
 
+experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
+
 for name in experiments_to_run:
     out_dir = os.path.abspath(name)
     if not os.path.isdir(name):
@@ -73,14 +77,11 @@ for name in experiments_to_run:
     else:
         dummy_itc_file = ''' '''
 
-    if args.uniform_cell_concentration:
+    if name in experiments_unif_conc_prior:
         uniform_cell_concentration = ''' --uniform_cell_concentration '''
-    else:
-        uniform_cell_concentration = ''' '''
-
-    if args.uniform_syringe_concentration:
         uniform_syringe_concentration = ''' --uniform_syringe_concentration '''
     else:
+        uniform_cell_concentration = ''' '''
         uniform_syringe_concentration = ''' '''
 
     qsub_script = '''#!/bin/bash
