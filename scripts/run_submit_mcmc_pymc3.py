@@ -15,6 +15,7 @@ import seaborn as sns
 sns.set()
 
 from _data_io import ITCExperiment, load_heat_micro_cal
+from _data_io import down_sampling_trace
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
 parser = argparse.ArgumentParser()
@@ -43,6 +44,7 @@ parser.add_argument("--cores", type=int, default=1)
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
 
+parser.add_argument("--downsampling_freq", type=int, default=1)
 parser.add_argument("--out_dir", type=str, default="out")
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
@@ -89,6 +91,8 @@ if args.write_qsub_script:
             uniform_P0 = " "
             uniform_Ls = " "
 
+        downsampling_freq = args.downsampling_freq
+
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
         qsub_script = '''#!/bin/bash
@@ -112,6 +116,7 @@ python ''' + this_script + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
         ''' --out_dir ''' + out_dir + \
+        ''' --downsampling_freq ''' + downsampling_freq + \
         '''\ndate\n'''
 
         print("Writing qsub file", qsub_file)
@@ -156,6 +161,9 @@ else:
 
     cores = args.cores
     print("cores", cores)
+
+    downsampling_freq = args.downsampling_freq
+    print("downsampling_freq", downsampling_freq)
 
     out_dir = args.out_dir
     print("out_dir", out_dir)
@@ -210,6 +218,7 @@ else:
 
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     trace_vars = {name: trace.get_values(name) for name in free_vars}
+    trace_vars = downsampling_freq(downsampling_freq, stride=args.downsampling_freq)
     out_trace = os.path.join(out_dir, "traces.pickle")
     pickle.dump(trace_vars, open(out_trace, "w"))
 
