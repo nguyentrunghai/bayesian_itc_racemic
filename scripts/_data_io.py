@@ -145,7 +145,7 @@ def load_heat_micro_cal(origin_heat_file):
     return np.array(heats)
 
 
-def down_sampling(pkl_in, pkl_out, stride=1):
+def down_sampling_trace(pkl_in, pkl_out, stride=1):
     """
     :param pkl_in:
     :param pkl_out:
