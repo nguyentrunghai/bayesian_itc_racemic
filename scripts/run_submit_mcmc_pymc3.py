@@ -115,8 +115,8 @@ python ''' + this_script + \
         ''' --draws %d''' % draws + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
-        ''' --out_dir ''' + out_dir + \
         ''' --downsampling_freq %d''' % downsampling_freq + \
+        ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
         print("Writing qsub file", qsub_file)
