@@ -116,7 +116,7 @@ python ''' + this_script + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
         ''' --out_dir ''' + out_dir + \
-        ''' --downsampling_freq ''' + downsampling_freq + \
+        ''' --downsampling_freq %d''' % downsampling_freq + \
         '''\ndate\n'''
 
         print("Writing qsub file", qsub_file)
