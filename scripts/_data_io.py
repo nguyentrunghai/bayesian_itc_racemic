@@ -145,22 +145,17 @@ def load_heat_micro_cal(origin_heat_file):
     return np.array(heats)
 
 
-def down_sampling_trace(pkl_in, pkl_out, stride=1):
+def down_sampling_trace(trace, stride=1):
     """
-    :param pkl_in:
-    :param pkl_out:
+    :param trace: dict, para_name -> 1d array
     :param stride:
-    :return:
+    :return: trace, dict
     """
     assert stride >= 1, "stride must be positive"
-    data = pickle.load(open(pkl_in, "r"))
     if stride == 1:
-        pickle.dump(data, open(pkl_out, "w"))
-        return None
+        return trace
 
-    for key in data:
-        data[key] = data[key][::stride]
-
-    pickle.dump(data, open(pkl_out, "w"))
-    return None
+    for key in trace:
+        trace[key] = trace[key][::stride]
+    return trace
 
