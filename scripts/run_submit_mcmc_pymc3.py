@@ -218,7 +218,7 @@ else:
 
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     trace_vars = {name: trace.get_values(name) for name in free_vars}
-    trace_vars = downsampling_freq(trace_vars, stride=args.downsampling_freq)
+    trace_vars = down_sampling_trace(trace_vars, stride=args.downsampling_freq)
     out_trace = os.path.join(out_dir, "traces.pickle")
     pickle.dump(trace_vars, open(out_trace, "w"))
 
