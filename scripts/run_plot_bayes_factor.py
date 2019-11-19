@@ -108,16 +108,38 @@ for experiment in experiments:
     ml_embm_mean[experiment] = np.mean(ml_embm[experiment])
     ml_embm_std[experiment] = np.std(ml_embm[experiment])
 
-bf_rmbm_vs_2cbm = pd.Series({experiment: ml_rmbm_mean[experiment] / ml_2cbm_mean[experiment]
-                             for experiment in experiments})
+bf_rmbm_vs_2cbm = {experiment: ml_rmbm_mean[experiment] / ml_2cbm_mean[experiment] for experiment in experiments}
 
-bf_embm_vs_2cbm = pd.Series({experiment: ml_embm_mean[experiment] / ml_2cbm_mean[experiment]
-                             for experiment in experiments})
+bf_embm_vs_2cbm = {experiment: ml_embm_mean[experiment] / ml_2cbm_mean[experiment] for experiment in experiments}
 
-bf_embm_vs_rmbm = pd.Series({experiment: ml_embm_mean[experiment] / ml_rmbm_mean[experiment]
-                             for experiment in experiments})
+bf_embm_vs_rmbm = {experiment: ml_embm_mean[experiment] / ml_rmbm_mean[experiment] for experiment in experiments}
 
 
-#bf_rmbm_vs_2cbm_err = {}
-#for experiment in experiments:
-#    bf_rmbm_vs_2cbm_err[experiment] = np.abs(bf_rmbm_vs_2cbm[experiment]) * (two_component_ml_std[experiment] / )
+bf_rmbm_vs_2cbm_err = {}
+for experiment in experiments:
+    a = np.abs(bf_rmbm_vs_2cbm[experiment])
+    b = ml_rmbm_std[experiment] / ml_rmbm_mean[experiment]
+    c = ml_2cbm_std[experiment] / ml_2cbm_mean[experiment]
+
+    bf_rmbm_vs_2cbm_err[experiment] = a * np.sqrt(b*b + c*c)
+
+bf_rmbm_vs_2cbm_df = pd.DataFrame({"bf": pd.Series(bf_rmbm_vs_2cbm), "err": pd.Series(bf_rmbm_vs_2cbm_err)})
+
+bf_embm_vs_2cbm_err = {}
+for experiment in experiments:
+    a = np.abs(bf_embm_vs_2cbm[experiment])
+    b = ml_embm_std[experiment] / ml_embm_mean[experiment]
+    c = ml_2cbm_std[experiment] / ml_2cbm_mean[experiment]
+
+    bf_embm_vs_2cbm_err[experiment] = a * np.sqrt(b*b + c*c)
+
+bf_embm_vs_2cbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_2cbm), "err": pd.Series(bf_embm_vs_2cbm_err)})
+
+bf_embm_vs_rmbm_err = {}
+for experiment in experiments:
+    a = np.abs(bf_embm_vs_rmbm[experiment])
+    b = ml_embm_std[experiment] / ml_embm_mean[experiment]
+    c = ml_rmbm_std[experiment] / ml_rmbm_mean[experiment]
+    bf_embm_vs_rmbm_err[experiment] = a * np.sqrt(b*b + c*c)
+
+bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.Series(bf_embm_vs_rmbm_err)})
