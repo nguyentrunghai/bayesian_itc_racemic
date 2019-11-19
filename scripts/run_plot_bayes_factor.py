@@ -9,6 +9,11 @@ import os
 from collections import defaultdict
 
 import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
 
 parser = argparse.ArgumentParser()
 
@@ -67,3 +72,16 @@ for experiment in experiments:
     for bf_embm in enantiomer_ml[experiment]:
         for bf_rmbm in racemic_mixture_ml[experiment]:
             bf_embm_vs_rmbm[experiment].append(bf_embm / bf_rmbm)
+
+
+bf_rmbm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
+bf_rmbm_vs_2cbm_std = pd.Series({experiment: np.std(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
+bf_rmbm_vs_2cbm_df = pd.DataFrame([bf_rmbm_vs_2cbm_mean, bf_rmbm_vs_2cbm_std], columns=["mean", "std"])
+
+bf_embm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_2cbm[experiment]) for experiment in experiments})
+bf_embm_vs_2cbm_std = pd.Series({experiment: np.std(bf_embm_vs_2cbm[experiment]) for experiment in experiments})
+bf_embm_vs_2cbm_df = pd.DataFrame([bf_embm_vs_2cbm_mean, bf_embm_vs_2cbm_std], columns=["mean", "std"])
+
+bf_embm_vs_rmbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
+bf_embm_vs_rmbm_std = pd.Series({experiment: np.std(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
+bf_embm_vs_rmbm_df = pd.DataFrame([bf_embm_vs_rmbm_mean, bf_embm_vs_rmbm_std], columns=["mean", "std"])
