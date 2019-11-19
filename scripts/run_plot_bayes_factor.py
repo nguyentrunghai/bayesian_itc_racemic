@@ -17,16 +17,15 @@ sns.set()
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_smc")
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_smc")
-parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_smc")
+parser.add_argument("--two_component_mcmc_dir", type=str, default="07.twocomponent_mcmc")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="08.racemicmixture_mcmc")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="09.enantiomer_mcmc")
 
 parser.add_argument("--bayes_factor_file", type=str, default="marginal_likelihood.dat")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
-parser.add_argument("--experiments", type=str,
-default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
-parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--experiments", type=str, default="Fokkens_1_a Fokkens_1_b")
+parser.add_argument("--font_scale", type=float, default=1.0)
 
 args = parser.parse_args()
 
