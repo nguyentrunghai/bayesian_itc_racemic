@@ -181,7 +181,7 @@ bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"])
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["mean_log"],
-        xerr=error_scale_down*bf_embm_vs_rmbm_df["std"])
+        xerr=error_scale_down*bf_embm_vs_rmbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
