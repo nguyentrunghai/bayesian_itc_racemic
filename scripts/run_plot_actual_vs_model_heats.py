@@ -7,9 +7,12 @@ from __future__ import print_function
 import os
 import argparse
 import pickle
+import glob
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+import numpy as np
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
@@ -20,6 +23,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str, default="twocomponent_mcmc")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="racemicmixture_mcmc")
 parser.add_argument("--enantiomer_mcmc_dir", type=str, default="enantiomer")
+
+parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 
 parser.add_argument("--exper_info_dir", type=str, default="exper_info")
 parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
@@ -40,6 +45,16 @@ args = parser.parse_args()
 
 KB = 0.0019872041      # in kcal/mol/K
 
+
+def _load_and_combine_traces(trace_files):
+    list_traces = [pickle.load(open(trace_file)) for trace_file in trace_files]
+    keys = list_traces[0].keys()
+    result = {}
+    for key in keys:
+        result[key] = np.concatenate([trace[key] for trace in list_traces])
+    return result
+
+
 experiments = args.experiments.split()
 experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
 
@@ -52,9 +67,23 @@ for experiment in experiments:
 
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, experiment, args.exper_info_file))
 
-    trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
-    trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
-    trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
+    #trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
+    trace_files_2cbm = glob.glob(
+        os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", experiment, args.mcmc_trace_file))
+    print("Loading:", trace_files_2cbm)
+    trace_2cbm = _load_and_combine_traces(trace_files_2cbm)
+
+    #trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
+    trace_files_rmbm = glob.glob(
+        os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", experiment, args.mcmc_trace_file))
+    print("Loading:", trace_files_rmbm)
+    trace_rmbm = _load_and_combine_traces(trace_files_rmbm)
+
+    #trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
+    trace_files_embm = glob.glob(
+        os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", experiment, args.mcmc_trace_file))
+    print("Loading:", trace_files_embm)
+    trace_embm = _load_and_combine_traces(trace_files_embm)
 
     if experiment in experiments_unif_conc_prior:
         uniform_P0 = True
