@@ -39,13 +39,12 @@ enantiomer_bf = defaultdict(list)
 for experiment in experiments:
     for repeat_dir in two_component_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        two_component_bf[experiments].append(np.loadtxt(bf_file))
+        two_component_bf[experiment].append(np.loadtxt(bf_file))
 
     for repeat_dir in racemic_mixture_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        racemic_mixture_bf[experiments].append(np.loadtxt(bf_file))
+        racemic_mixture_bf[experiment].append(np.loadtxt(bf_file))
 
     for repeat_dir in enantiomer_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        enantiomer_bf[experiments].append(np.loadtxt(bf_file))
-        
+        enantiomer_bf[experiment].append(np.loadtxt(bf_file))
