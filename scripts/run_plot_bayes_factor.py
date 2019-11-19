@@ -55,7 +55,7 @@ for experiment in experiments:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
         enantiomer_ml[experiment].append(np.loadtxt(bf_file))
 
-
+"""
 bf_rmbm_vs_2cbm = defaultdict(list)
 bf_embm_vs_2cbm = defaultdict(list)
 bf_embm_vs_rmbm = defaultdict(list)
@@ -84,4 +84,24 @@ bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df = pd.DataFrame({"mean": bf_embm_vs_2cbm_
 
 bf_embm_vs_rmbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
 bf_embm_vs_rmbm_std = pd.Series({experiment: np.std(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
-bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "std": bf_embm_vs_rmbm_std}) 
+bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "std": bf_embm_vs_rmbm_std})
+"""
+
+two_component_ml_mean = {}
+racemic_mixture_ml_mean = {}
+enantiomer_ml_mean = {}
+
+for experiment in experiments:
+    two_component_ml_mean[experiment] = np.mean(two_component_ml[experiment])
+    racemic_mixture_ml_mean[experiment] = np.mean(racemic_mixture_ml[experiment])
+    enantiomer_ml_mean[experiment] = np.mean(enantiomer_ml[experiment])
+
+bf_rmbm_vs_2cbm = {experiment: racemic_mixture_ml_mean[experiment] / two_component_ml_mean[experiment]}
+bf_rmbm_vs_2cbm = pd.Series(bf_rmbm_vs_2cbm)
+
+bf_embm_vs_2cbm = {experiment: enantiomer_ml_mean[experiment] / two_component_ml_mean[experiment]}
+bf_embm_vs_2cbm = pd.Series(bf_embm_vs_2cbm)
+
+bf_embm_vs_rmbm = {experiment: enantiomer_ml_mean[experiment] / racemic_mixture_ml_mean[experiment]}
+bf_embm_vs_rmbm = pd.Series(bf_embm_vs_rmbm)
+
