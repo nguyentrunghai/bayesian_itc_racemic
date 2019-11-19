@@ -25,6 +25,7 @@ parser.add_argument("--bayes_factor_file", type=str, default="marginal_likelihoo
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
+parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
 
@@ -143,3 +144,33 @@ for experiment in experiments:
     bf_embm_vs_rmbm_err[experiment] = a * np.sqrt(b*b + c*c)
 
 bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.Series(bf_embm_vs_rmbm_err)})
+
+
+# plot
+sns.set(font_scale=args.font_scale)
+error_scale_down = 0.05
+
+bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="bf", ascending=True)
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+ax.barh(list(bf_rmbm_vs_2cbm_df.index), np.log10(bf_rmbm_vs_2cbm_df["bf"]),
+        xerr=np.log10(error_scale_down*bf_rmbm_vs_2cbm_df["err"]))
+ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
+
+
+bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="bf", ascending=True)
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+ax.barh(list(bf_embm_vs_2cbm_df.index), np.log10(bf_embm_vs_2cbm_df["bf"]),
+        xerr=np.log10(error_scale_down*bf_embm_vs_2cbm_df["err"]))
+ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
+
+bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="bf", ascending=True)
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+ax.barh(list(bf_embm_vs_rmbm_df.index), np.log10(bf_embm_vs_rmbm_df["bf"]),
+        xerr=np.log10(error_scale_down*bf_embm_vs_rmbm_df["err"]))
+ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
+fig.tight_layout()
+fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
