@@ -17,14 +17,15 @@ sns.set()
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--two_component_mcmc_dir", type=str, default="twocomponent_mcmc")
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="racemicmixture_mcmc")
-parser.add_argument("--enantiomer_mcmc_dir", type=str, default="enantiomer_mcmc")
+parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_smc")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_smc")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_smc")
 
 parser.add_argument("--bayes_factor_file", type=str, default="marginal_likelihood.dat")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
-parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
+parser.add_argument("--experiments", type=str,
+default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
@@ -66,15 +67,15 @@ bf_embm_vs_rmbm = defaultdict(list)
 for experiment in experiments:
     for num in ml_rmbm[experiment]:
         for den in ml_2cbm[experiment]:
-            bf_rmbm_vs_2cbm[experiment].append(np.log10(num) - np.log10(den))
+            bf_rmbm_vs_2cbm[experiment].append(num / den)
 
     for num in ml_embm[experiment]:
         for den in ml_2cbm[experiment]:
-            bf_embm_vs_2cbm[experiment].append(np.log10(num) - np.log10(den))
+            bf_embm_vs_2cbm[experiment].append(num / den)
 
     for num in ml_embm[experiment]:
         for den in ml_rmbm[experiment]:
-            bf_embm_vs_rmbm[experiment].append(np.log10(num) - np.log10(den))
+            bf_embm_vs_rmbm[experiment].append(num / den)
 
 
 bf_rmbm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
@@ -151,27 +152,36 @@ sns.set(font_scale=args.font_scale)
 error_scale_down = 0.5
 
 bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="mean", ascending=True)
+bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"])
+bf_rmbm_vs_2cbm_df["std_log"] = np.log10(bf_rmbm_vs_2cbm_df["std"])
+
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_rmbm_vs_2cbm_df.index), np.log10(bf_rmbm_vs_2cbm_df["mean"]),
-        xerr=np.log10(error_scale_down*bf_rmbm_vs_2cbm_df["std"]))
+ax.barh(list(bf_rmbm_vs_2cbm_df.index), bf_rmbm_vs_2cbm_df["mean_log"],
+        xerr=error_scale_down*bf_rmbm_vs_2cbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
 
 bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="mean", ascending=True)
+bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"])
+bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"])
+
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_2cbm_df.index), np.log10(bf_embm_vs_2cbm_df["mean"]),
-        xerr=np.log10(error_scale_down*bf_embm_vs_2cbm_df["std"]))
+ax.barh(list(bf_embm_vs_2cbm_df.index), bf_embm_vs_2cbm_df["mean_log"],
+        xerr=error_scale_down*bf_embm_vs_2cbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
 
 bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="mean", ascending=True)
+bf_embm_vs_rmbm_df["mean_log"] = np.log10(bf_embm_vs_rmbm_df["mean"])
+bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"])
+
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_rmbm_df.index), np.log10(bf_embm_vs_rmbm_df["mean"]),
-        xerr=np.log10(error_scale_down*bf_embm_vs_rmbm_df["std"]))
+ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["mean_log"],
+        xerr=error_scale_down*bf_embm_vs_rmbm_df["std"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
