@@ -76,12 +76,12 @@ for experiment in experiments:
 
 bf_rmbm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
 bf_rmbm_vs_2cbm_std = pd.Series({experiment: np.std(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
-bf_rmbm_vs_2cbm_df = pd.DataFrame([bf_rmbm_vs_2cbm_mean, bf_rmbm_vs_2cbm_std], columns=["mean", "std"])
+bf_rmbm_vs_2cbm_df = pd.DataFrame({"mean": bf_rmbm_vs_2cbm_mean, "std": bf_rmbm_vs_2cbm_std})
 
 bf_embm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_2cbm[experiment]) for experiment in experiments})
 bf_embm_vs_2cbm_std = pd.Series({experiment: np.std(bf_embm_vs_2cbm[experiment]) for experiment in experiments})
-bf_embm_vs_2cbm_df = pd.DataFrame([bf_embm_vs_2cbm_mean, bf_embm_vs_2cbm_std], columns=["mean", "std"])
+bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df = pd.DataFrame({"mean": bf_embm_vs_2cbm_mean, "std": bf_embm_vs_2cbm_std})
 
 bf_embm_vs_rmbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
 bf_embm_vs_rmbm_std = pd.Series({experiment: np.std(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
-bf_embm_vs_rmbm_df = pd.DataFrame([bf_embm_vs_rmbm_mean, bf_embm_vs_rmbm_std], columns=["mean", "std"])
+bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "std": bf_embm_vs_rmbm_std}) 
