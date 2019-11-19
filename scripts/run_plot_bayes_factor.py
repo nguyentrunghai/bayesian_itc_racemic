@@ -29,6 +29,8 @@ parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d"
 args = parser.parse_args()
 
 experiments = args.experiments.split()
+print("experiments:", experiments)
+
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
 print("two_component_dirs:", two_component_dirs)
 
@@ -38,22 +40,22 @@ print("racemic_mixture_dir:", racemic_mixture_dirs)
 enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
 print("enantiomer_dir:", enantiomer_dirs)
 
-two_component_ml = defaultdict(list)
-racemic_mixture_ml = defaultdict(list)
-enantiomer_ml = defaultdict(list)
+ml_2cbm = defaultdict(list)
+ml_rmbm = defaultdict(list)
+ml_embm = defaultdict(list)
 
 for experiment in experiments:
     for repeat_dir in two_component_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        two_component_ml[experiment].append(np.loadtxt(bf_file))
+        ml_2cbm[experiment].append(np.loadtxt(bf_file))
 
     for repeat_dir in racemic_mixture_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        racemic_mixture_ml[experiment].append(np.loadtxt(bf_file))
+        ml_rmbm[experiment].append(np.loadtxt(bf_file))
 
     for repeat_dir in enantiomer_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        enantiomer_ml[experiment].append(np.loadtxt(bf_file))
+        ml_embm[experiment].append(np.loadtxt(bf_file))
 
 """
 bf_rmbm_vs_2cbm = defaultdict(list)
@@ -87,35 +89,35 @@ bf_embm_vs_rmbm_std = pd.Series({experiment: np.std(bf_embm_vs_rmbm[experiment])
 bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "std": bf_embm_vs_rmbm_std})
 """
 
-two_component_ml_mean = {}
-two_component_ml_std = {}
+ml_2cbm_mean = {}
+ml_2cbm_std = {}
 
-racemic_mixture_ml_mean = {}
-racemic_mixture_ml_std = {}
+ml_rmbm_mean = {}
+ml_rmbm_std = {}
 
-enantiomer_ml_mean = {}
-enantiomer_ml_std = {}
+ml_embm_mean = {}
+ml_embm_std = {}
 
 for experiment in experiments:
-    two_component_ml_mean[experiment] = np.mean(two_component_ml[experiment])
-    two_component_ml_std[experiment] = np.std(two_component_ml[experiment])
+    ml_2cbm_mean[experiment] = np.mean(ml_2cbm[experiment])
+    ml_2cbm_std[experiment] = np.std(ml_2cbm[experiment])
 
-    racemic_mixture_ml_mean[experiment] = np.mean(racemic_mixture_ml[experiment])
-    racemic_mixture_ml_std[experiment] = np.std(racemic_mixture_ml[experiment])
+    ml_rmbm_mean[experiment] = np.mean(ml_rmbm[experiment])
+    ml_rmbm_std[experiment] = np.std(ml_rmbm[experiment])
 
-    enantiomer_ml_mean[experiment] = np.mean(enantiomer_ml[experiment])
-    enantiomer_ml_mean[experiment] = np.std(enantiomer_ml[experiment])
+    ml_embm_mean[experiment] = np.mean(ml_embm[experiment])
+    ml_embm_std[experiment] = np.std(ml_embm[experiment])
 
-bf_rmbm_vs_2cbm = pd.Series({experiment: racemic_mixture_ml_mean[experiment] / two_component_ml_mean[experiment]
+bf_rmbm_vs_2cbm = pd.Series({experiment: ml_rmbm_mean[experiment] / ml_2cbm_mean[experiment]
                              for experiment in experiments})
 
-bf_embm_vs_2cbm = pd.Series({experiment: enantiomer_ml_mean[experiment] / two_component_ml_mean[experiment]
+bf_embm_vs_2cbm = pd.Series({experiment: ml_embm_mean[experiment] / ml_2cbm_mean[experiment]
                              for experiment in experiments})
 
-bf_embm_vs_rmbm = pd.Series({experiment: enantiomer_ml_mean[experiment] / racemic_mixture_ml_mean[experiment]
+bf_embm_vs_rmbm = pd.Series({experiment: ml_embm_mean[experiment] / ml_rmbm_mean[experiment]
                              for experiment in experiments})
 
 
 #bf_rmbm_vs_2cbm_err = {}
 #for experiment in experiments:
-    
+#    bf_rmbm_vs_2cbm_err[experiment] = np.abs(bf_rmbm_vs_2cbm[experiment]) * (two_component_ml_std[experiment] / )
