@@ -58,23 +58,23 @@ for experiment in experiments:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
         ml_embm[experiment].append(np.loadtxt(bf_file))
 
-"""
+
 bf_rmbm_vs_2cbm = defaultdict(list)
 bf_embm_vs_2cbm = defaultdict(list)
 bf_embm_vs_rmbm = defaultdict(list)
 
 for experiment in experiments:
-    for bf_rmbm in racemic_mixture_ml[experiment]:
-        for bf_2cbm in two_component_ml[experiment]:
-            bf_rmbm_vs_2cbm[experiment].append(bf_rmbm / bf_2cbm)
+    for num in ml_rmbm[experiment]:
+        for den in ml_2cbm[experiment]:
+            bf_rmbm_vs_2cbm[experiment].append(np.log10(num) - np.log10(den))
 
-    for bf_embm in enantiomer_ml[experiment]:
-        for bf_2cbm in two_component_ml[experiment]:
-            bf_embm_vs_2cbm[experiment].append(bf_embm / bf_2cbm)
+    for num in ml_embm[experiment]:
+        for den in ml_2cbm[experiment]:
+            bf_embm_vs_2cbm[experiment].append(np.log10(num) - np.log10(den))
 
-    for bf_embm in enantiomer_ml[experiment]:
-        for bf_rmbm in racemic_mixture_ml[experiment]:
-            bf_embm_vs_rmbm[experiment].append(bf_embm / bf_rmbm)
+    for num in ml_embm[experiment]:
+        for den in ml_rmbm[experiment]:
+            bf_embm_vs_rmbm[experiment].append(np.log10(num) - np.log10(den))
 
 
 bf_rmbm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
@@ -88,8 +88,8 @@ bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df = pd.DataFrame({"mean": bf_embm_vs_2cbm_
 bf_embm_vs_rmbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
 bf_embm_vs_rmbm_std = pd.Series({experiment: np.std(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
 bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "std": bf_embm_vs_rmbm_std})
-"""
 
+"""
 ml_2cbm_mean = {}
 ml_2cbm_std = {}
 
@@ -144,33 +144,34 @@ for experiment in experiments:
     bf_embm_vs_rmbm_err[experiment] = a * np.sqrt(b*b + c*c)
 
 bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.Series(bf_embm_vs_rmbm_err)})
-
+"""
 
 # plot
 sns.set(font_scale=args.font_scale)
-error_scale_down = 0.05
+error_scale_down = 0.5
 
-bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="bf", ascending=True)
+bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="mean", ascending=True)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_rmbm_vs_2cbm_df.index), np.log10(bf_rmbm_vs_2cbm_df["bf"]),
-        xerr=np.log10(error_scale_down*bf_rmbm_vs_2cbm_df["err"]))
+ax.barh(list(bf_rmbm_vs_2cbm_df.index), np.log10(bf_rmbm_vs_2cbm_df["mean"]),
+        xerr=np.log10(error_scale_down*bf_rmbm_vs_2cbm_df["std"]))
 ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
 
-bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="bf", ascending=True)
+bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="mean", ascending=True)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_2cbm_df.index), np.log10(bf_embm_vs_2cbm_df["bf"]),
-        xerr=np.log10(error_scale_down*bf_embm_vs_2cbm_df["err"]))
+ax.barh(list(bf_embm_vs_2cbm_df.index), np.log10(bf_embm_vs_2cbm_df["mean"]),
+        xerr=np.log10(error_scale_down*bf_embm_vs_2cbm_df["std"]))
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
-bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="bf", ascending=True)
+
+bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="mean", ascending=True)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_rmbm_df.index), np.log10(bf_embm_vs_rmbm_df["bf"]),
-        xerr=np.log10(error_scale_down*bf_embm_vs_rmbm_df["err"]))
+ax.barh(list(bf_embm_vs_rmbm_df.index), np.log10(bf_embm_vs_rmbm_df["mean"]),
+        xerr=np.log10(error_scale_down*bf_embm_vs_rmbm_df["std"]))
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
