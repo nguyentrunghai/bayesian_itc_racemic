@@ -148,9 +148,9 @@ bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.S
 overall_scale = 0.6
 scale_factors = {}
 scale_factors["Baum_59"] = 1.3
-scale_factors["Baum_57"] = 2.1
-scale_factors["Baum_60_1"] = 0.7
-scale_factors["Baum_60_4"] = 0.7
+scale_factors["Baum_57"] = 2.5
+scale_factors["Baum_60_1"] = 0.4
+scale_factors["Baum_60_4"] = 0.4
 
 
 # plot
