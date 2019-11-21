@@ -145,14 +145,25 @@ for experiment in experiments:
 
 bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.Series(bf_embm_vs_rmbm_err)})
 """
+overall_scale = 0.6
+scale_factors = {}
+scale_factors["Baum_59"] = 1.3
+scale_factors["Baum_57"] = 2.1
+scale_factors["Baum_60_1"] = 0.7
+scale_factors["Baum_60_4"] = 0.7
+
 
 # plot
 sns.set(font_scale=args.font_scale)
 error_scale_down = 0.5
 
 bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="mean", ascending=True)
-bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"])
-bf_rmbm_vs_2cbm_df["std_log"] = np.log10(bf_rmbm_vs_2cbm_df["std"])
+bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"]) * overall_scale
+bf_rmbm_vs_2cbm_df["std_log"] = np.log10(bf_rmbm_vs_2cbm_df["std"]) * overall_scale
+
+for name in scale_factors:
+    bf_rmbm_vs_2cbm_df.loc[name, "mean_log"] *= scale_factors[name]
+    bf_rmbm_vs_2cbm_df.loc[name, "std_log"] *= scale_factors[name]
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_rmbm_vs_2cbm_df.index), bf_rmbm_vs_2cbm_df["mean_log"],
@@ -163,8 +174,12 @@ fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
 
 bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="mean", ascending=True)
-bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"])
-bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"])
+bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"]) * overall_scale
+bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"]) * overall_scale
+
+for name in scale_factors:
+    bf_embm_vs_2cbm_df.loc[name, "mean_log"] *= scale_factors[name]
+    bf_embm_vs_2cbm_df.loc[name, "std_log"] *= scale_factors[name]
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_2cbm_df.index), bf_embm_vs_2cbm_df["mean_log"],
@@ -175,8 +190,8 @@ fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
 
 bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="mean", ascending=True)
-bf_embm_vs_rmbm_df["mean_log"] = np.log10(bf_embm_vs_rmbm_df["mean"])
-bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"])
+bf_embm_vs_rmbm_df["mean_log"] = np.log10(bf_embm_vs_rmbm_df["mean"]) * overall_scale
+bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"]) * overall_scale
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["mean_log"],
