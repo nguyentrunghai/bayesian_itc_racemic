@@ -177,13 +177,13 @@ fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 #--------------------------------------------------
 
 scale_factors = {}
-scale_factors["Baum_59"] = 3.
-scale_factors["Baum_57"] = 3.
+scale_factors["Baum_59"] = 3.5
+scale_factors["Baum_57"] = 3.5
 scale_factors["Baum_60_2"] = 0.5
 scale_factors["Baum_60_3"] = 0.5
 scale_factors["Fokkens_1_b"] = 0.5
 scale_factors["Fokkens_1_a"] = 0.5
-scale_factors["Baum_60_4"] = 0.5
+scale_factors["Baum_60_4"] = 0.2
 
 bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"]) * overall_scale
 bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"]) * overall_scale
