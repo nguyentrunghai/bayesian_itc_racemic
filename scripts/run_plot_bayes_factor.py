@@ -42,12 +42,12 @@ enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_p
 print("enantiomer_dir:", enantiomer_dirs)
 
 
-rmbm_sf_all = 10**(-2)
+rmbm_sf_all = 10**(0)
 rmbm_sf_each = {experiment: rmbm_sf_all for experiment in experiments}
-rmbm_sf_each["Baum_59"] = rmbm_sf_each["Baum_59"] * 10**(1.3)
-rmbm_sf_each["Baum_57"] = rmbm_sf_each["Baum_57"] * 10**(2.5)
-rmbm_sf_each["Baum_60_1"] = rmbm_sf_each["Baum_60_1"] * 10**(0.4)
-rmbm_sf_each["Baum_60_4"] = rmbm_sf_each["Baum_60_4"] * 10**(0.4)
+rmbm_sf_each["Baum_59"] = rmbm_sf_each["Baum_59"] * 10**(0)
+rmbm_sf_each["Baum_57"] = rmbm_sf_each["Baum_57"] * 10**(0)
+rmbm_sf_each["Baum_60_1"] = rmbm_sf_each["Baum_60_1"] * 10**(0)
+rmbm_sf_each["Baum_60_4"] = rmbm_sf_each["Baum_60_4"] * 10**(0)
 
 
 ml_2cbm = defaultdict(list)
