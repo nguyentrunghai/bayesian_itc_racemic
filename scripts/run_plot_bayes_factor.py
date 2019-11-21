@@ -157,6 +157,7 @@ bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.S
 
 
 # plot
+error_scale = 0.5
 sns.set(font_scale=args.font_scale)
 
 bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"])
@@ -166,7 +167,7 @@ bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="mean_log", ascending=Tru
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_rmbm_vs_2cbm_df.index), bf_rmbm_vs_2cbm_df["mean_log"],
-        xerr=bf_rmbm_vs_2cbm_df["std_log"])
+        xerr=error_scale*bf_rmbm_vs_2cbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
@@ -179,7 +180,7 @@ bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="mean_log", ascending=Tru
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_2cbm_df.index), bf_embm_vs_2cbm_df["mean_log"],
-        xerr=bf_embm_vs_2cbm_df["std_log"])
+        xerr=error_scale*bf_embm_vs_2cbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
@@ -192,7 +193,7 @@ bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="mean_log", ascending=Tru
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["mean_log"],
-        xerr=bf_embm_vs_rmbm_df["std_log"])
+        xerr=error_scale*bf_embm_vs_rmbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
