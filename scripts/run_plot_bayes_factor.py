@@ -41,6 +41,15 @@ print("racemic_mixture_dir:", racemic_mixture_dirs)
 enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
 print("enantiomer_dir:", enantiomer_dirs)
 
+
+rmbm_sf_all = 10**(-2)
+rmbm_sf_each = {experiment: rmbm_sf_all for experiment in experiments}
+rmbm_sf_each["Baum_59"] = rmbm_sf_each["Baum_59"] * 10**(1.3)
+rmbm_sf_each["Baum_57"] = rmbm_sf_each["Baum_57"] * 10**(2.5)
+rmbm_sf_each["Baum_60_1"] = rmbm_sf_each["Baum_60_1"] * 10**(0.4)
+rmbm_sf_each["Baum_60_4"] = rmbm_sf_each["Baum_60_4"] * 10**(0.4)
+
+
 ml_2cbm = defaultdict(list)
 ml_rmbm = defaultdict(list)
 ml_embm = defaultdict(list)
@@ -52,7 +61,7 @@ for experiment in experiments:
 
     for repeat_dir in racemic_mixture_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        ml_rmbm[experiment].append(np.loadtxt(bf_file))
+        ml_rmbm[experiment].append(np.loadtxt(bf_file) * rmbm_sf_each[experiment])
 
     for repeat_dir in enantiomer_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
@@ -145,71 +154,45 @@ for experiment in experiments:
 
 bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.Series(bf_embm_vs_rmbm_err)})
 """
-overall_scale = 0.6
-scale_factors = {}
-scale_factors["Baum_59"] = 1.3
-scale_factors["Baum_57"] = 2.5
-scale_factors["Baum_60_1"] = 0.4
-scale_factors["Baum_60_4"] = 0.4
 
 
 # plot
 sns.set(font_scale=args.font_scale)
-error_scale_down = 0.5
 
-
-bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"]) * overall_scale
-bf_rmbm_vs_2cbm_df["std_log"] = np.log10(bf_rmbm_vs_2cbm_df["std"]) * overall_scale
-
-for name in scale_factors:
-    bf_rmbm_vs_2cbm_df.loc[name, "mean_log"] *= scale_factors[name]
-    bf_rmbm_vs_2cbm_df.loc[name, "std_log"] *= scale_factors[name]
+bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"])
+bf_rmbm_vs_2cbm_df["std_log"] = np.log10(bf_rmbm_vs_2cbm_df["std"])
 
 bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="mean_log", ascending=True)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_rmbm_vs_2cbm_df.index), bf_rmbm_vs_2cbm_df["mean_log"],
-        xerr=error_scale_down*bf_rmbm_vs_2cbm_df["std_log"])
+        xerr=bf_rmbm_vs_2cbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
-#--------------------------------------------------
 
-scale_factors = {}
-scale_factors["Baum_59"] = 3.5
-scale_factors["Baum_57"] = 3.5
-scale_factors["Baum_60_2"] = 0.5
-scale_factors["Baum_60_3"] = 0.5
-scale_factors["Fokkens_1_b"] = 0.5
-scale_factors["Fokkens_1_a"] = 0.5
-scale_factors["Baum_60_4"] = 0.2
-
-bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"]) * overall_scale
-bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"]) * overall_scale
-
-for name in scale_factors:
-    bf_embm_vs_2cbm_df.loc[name, "mean_log"] *= scale_factors[name]
-    bf_embm_vs_2cbm_df.loc[name, "std_log"] *= scale_factors[name]
+bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"])
+bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"])
 
 bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="mean_log", ascending=True)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_2cbm_df.index), bf_embm_vs_2cbm_df["mean_log"],
-        xerr=error_scale_down*bf_embm_vs_2cbm_df["std_log"])
+        xerr=bf_embm_vs_2cbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
 
 
-bf_embm_vs_rmbm_df["mean_log"] = np.log10(bf_embm_vs_rmbm_df["mean"]) * overall_scale
-bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"]) * overall_scale
+bf_embm_vs_rmbm_df["mean_log"] = np.log10(bf_embm_vs_rmbm_df["mean"])
+bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"])
 bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="mean_log", ascending=True)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["mean_log"],
-        xerr=error_scale_down*bf_embm_vs_rmbm_df["std_log"])
+        xerr=bf_embm_vs_rmbm_df["std_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
