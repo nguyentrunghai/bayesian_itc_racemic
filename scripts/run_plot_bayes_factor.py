@@ -10,6 +10,7 @@ from collections import defaultdict
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -29,6 +30,11 @@ parser.add_argument("--font_scale", type=float, default=1.0)
 
 args = parser.parse_args()
 
+
+def _std_from_iqr(data):
+    return stats.iqr(data) / 1.35
+
+
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
@@ -44,19 +50,20 @@ print("enantiomer_dir:", enantiomer_dirs)
 
 rmbm_sf_all = 10**(-1)
 rmbm_sf_each = {experiment: rmbm_sf_all for experiment in experiments}
-rmbm_sf_each["Baum_59"] *= 10**(2)
-rmbm_sf_each["Baum_57"] *= 10**(4)
-rmbm_sf_each["Baum_60_1"] *= 10**(-2)
-rmbm_sf_each["Baum_60_4"] *= 10**(-2)
+#rmbm_sf_each["Baum_59"] *= 10**(2)
+#rmbm_sf_each["Baum_57"] *= 10**(4)
+#rmbm_sf_each["Baum_60_1"] *= 10**(-2)
+#rmbm_sf_each["Baum_60_4"] *= 10**(-2)
+#rmbm_sf_each["Fokkens_1_C"] *= 10**(1)
 
 embm_sf_all = 10**(-1)
 embm_sf_each = {experiment: embm_sf_all for experiment in experiments}
-embm_sf_each["Baum_60_4"] *= 10**(-3)
-embm_sf_each["Fokkens_1_d"] *= 10**(2)
-embm_sf_each["Baum_60_2"] *= 10**(-2)
-embm_sf_each["Baum_60_3"] *= 10**(-2)
-embm_sf_each["Baum_59"] *= 10**(3)
-embm_sf_each["Baum_57"] *= 10**(3)
+#embm_sf_each["Baum_60_4"] *= 10**(-3)
+#embm_sf_each["Fokkens_1_d"] *= 10**(2)
+#embm_sf_each["Baum_60_2"] *= 10**(-2)
+#embm_sf_each["Baum_60_3"] *= 10**(-2)
+#embm_sf_each["Baum_59"] *= 10**(3)
+#embm_sf_each["Baum_57"] *= 10**(3)
 
 ml_2cbm = defaultdict(list)
 ml_rmbm = defaultdict(list)
@@ -94,17 +101,27 @@ for experiment in experiments:
             bf_embm_vs_rmbm[experiment].append(num / den)
 
 
-bf_rmbm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
-bf_rmbm_vs_2cbm_std = pd.Series({experiment: np.std(bf_rmbm_vs_2cbm[experiment]) for experiment in experiments})
-bf_rmbm_vs_2cbm_df = pd.DataFrame({"mean": bf_rmbm_vs_2cbm_mean, "std": bf_rmbm_vs_2cbm_std})
+bf_rmbm_vs_2cbm_mean = pd.Series({e: np.mean(bf_rmbm_vs_2cbm[e]) for e in experiments})
+bf_rmbm_vs_2cbm_median = pd.Series({e: np.median(bf_rmbm_vs_2cbm[e]) for e in experiments})
+bf_rmbm_vs_2cbm_std = pd.Series({e: np.std(bf_rmbm_vs_2cbm[e]) for e in experiments})
+bf_rmbm_vs_2cbm_std_iqr = pd.Series({e: _std_from_iqr(bf_rmbm_vs_2cbm[e]) for e in experiments})
+bf_rmbm_vs_2cbm_df = pd.DataFrame({"mean": bf_rmbm_vs_2cbm_mean, "median": bf_rmbm_vs_2cbm_median,
+                                   "std": bf_rmbm_vs_2cbm_std, "std_iqr": bf_rmbm_vs_2cbm_std_iqr})
 
-bf_embm_vs_2cbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_2cbm[experiment]) for experiment in experiments})
-bf_embm_vs_2cbm_std = pd.Series({experiment: np.std(bf_embm_vs_2cbm[experiment]) for experiment in experiments})
-bf_embm_vs_2cbm_df = pd.DataFrame({"mean": bf_embm_vs_2cbm_mean, "std": bf_embm_vs_2cbm_std})
+bf_embm_vs_2cbm_mean = pd.Series({e: np.mean(bf_embm_vs_2cbm[e]) for e in experiments})
+bf_embm_vs_2cbm_median = pd.Series({e: np.median(bf_embm_vs_2cbm[e]) for e in experiments})
+bf_embm_vs_2cbm_std = pd.Series({e: np.std(bf_embm_vs_2cbm[e]) for e in experiments})
+bf_embm_vs_2cbm_std_iqr = pd.Series({e: _std_from_iqr(bf_embm_vs_2cbm[e]) for e in experiments})
+bf_embm_vs_2cbm_df = pd.DataFrame({"mean": bf_embm_vs_2cbm_mean, "median": bf_embm_vs_2cbm_median,
+                                   "std": bf_embm_vs_2cbm_std, "std_iqr": bf_embm_vs_2cbm_std_iqr})
 
-bf_embm_vs_rmbm_mean = pd.Series({experiment: np.mean(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
-bf_embm_vs_rmbm_std = pd.Series({experiment: np.std(bf_embm_vs_rmbm[experiment]) for experiment in experiments})
-bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "std": bf_embm_vs_rmbm_std})
+
+bf_embm_vs_rmbm_mean = pd.Series({e: np.mean(bf_embm_vs_rmbm[e]) for e in experiments})
+bf_embm_vs_rmbm_median = pd.Series({e: np.median(bf_embm_vs_rmbm[e]) for e in experiments})
+bf_embm_vs_rmbm_std = pd.Series({e: np.std(bf_embm_vs_rmbm[e]) for e in experiments})
+bf_embm_vs_rmbm_std_iqr = pd.Series({e: _std_from_iqr(bf_embm_vs_rmbm[e]) for e in experiments})
+bf_embm_vs_rmbm_df = pd.DataFrame({"mean": bf_embm_vs_rmbm_mean, "median": bf_embm_vs_rmbm_median,
+                                   "std": bf_embm_vs_rmbm_std, "std_iqr": bf_embm_vs_rmbm_std_iqr})
 
 """
 ml_2cbm_mean = {}
@@ -168,40 +185,42 @@ bf_embm_vs_rmbm_df = pd.DataFrame({"bf": pd.Series(bf_embm_vs_rmbm), "err": pd.S
 error_scale = 0.5
 sns.set(font_scale=args.font_scale)
 
-bf_rmbm_vs_2cbm_df["mean_log"] = np.log10(bf_rmbm_vs_2cbm_df["mean"])
-bf_rmbm_vs_2cbm_df["std_log"] = np.log10(bf_rmbm_vs_2cbm_df["std"])
+for col in bf_rmbm_vs_2cbm_df.columns:
+    bf_rmbm_vs_2cbm_df[col + "_log"] = np.log10(bf_rmbm_vs_2cbm_df[col])
 
-bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="mean_log", ascending=True)
+bf_rmbm_vs_2cbm_df = bf_rmbm_vs_2cbm_df.sort_values(by="median_log", ascending=True)
+print("bf_rmbm_vs_2cbm_df:", bf_rmbm_vs_2cbm_df)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_rmbm_vs_2cbm_df.index), bf_rmbm_vs_2cbm_df["mean_log"],
-        xerr=error_scale*bf_rmbm_vs_2cbm_df["std_log"])
+ax.barh(list(bf_rmbm_vs_2cbm_df.index), bf_rmbm_vs_2cbm_df["median_log"],
+        xerr=error_scale*bf_rmbm_vs_2cbm_df["std_iqr_log"])
 ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
 
-bf_embm_vs_2cbm_df["mean_log"] = np.log10(bf_embm_vs_2cbm_df["mean"])
-bf_embm_vs_2cbm_df["std_log"] = np.log10(bf_embm_vs_2cbm_df["std"])
+for col in bf_embm_vs_2cbm_df.columns:
+    bf_embm_vs_2cbm_df[col + "_log"] = np.log10(bf_embm_vs_2cbm_df[col])
 
-bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="mean_log", ascending=True)
+bf_embm_vs_2cbm_df = bf_embm_vs_2cbm_df.sort_values(by="median_log", ascending=True)
+print("bf_embm_vs_2cbm_df:", bf_embm_vs_2cbm_df)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_2cbm_df.index), bf_embm_vs_2cbm_df["mean_log"],
-        xerr=error_scale*bf_embm_vs_2cbm_df["std_log"])
+ax.barh(list(bf_embm_vs_2cbm_df.index), bf_embm_vs_2cbm_df["median_log"],
+        xerr=error_scale*bf_embm_vs_2cbm_df["std_iqr_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
 
+for col in bf_embm_vs_rmbm_df.columns:
+    bf_embm_vs_rmbm_df[col + "_log"] = np.log10(bf_embm_vs_rmbm_df[col])
 
-bf_embm_vs_rmbm_df["mean_log"] = np.log10(bf_embm_vs_rmbm_df["mean"])
-bf_embm_vs_rmbm_df["std_log"] = np.log10(bf_embm_vs_rmbm_df["std"])
-bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="mean_log", ascending=True)
+bf_embm_vs_rmbm_df = bf_embm_vs_rmbm_df.sort_values(by="median_log", ascending=True)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["mean_log"],
-        xerr=error_scale*bf_embm_vs_rmbm_df["std_log"])
+ax.barh(list(bf_embm_vs_rmbm_df.index), bf_embm_vs_rmbm_df["median_log"],
+        xerr=error_scale*bf_embm_vs_rmbm_df["std_iqr_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
