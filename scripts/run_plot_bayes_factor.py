@@ -42,13 +42,21 @@ enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_p
 print("enantiomer_dir:", enantiomer_dirs)
 
 
-rmbm_sf_all = 10**(0)
+rmbm_sf_all = 10**(-1)
 rmbm_sf_each = {experiment: rmbm_sf_all for experiment in experiments}
-rmbm_sf_each["Baum_59"] = rmbm_sf_each["Baum_59"] * 10**(2)
-rmbm_sf_each["Baum_57"] = rmbm_sf_each["Baum_57"] * 10**(3)
-rmbm_sf_each["Baum_60_1"] = rmbm_sf_each["Baum_60_1"] * 10**(2)
-rmbm_sf_each["Baum_60_4"] = rmbm_sf_each["Baum_60_4"] * 10**(2)
+rmbm_sf_each["Baum_59"] *= 10**(2)
+rmbm_sf_each["Baum_57"] *= 10**(4)
+rmbm_sf_each["Baum_60_1"] *= 10**(-2)
+rmbm_sf_each["Baum_60_4"] *= 10**(-2)
 
+embm_sf_all = 10**(-1)
+embm_sf_each = {experiment: embm_sf_all for experiment in experiments}
+rmbm_sf_each["Baum_60_4"] *= 10**(-3)
+rmbm_sf_each["Fokkens_1_d"] *= 10**(2)
+rmbm_sf_each["Baum_60_2"] *= 10**(-2)
+rmbm_sf_each["Baum_60_3"] *= 10**(-2)
+rmbm_sf_each["Baum_59"] *= 10**(3)
+rmbm_sf_each["Baum_57"] *= 10**(3)
 
 ml_2cbm = defaultdict(list)
 ml_rmbm = defaultdict(list)
@@ -65,7 +73,7 @@ for experiment in experiments:
 
     for repeat_dir in enantiomer_dirs:
         bf_file = os.path.join(repeat_dir, experiment, args.bayes_factor_file)
-        ml_embm[experiment].append(np.loadtxt(bf_file))
+        ml_embm[experiment].append(np.loadtxt(bf_file) * rmbm_sf_each[experiment])
 
 
 bf_rmbm_vs_2cbm = defaultdict(list)
