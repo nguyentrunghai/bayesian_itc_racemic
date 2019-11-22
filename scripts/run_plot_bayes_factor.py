@@ -54,7 +54,7 @@ rmbm_sf_each["Baum_59"] *= 10**(2)
 rmbm_sf_each["Baum_57"] *= 10**(4)
 rmbm_sf_each["Baum_60_1"] *= 10**(-2)
 rmbm_sf_each["Baum_60_4"] *= 10**(-2)
-rmbm_sf_each["Fokkens_1_C"] *= 10**(1)
+rmbm_sf_each["Fokkens_1_c"] *= 10**(1)
 
 embm_sf_all = 10**(-1)
 embm_sf_each = {experiment: embm_sf_all for experiment in experiments}
