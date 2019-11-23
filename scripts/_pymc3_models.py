@@ -201,7 +201,7 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     return q_n
 
 
-def lognormal_prior(name, stated_value, uncertainty):
+def lognormal_prior(name, stated_value, uncertainty, auto_transform=True):
     """
     copied from bayesian_itc/bitc/models.py
     Define a pymc3 prior for a deimensionless quantity
@@ -209,20 +209,30 @@ def lognormal_prior(name, stated_value, uncertainty):
     """
     m = stated_value
     v = uncertainty ** 2
-    return pymc3.Lognormal(name,
-                           mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
-                           tau=1.0 / np.log(1 + (v / (m ** 2))),
-                           testval=m)
+    if auto_transform:
+        return pymc3.Lognormal(name,
+                               mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
+                               tau=1.0 / np.log(1 + (v / (m ** 2))),
+                               testval=m)
+    else:
+        return pymc3.Lognormal(name,
+                               mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
+                               tau=1.0 / np.log(1 + (v / (m ** 2))),
+                               transform=None,
+                               testval=m)
 
 
-def uniform_prior(name, lower, upper):
+def uniform_prior(name, lower, upper, auto_transform=True):
     """
     :param name: str
     :param lower: float
     :param upper: float
     :return: pymc3.Uniform
     """
-    return pymc3.Uniform(name, lower=lower, upper=upper)
+    if auto_transform:
+        return pymc3.Uniform(name, lower=lower, upper=upper)
+    else:
+        return pymc3.Uniform(name, lower=lower, upper=upper, transform=None)
 
 
 def make_TwoComponentBindingModel(q_actual_cal, exper_info,
