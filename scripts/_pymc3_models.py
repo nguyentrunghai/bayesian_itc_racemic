@@ -330,7 +330,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
         q_actual_micro_cal = q_actual_cal * 10.**6
         sigma_micro_cal = sigma_cal * 10.**6
 
-        q_obs = pymc3.Normal("q_obs_cal", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
+        q_obs = pymc3.Normal("q_obs", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
 
     return model
 
@@ -440,6 +440,6 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
         q_actual_micro_cal = q_actual_cal * 10. ** 6
         sigma_micro_cal = sigma_cal * 10. ** 6
 
-        q_obs = pymc3.Normal("q_obs_cal", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
+        q_obs = pymc3.Normal("q_obs", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
 
     return model
