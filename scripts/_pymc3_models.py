@@ -237,7 +237,8 @@ def uniform_prior(name, lower, upper, auto_transform=True):
 
 def make_TwoComponentBindingModel(q_actual_cal, exper_info,
                                   dcell=0.1, dsyringe=0.1,
-                                  uniform_P0=False, uniform_Ls=False, concentration_range_factor=10):
+                                  uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                  auto_transform=True):
     """
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
@@ -248,6 +249,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
     :param concentration_range_factor: float, if uniform_P0, or uniform_Ls or both is True,
                                         lower = stated_value / concentration_range_factor,
                                         upper = stated_value * concentration_range_factor
+    :param auto_transform: bool, to turn automatic transform on or off
     :return: an instance of pymc3.model.Model
     """
 
@@ -289,30 +291,32 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
         # prior for receptor concentration
         if uniform_P0:
             print("Uniform prior for P0")
-            P0 = uniform_prior("P0", lower=P0_min, upper=P0_max)
+            P0 = uniform_prior("P0", lower=P0_min, upper=P0_max, auto_transform=auto_transform)
         else:
             print("LogNormal prior for P0")
-            P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0)
+            P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0,
+                                 auto_transform=auto_transform)
 
         # prior for ligand concentration
         if uniform_Ls:
             print("Uniform prior for Ls")
-            Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max)
+            Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max, auto_transform=auto_transform)
         else:
             print("LogNormal prior for Ls")
-            Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
+            Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls,
+                                 auto_transform=auto_transform)
 
         # prior for DeltaG
-        DeltaG = uniform_prior("DeltaG", lower=-40., upper=40.)
+        DeltaG = uniform_prior("DeltaG", lower=-40., upper=40., auto_transform=auto_transform)
 
         # prior for DeltaH
-        DeltaH = uniform_prior("DeltaH", lower=-100., upper=100.)
+        DeltaH = uniform_prior("DeltaH", lower=-100., upper=100., auto_transform=auto_transform)
 
         # prior for DeltaH_0
-        DeltaH_0 = uniform_prior("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max)
+        DeltaH_0 = uniform_prior("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max, auto_transform=auto_transform)
 
         # prior for log_sigma
-        log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max)
+        log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max, auto_transform=auto_transform)
 
         q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
@@ -330,7 +334,8 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                     dcell=0.1, dsyringe=0.1,
                                     uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
-                                    is_rho_free_param=False):
+                                    is_rho_free_param=False,
+                                    auto_transform=True):
     """
     :param q_actual_cal: observed heats in calorie
     :param exper_info: an object of _data_io.ITCExperiment class
@@ -341,6 +346,7 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
     :param concentration_range_factor: float, if uniform_P0, or uniform_Ls or both is True,
                                         lower = stated_value / concentration_range_factor,
                                         upper = stated_value * concentration_range_factor
+    :param auto_transform: bool, to turn automatic transform on or off
     :param is_rho_free_param: bool
     :return: an instance of pymc3.model.Model
     """
@@ -386,37 +392,39 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
         # prior for receptor concentration
         if uniform_P0:
             print("Uniform prior for P0")
-            P0 = uniform_prior("P0", lower=P0_min, upper=P0_max)
+            P0 = uniform_prior("P0", lower=P0_min, upper=P0_max, auto_transform=auto_transform)
         else:
             print("LogNormal prior for P0")
-            P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0)
+            P0 = lognormal_prior("P0", stated_value=stated_P0, uncertainty=uncertainty_P0,
+                                 auto_transform=auto_transform)
 
         # prior for ligand concentration
         if uniform_Ls:
             print("Uniform prior for Ls")
-            Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max)
+            Ls = uniform_prior("Ls", lower=Ls_min, upper=Ls_max, auto_transform=auto_transform)
         else:
             print("LogNormal prior for Ls")
-            Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls)
+            Ls = lognormal_prior("Ls", stated_value=stated_Ls, uncertainty=uncertainty_Ls,
+                                 auto_transform=auto_transform)
 
         if is_rho_free_param:
-            rho = uniform_prior("rho", lower=0., upper=1.)
+            rho = uniform_prior("rho", lower=0., upper=1., auto_transform=auto_transform)
         else:
             rho = 0.5
 
         # prior for DeltaG1, and DeltaDeltaG
-        DeltaG1 = uniform_prior("DeltaG1", lower=-40., upper=40.)
-        DeltaDeltaG = uniform_prior("DeltaDeltaG", lower=0., upper=40.)
+        DeltaG1 = uniform_prior("DeltaG1", lower=-40., upper=40., auto_transform=auto_transform)
+        DeltaDeltaG = uniform_prior("DeltaDeltaG", lower=0., upper=40., auto_transform=auto_transform)
 
         # prior for DeltaH1 and DeltaH2
-        DeltaH1 = uniform_prior("DeltaH1", lower=-100., upper=100.)
-        DeltaH2 = uniform_prior("DeltaH2", lower=-100., upper=100.)
+        DeltaH1 = uniform_prior("DeltaH1", lower=-100., upper=100., auto_transform=auto_transform)
+        DeltaH2 = uniform_prior("DeltaH2", lower=-100., upper=100., auto_transform=auto_transform)
 
         # prior for DeltaH_0
-        DeltaH_0 = uniform_prior("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max)
+        DeltaH_0 = uniform_prior("DeltaH_0", lower=DeltaH_0_min, upper=DeltaH_0_max, auto_transform=auto_transform)
 
         # prior for log_sigma
-        log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max)
+        log_sigma = uniform_prior("log_sigma", lower=log_sigma_min, upper=log_sigma_max, auto_transform=auto_transform)
 
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho,
                                                        DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
