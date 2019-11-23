@@ -210,11 +210,13 @@ def lognormal_prior(name, stated_value, uncertainty, auto_transform=True):
     m = stated_value
     v = uncertainty ** 2
     if auto_transform:
+        print("Automatic transform is on")
         return pymc3.Lognormal(name,
                                mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
                                tau=1.0 / np.log(1 + (v / (m ** 2))),
                                testval=m)
     else:
+        print("Automatic transform is off")
         return pymc3.Lognormal(name,
                                mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
                                tau=1.0 / np.log(1 + (v / (m ** 2))),
@@ -230,8 +232,10 @@ def uniform_prior(name, lower, upper, auto_transform=True):
     :return: pymc3.Uniform
     """
     if auto_transform:
+        print("Automatic transform is on")
         return pymc3.Uniform(name, lower=lower, upper=upper)
     else:
+        print("Automatic transform is off")
         return pymc3.Uniform(name, lower=lower, upper=upper, transform=None)
 
 
