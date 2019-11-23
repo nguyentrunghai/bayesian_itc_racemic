@@ -14,6 +14,8 @@ uniform_P0 = True
 uniform_Ls = True
 concentration_range_factor = 10.
 
+auto_transform = False
+
 exper_info = ITCExperiment(exper_info_file)
 q_actual_micro_cal = load_heat_micro_cal(heat_file)
 q_actual_cal = q_actual_micro_cal * 10. ** (-6)
@@ -22,21 +24,24 @@ if model_name == "2cbm":
     pm_model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
                                              dcell=dcell, dsyringe=dsyringe,
                                              uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                             concentration_range_factor=concentration_range_factor)
+                                             concentration_range_factor=concentration_range_factor,
+                                             auto_transform=auto_transform)
 
 elif model_name == "rmbm":
     pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                                dcell=dcell, dsyringe=dsyringe,
                                                uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                concentration_range_factor=concentration_range_factor,
-                                               is_rho_free_param=False)
+                                               is_rho_free_param=False,
+                                               auto_transform=auto_transform)
 
 elif model_name == "embm":
     pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                                dcell=dcell, dsyringe=dsyringe,
                                                uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                concentration_range_factor=concentration_range_factor,
-                                               is_rho_free_param=True)
+                                               is_rho_free_param=True,
+                                               auto_transform=auto_transform)
 else:
     raise ValueError("Unknown model: " + model_name)
 
