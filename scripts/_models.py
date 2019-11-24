@@ -539,6 +539,30 @@ def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_
 
         return np.array(llhs)
 
+    elif model_name == "rmbm":
+        P0_trace = traces["P0"]
+        Ls_trace = traces["Ls"]
+        rho = 0.5
+        DeltaG1_trace = traces["DeltaG1"]
+        DeltaDeltaG_trace = traces["DeltaDeltaG"]
+        DeltaH1_trace = traces["DeltaH1"]
+        DeltaH2_trace = traces["DeltaH2"]
+        DeltaH_0_trace = traces["DeltaH_0"]
+        log_sigma_trace = traces["log_sigma"]
+
+        llhs = []
+        for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
+                                                                                       DeltaG1_trace,
+                                                                                       DeltaDeltaG_trace,
+                                                                                       DeltaH1_trace, DeltaH2_trace,
+                                                                                       DeltaH_0_trace,
+                                                                                       log_sigma_trace):
+            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                           DeltaG1, DeltaDeltaG, beta, n_injections)
+            sigma_cal = np.exp(log_sigma)
+            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
+
+        return np.array(llhs)
 
 
 class PyMCLogNormal(object):
