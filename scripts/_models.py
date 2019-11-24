@@ -5,6 +5,8 @@ define different heat models
 import numpy as np
 import pymc
 
+from _data_io import ITCExperiment, load_heat_micro_cal
+
 KB = 0.0019872041      # in kcal/mol/K
 
 # copied from the method expected_injection_heats of the class TwoComponentBindingModel in bayesian_itc/bitc/models.py
@@ -499,6 +501,33 @@ def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
         log_likelihoods.append(likelihood)
 
     return np.array(log_priors), np.array(log_likelihoods)
+
+
+def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_file,
+                                      dcell=0.1, dsyringe=0.1,
+                                      uniform_P0=False, uniform_Ls=False,
+                                      concentration_range_factor=10.):
+    """
+    :param traces: dict, variable_name -> 1d array
+    :param model_name: str, in ["2cbm", "rmbm", "embm"]
+    :param exper_info_file: str
+    :param heat_file: str
+    :param dcell: float in (0, 1)
+    :param dsyringe: float in (0, 1)
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
+    :return: llhs, 1d array
+    """
+    exper_info = ITCExperiment(exper_info_file)
+    q_actual_micro_cal = load_heat_micro_cal(heat_file)
+    q_actual_cal = q_actual_micro_cal * 10. ** (-6)
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+
 
 
 class PyMCLogNormal(object):
