@@ -3,7 +3,7 @@ import pickle
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
-from _pymc3_models import extract_loglhs_from_traces_pymc3
+from _pymc3_models import extract_loglhs_from_traces_pymc3_v1, extract_loglhs_from_traces_pymc3_v2
 from _models import extract_loglhs_from_traces_manual
 
 exper_info_file = "/home/tnguye46/bayesian_itc_racemic/05.exper_info/Baum_59/experimental_information.pickle"
@@ -60,9 +60,16 @@ for rv in pm_model.observed_RVs:
 
 
 """
+traces_10 = {key: traces[key][:10] for key in traces}
 traces_100 = {key: traces[key][:100] for key in traces}
 
-logllhs_pymc3 = extract_loglhs_from_traces_pymc3(traces_100, model_name, exper_info_file, heat_file,
+logllhs_pymc3_v1 = extract_loglhs_from_traces_pymc3_v1(traces_10, model_name, exper_info_file, heat_file,
+                                     dcell=dcell, dsyringe=dsyringe,
+                                     uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                     concentration_range_factor=concentration_range_factor,
+                                     auto_transform=False)
+                                     
+logllhs_pymc3_v2 = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file,
                                      dcell=dcell, dsyringe=dsyringe,
                                      uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                      concentration_range_factor=concentration_range_factor,
