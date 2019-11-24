@@ -179,7 +179,7 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     return np.array(q_n)
 
 
-def log_likelihood_normal_(q_actual, q_model, sigma):
+def log_likelihood_normal_v1(q_actual, q_model, sigma):
     """
     :param q_actual: 1d ndarray, actual or observed values of heats
     :param q_model: heat calculated from a model
@@ -197,7 +197,7 @@ def log_likelihood_normal_(q_actual, q_model, sigma):
     return log_likelihood
 
 
-def log_likelihood_normal(q_actual, q_model, sigma):
+def log_likelihood_normal_v2(q_actual, q_model, sigma):
     """
     :param q_actual: 1d ndarray, actual or observed values of heats
     :param q_model: heat calculated from a model
@@ -211,6 +211,26 @@ def log_likelihood_normal(q_actual, q_model, sigma):
     n_injections = len(q_actual)
 
     log_likelihood = -0.5 * n_injections * np.log(2 * np.pi) - 0.5 * np.sum(z**2)
+
+    return log_likelihood
+
+
+from scipy import stats
+
+def log_likelihood_normal(q_actual, q_model, sigma):
+    """
+    :param q_actual: 1d ndarray, actual or observed values of heats
+    :param q_model: heat calculated from a model
+    :param sigma: standard deviation
+    :return: likelihood, float
+
+    log_likelihood = -(N/2)\ln(2 \pi \sigma^2) - 1/(2 \sigma^2) \sum_{i=1}^N \epsilon^2
+    """
+    zs = (q_model - q_actual) / sigma
+
+    norm_rv = stats.norm(loc=0, scale=1)
+
+    log_likelihood = np.sum(norm_rv.logpdf(zs))
 
     return log_likelihood
 
