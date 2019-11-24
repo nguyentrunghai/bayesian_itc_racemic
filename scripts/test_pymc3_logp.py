@@ -1,4 +1,6 @@
 
+import pickle
+
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
@@ -44,4 +46,13 @@ elif model_name == "embm":
                                                auto_transform=auto_transform)
 else:
     raise ValueError("Unknown model: " + model_name)
+
+
+traces = pickle.load(open("traces.pickle"))
+inp_data = {key: traces[key][0] for key in traces}
+
+logps = {rv.name: rv.logp(**inp_data) for rv in pm_model.free_RVs}
+
+for rv in pm_model.observed_RVs:
+    logps[rv.name] = rv.logp(**inp_data)
 
