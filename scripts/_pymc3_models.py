@@ -465,48 +465,6 @@ def make_dummy_normal_model(q_actual, dummy_mu=0., dummy_sd=1.):
     return model
 
 
-def marginal_likelihood_v1(log_likelihoods):
-    """
-    :param log_likelihoods: 1d array
-    :return: marg_llh, float
-    """
-    log_weights = -(log_likelihoods - log_likelihoods.max())
-    weights = np.exp(log_weights)
-    weights = weights / np.sum(weights)
-    llhs = np.exp(log_likelihoods)
-    llhs_weighted = llhs * weights
-
-    marg_llh = np.sum(llhs_weighted)
-    return marg_llh
-
-
-def marginal_likelihood_v2(log_likelihoods):
-    """
-    :param log_likelihoods: 1d array
-    :return: marg_llh, float
-    """
-    log_weights = -(log_likelihoods - log_likelihoods.max())
-    sum_weight = np.sum(np.exp(log_weights))
-    log_sum_weight = np.log(sum_weight)
-
-    marg_llh = np.sum(np.exp(log_weights - log_sum_weight + log_likelihoods))
-    return marg_llh
-
-
-def marginal_likelihood_v3(log_likelihoods):
-    """
-    :param log_likelihoods: 1d array
-    :return: marg_llh, float
-    """
-    n = len(log_likelihoods)
-    sum_weight = np.sum(np.exp(-log_likelihoods))
-    marg_llh = n / sum_weight
-    return marg_llh
-
-
-marginal_likelihood = marginal_likelihood_v2
-
-
 def extract_loglhs_from_traces_pymc3_v1(traces, model_name, exper_info_file, heat_file,
                                      dcell=0.1, dsyringe=0.1,
                                      uniform_P0=False, uniform_Ls=False,
@@ -563,7 +521,7 @@ def extract_loglhs_from_traces_pymc3_v1(traces, model_name, exper_info_file, hea
 
     return np.array(loglhs)
 
-
+# TODO v1 and v2 do not give the same result
 def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, heat_file):
     """
     :param traces: dict, variable_name -> 1d array
