@@ -3,6 +3,7 @@ define different heat models
 """
 
 import numpy as np
+from scipy import stats
 import pymc
 
 from _data_io import ITCExperiment, load_heat_micro_cal
@@ -179,44 +180,6 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     return np.array(q_n)
 
 
-def log_likelihood_normal_v1(q_actual, q_model, sigma):
-    """
-    :param q_actual: 1d ndarray, actual or observed values of heats
-    :param q_model: heat calculated from a model
-    :param sigma: standard deviation
-    :return: likelihood, float
-
-    log_likelihood = -(N/2)\ln(2 \pi \sigma^2) - 1/(2 \sigma^2) \sum_{i=1}^N \epsilon^2
-    """
-    sum_e_squared = np.sum((q_model - q_actual)**2)
-
-    n_injections = len(q_actual)
-    sigma_2 = sigma**2
-    log_likelihood = - n_injections / 2. * np.log(2 * np.pi * sigma_2) - sum_e_squared / 2. / sigma_2
-
-    return log_likelihood
-
-
-def log_likelihood_normal_v2(q_actual, q_model, sigma):
-    """
-    :param q_actual: 1d ndarray, actual or observed values of heats
-    :param q_model: heat calculated from a model
-    :param sigma: standard deviation
-    :return: likelihood, float
-
-    log_likelihood = -(N/2)\ln(2 \pi \sigma^2) - 1/(2 \sigma^2) \sum_{i=1}^N \epsilon^2
-    """
-    z = (q_model - q_actual) / sigma
-
-    n_injections = len(q_actual)
-
-    log_likelihood = -0.5 * n_injections * np.log(2 * np.pi) - 0.5 * np.sum(z**2)
-
-    return log_likelihood
-
-
-from scipy import stats
-
 def log_likelihood_normal(q_actual, q_model, sigma):
     """
     :param q_actual: 1d ndarray, actual or observed values of heats
@@ -227,9 +190,7 @@ def log_likelihood_normal(q_actual, q_model, sigma):
     log_likelihood = -(N/2)\ln(2 \pi \sigma^2) - 1/(2 \sigma^2) \sum_{i=1}^N \epsilon^2
     """
     zs = (q_model - q_actual) / sigma
-
     norm_rv = stats.norm(loc=0, scale=1)
-
     log_likelihood = np.sum(norm_rv.logpdf(zs))
 
     return log_likelihood
@@ -540,95 +501,6 @@ def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
     return np.array(log_priors), np.array(log_likelihoods)
 
 
-def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_file):
-    """
-    :param traces: dict, variable_name -> 1d array
-    :param model_name: str, in ["2cbm", "rmbm", "embm"]
-    :param exper_info_file: str
-    :param heat_file: str
-    :return: llhs, 1d array
-    """
-    exper_info = ITCExperiment(exper_info_file)
-    q_actual_micro_cal = load_heat_micro_cal(heat_file)
-    q_actual_cal = q_actual_micro_cal * 10. ** (-6)
-
-    V0 = exper_info.get_cell_volume_liter()
-    DeltaVn = exper_info.get_injection_volumes_liter()
-    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
-    n_injections = exper_info.get_number_injections()
-
-    if model_name == "2cbm":
-        P0_trace = traces["P0"]
-        Ls_trace = traces["Ls"]
-        DeltaG_trace = traces["DeltaG"]
-        DeltaH_trace = traces["DeltaH"]
-        DeltaH_0_trace = traces["DeltaH_0"]
-        log_sigma_trace = traces["log_sigma"]
-
-        llhs = []
-        for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
-                                                               DeltaH_0_trace, log_sigma_trace):
-            q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
-                                                         DeltaH_0, beta, n_injections)
-
-            sigma_cal = np.exp(log_sigma)
-            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
-
-        return np.array(llhs)
-
-    elif model_name == "rmbm":
-        P0_trace = traces["P0"]
-        Ls_trace = traces["Ls"]
-        rho = 0.5
-        DeltaG1_trace = traces["DeltaG1"]
-        DeltaDeltaG_trace = traces["DeltaDeltaG"]
-        DeltaH1_trace = traces["DeltaH1"]
-        DeltaH2_trace = traces["DeltaH2"]
-        DeltaH_0_trace = traces["DeltaH_0"]
-        log_sigma_trace = traces["log_sigma"]
-
-        llhs = []
-        for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
-                                                                                       DeltaG1_trace,
-                                                                                       DeltaDeltaG_trace,
-                                                                                       DeltaH1_trace, DeltaH2_trace,
-                                                                                       DeltaH_0_trace,
-                                                                                       log_sigma_trace):
-            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
-                                                           DeltaG1, DeltaDeltaG, beta, n_injections)
-            sigma_cal = np.exp(log_sigma)
-            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
-
-        return np.array(llhs)
-
-    elif model_name == "embm":
-        P0_trace = traces["P0"]
-        Ls_trace = traces["Ls"]
-        rho_trace = traces["rho"]
-        DeltaG1_trace = traces["DeltaG1"]
-        DeltaDeltaG_trace = traces["DeltaDeltaG"]
-        DeltaH1_trace = traces["DeltaH1"]
-        DeltaH2_trace = traces["DeltaH2"]
-        DeltaH_0_trace = traces["DeltaH_0"]
-        log_sigma_trace = traces["log_sigma"]
-
-        llhs = []
-        for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
-                                                                                            rho_trace,
-                                                                                            DeltaG1_trace,
-                                                                                            DeltaDeltaG_trace,
-                                                                                            DeltaH1_trace,
-                                                                                            DeltaH2_trace,
-                                                                                            DeltaH_0_trace,
-                                                                                            log_sigma_trace):
-            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
-                                                           DeltaG1, DeltaDeltaG, beta, n_injections)
-            sigma_cal = np.exp(log_sigma)
-            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
-
-        return np.array(llhs)
-
-
 class PyMCLogNormal(object):
     def __init__(self, name, stated_value, uncertainty_percent):
         """
@@ -764,3 +636,90 @@ def sample_priors(nsamples, burn, thin,
     return all_traces
 
 
+def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_file):
+    """
+    :param traces: dict, variable_name -> 1d array
+    :param model_name: str, in ["2cbm", "rmbm", "embm"]
+    :param exper_info_file: str
+    :param heat_file: str
+    :return: llhs, 1d array
+    """
+    exper_info = ITCExperiment(exper_info_file)
+    q_actual_micro_cal = load_heat_micro_cal(heat_file)
+    q_actual_cal = q_actual_micro_cal * 10. ** (-6)
+
+    V0 = exper_info.get_cell_volume_liter()
+    DeltaVn = exper_info.get_injection_volumes_liter()
+    beta = 1 / KB / exper_info.get_target_temperature_kelvin()
+    n_injections = exper_info.get_number_injections()
+
+    if model_name == "2cbm":
+        P0_trace = traces["P0"]
+        Ls_trace = traces["Ls"]
+        DeltaG_trace = traces["DeltaG"]
+        DeltaH_trace = traces["DeltaH"]
+        DeltaH_0_trace = traces["DeltaH_0"]
+        log_sigma_trace = traces["log_sigma"]
+
+        llhs = []
+        for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
+                                                               DeltaH_0_trace, log_sigma_trace):
+            q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
+                                                         DeltaH_0, beta, n_injections)
+
+            sigma_cal = np.exp(log_sigma)
+            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
+
+        return np.array(llhs)
+
+    elif model_name == "rmbm":
+        P0_trace = traces["P0"]
+        Ls_trace = traces["Ls"]
+        rho = 0.5
+        DeltaG1_trace = traces["DeltaG1"]
+        DeltaDeltaG_trace = traces["DeltaDeltaG"]
+        DeltaH1_trace = traces["DeltaH1"]
+        DeltaH2_trace = traces["DeltaH2"]
+        DeltaH_0_trace = traces["DeltaH_0"]
+        log_sigma_trace = traces["log_sigma"]
+
+        llhs = []
+        for P0, Ls, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
+                                                                                       DeltaG1_trace,
+                                                                                       DeltaDeltaG_trace,
+                                                                                       DeltaH1_trace, DeltaH2_trace,
+                                                                                       DeltaH_0_trace,
+                                                                                       log_sigma_trace):
+            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                           DeltaG1, DeltaDeltaG, beta, n_injections)
+            sigma_cal = np.exp(log_sigma)
+            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
+
+        return np.array(llhs)
+
+    elif model_name == "embm":
+        P0_trace = traces["P0"]
+        Ls_trace = traces["Ls"]
+        rho_trace = traces["rho"]
+        DeltaG1_trace = traces["DeltaG1"]
+        DeltaDeltaG_trace = traces["DeltaDeltaG"]
+        DeltaH1_trace = traces["DeltaH1"]
+        DeltaH2_trace = traces["DeltaH2"]
+        DeltaH_0_trace = traces["DeltaH_0"]
+        log_sigma_trace = traces["log_sigma"]
+
+        llhs = []
+        for P0, Ls, rho, DeltaG1, DeltaDeltaG, DeltaH1, DeltaH2, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace,
+                                                                                            rho_trace,
+                                                                                            DeltaG1_trace,
+                                                                                            DeltaDeltaG_trace,
+                                                                                            DeltaH1_trace,
+                                                                                            DeltaH2_trace,
+                                                                                            DeltaH_0_trace,
+                                                                                            log_sigma_trace):
+            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+                                                           DeltaG1, DeltaDeltaG, beta, n_injections)
+            sigma_cal = np.exp(log_sigma)
+            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
+
+        return np.array(llhs)
