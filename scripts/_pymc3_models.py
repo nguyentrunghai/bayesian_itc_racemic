@@ -443,3 +443,18 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
         q_obs = pymc3.Normal("q_obs", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
 
     return model
+
+
+def marginal_likelihood_v1(log_likelihoods):
+    """
+    :param log_likelihoods: 1d array
+    :return: marg_llh, float
+    """
+    log_weights = -(log_likelihoods - log_likelihoods.max())
+    weights = np.exp(log_weights)
+    weights = weights / np.sum(weights)
+    llhs = np.exp(log_likelihoods)
+    llhs_weighted = llhs * weights
+
+    marg_llh = np.sum(llhs_weighted)
+    return marg_llh
