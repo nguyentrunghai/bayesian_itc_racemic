@@ -11,6 +11,9 @@ from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import logsigma_guesses, deltaH0_guesses
 from _models import KB
 
+from _models import heats_TwoComponentBindingModel as heats_TwoComponentBindingModel_numpy
+from _models import heats_RacemicMixtureBindingModel as heats_RacemicMixtureBindingModel_numpy
+
 
 def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
     """
@@ -594,7 +597,7 @@ def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, hea
 
         for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
                                                                DeltaH_0_trace, log_sigma_trace):
-            q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG,
+            q_model_cal = heats_TwoComponentBindingModel_numpy(V0, DeltaVn, P0, Ls, DeltaG,
                                                          DeltaH, DeltaH_0, beta, n_injections)
             list_q_model_cal.append(q_model_cal)
             list_sigma_cal.append(np.exp(log_sigma))
@@ -616,7 +619,7 @@ def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, hea
                                                                                        DeltaH1_trace, DeltaH2_trace,
                                                                                        DeltaH_0_trace,
                                                                                        log_sigma_trace):
-            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+            q_model_cal = heats_RacemicMixtureBindingModel_numpy(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                            DeltaG1, DeltaDeltaG, beta, n_injections)
             list_q_model_cal.append(q_model_cal)
             list_sigma_cal.append(np.exp(log_sigma))
@@ -640,7 +643,7 @@ def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, hea
                                                                                             DeltaH2_trace,
                                                                                             DeltaH_0_trace,
                                                                                             log_sigma_trace):
-            q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
+            q_model_cal = heats_RacemicMixtureBindingModel_numpy(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                            DeltaG1, DeltaDeltaG, beta, n_injections)
             list_q_model_cal.append(q_model_cal)
             list_sigma_cal.append(np.exp(log_sigma))
