@@ -69,11 +69,8 @@ logllhs_pymc3_v1 = extract_loglhs_from_traces_pymc3_v1(traces_10, model_name, ex
                                      concentration_range_factor=concentration_range_factor,
                                      auto_transform=False)
                                      
-logllhs_pymc3_v2 = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file,
-                                     dcell=dcell, dsyringe=dsyringe,
-                                     uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                     concentration_range_factor=concentration_range_factor,
-                                     auto_transform=False)
+#logllhs_pymc3_v2 = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file)
+list_q_model_cal, list_sigma_cal = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file)
 
 logllhs_manual = extract_loglhs_from_traces_manual(traces_100, model_name, exper_info_file, heat_file)
 """
