@@ -179,7 +179,7 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     return np.array(q_n)
 
 
-def normal_likelihood(q_actual, q_model, sigma):
+def log_normal_likelihood(q_actual, q_model, sigma):
     """
     :param q_actual: 1d ndarray, actual or observed values of heats
     :param q_model: heat calculated from a model
@@ -195,7 +195,7 @@ def normal_likelihood(q_actual, q_model, sigma):
     sigma_2 = sigma**2
     log_likelihood = - n_injections / 2. * np.log(2 * np.pi * sigma_2) - sum_e_squared / 2. / sigma_2
 
-    return np.exp(log_likelihood)
+    return log_likelihood
 
 
 def lognormal_pdf(x, stated_center, uncertainty):
@@ -527,6 +527,22 @@ def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_
     DeltaVn = exper_info.get_injection_volumes_liter()
     beta = 1 / KB / exper_info.get_target_temperature_kelvin()
     n_injections = exper_info.get_number_injections()
+
+    if model_name == "2cbm":
+        P0_trace = traces["P0"]
+        Ls_trace = traces["Ls"]
+        DeltaG_trace = traces["DeltaG"]
+        DeltaH_trace = traces["DeltaH"]
+        DeltaH_0_trace = traces["DeltaH_0"]
+        log_sigma_trace = traces["log_sigma"]
+
+        for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
+                                                               DeltaH_0_trace, log_sigma_trace):
+            q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
+                                                         DeltaH_0, beta, n_injections)
+
+            sigma_cal = np.exp(log_sigma)
+            likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
 
 
 
