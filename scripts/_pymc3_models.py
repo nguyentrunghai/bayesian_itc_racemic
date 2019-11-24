@@ -458,3 +458,13 @@ def marginal_likelihood_v1(log_likelihoods):
 
     marg_llh = np.sum(llhs_weighted)
     return marg_llh
+
+
+def marginal_likelihood_v3(log_likelihoods):
+    """
+    :param log_likelihoods: 1d array
+    :return: marg_llh, float
+    """
+    sum_weight = np.sum(np.exp(-log_likelihoods))
+    marg_llh = 1. / sum_weight
+    return marg_llh
