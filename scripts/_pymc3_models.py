@@ -479,9 +479,13 @@ def marginal_likelihood_v3(log_likelihoods):
     :param log_likelihoods: 1d array
     :return: marg_llh, float
     """
+    n = len(log_likelihoods)
     sum_weight = np.sum(np.exp(-log_likelihoods))
-    marg_llh = 1. / sum_weight
+    marg_llh = n / sum_weight
     return marg_llh
+
+
+marginal_likelihood = marginal_likelihood_v2
 
 
 def extract_loglhs_from_traces_pymc3(traces, model_name, exper_info_file, heat_file,
