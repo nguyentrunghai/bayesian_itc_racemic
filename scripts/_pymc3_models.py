@@ -650,10 +650,10 @@ def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, hea
 
     dummy_model = make_dummy_normal_model(q_actual_cal)
 
-    #llhs = []
-    #for q_model, sigma in zip(list_q_model_cal, list_sigma_cal):
-    #    llhs.append(dummy_model.q_obs.logp(q_model=q_model, sigma=sigma))
+    llhs = []
+    for q_model, sigma in zip(list_q_model_cal, list_sigma_cal):
+        llhs.append(dummy_model.q_obs.logp(q_model=q_model, sigma=sigma))
 
-    return list_q_model_cal, list_sigma_cal
+    return np.array(llhs)
 
 
