@@ -446,6 +446,22 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
     return model
 
 
+def make_dummy_normal_model(q_actual, dummy_mu=0., dummy_sd=1.):
+    """
+    :param q_actual: 1d array
+    :param dummy_mu: float
+    :param dummy_sd: float
+    :return: model, an instance of pymc3.model.Model
+    """
+    with pymc3.Model() as model:
+        q_model = pymc3.Normal("q_model", mu=dummy_mu, sd=dummy_sd, shape=(len(q_actual)))
+        sigma = pymc3.Normal("sigma", mu=dummy_mu, sd=dummy_sd)
+
+        q_obs = pymc3.Normal("q_obs", mu=q_model, sd=sigma, observed=q_actual)
+
+    return model
+
+
 def marginal_likelihood_v1(log_likelihoods):
     """
     :param log_likelihoods: 1d array
