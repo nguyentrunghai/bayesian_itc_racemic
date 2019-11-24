@@ -308,7 +308,7 @@ def log_prior_likelihood_2cbm(q_actual_cal, exper_info, mcmc_trace,
                                                      DeltaH_0, beta, n_injections)
 
         sigma_cal = np.exp(log_sigma)
-        likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+        likelihood = log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal)
 
         prior = 0.
         if not uniform_P0:
@@ -389,7 +389,7 @@ def log_prior_likelihood_rmbm(q_actual_cal, exper_info, mcmc_trace,
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
         sigma_cal = np.exp(log_sigma)
-        likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+        likelihood = log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal)
 
         prior = 0.
         if not uniform_P0:
@@ -473,7 +473,7 @@ def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
         q_model_cal = heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2, DeltaH_0,
                                                        DeltaG1, DeltaDeltaG, beta, n_injections)
         sigma_cal = np.exp(log_sigma)
-        likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+        likelihood = log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal)
 
         prior = 0.
         if not uniform_P0:
@@ -503,20 +503,12 @@ def log_prior_likelihood_embm(q_actual_cal, exper_info, mcmc_trace,
     return np.array(log_priors), np.array(log_likelihoods)
 
 
-def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_file,
-                                      dcell=0.1, dsyringe=0.1,
-                                      uniform_P0=False, uniform_Ls=False,
-                                      concentration_range_factor=10.):
+def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_file):
     """
     :param traces: dict, variable_name -> 1d array
     :param model_name: str, in ["2cbm", "rmbm", "embm"]
     :param exper_info_file: str
     :param heat_file: str
-    :param dcell: float in (0, 1)
-    :param dsyringe: float in (0, 1)
-    :param uniform_P0: bool
-    :param uniform_Ls: bool
-    :param concentration_range_factor: float
     :return: llhs, 1d array
     """
     exper_info = ITCExperiment(exper_info_file)
@@ -536,13 +528,16 @@ def extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_
         DeltaH_0_trace = traces["DeltaH_0"]
         log_sigma_trace = traces["log_sigma"]
 
+        llhs = []
         for P0, Ls, DeltaG, DeltaH, DeltaH_0, log_sigma in zip(P0_trace, Ls_trace, DeltaG_trace, DeltaH_trace,
                                                                DeltaH_0_trace, log_sigma_trace):
             q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH,
                                                          DeltaH_0, beta, n_injections)
 
             sigma_cal = np.exp(log_sigma)
-            likelihood = np.log(normal_likelihood(q_actual_cal, q_model_cal, sigma_cal))
+            llhs.append(log_likelihood_normal(q_actual_cal, q_model_cal, sigma_cal))
+
+        return np.array(llhs)
 
 
 
