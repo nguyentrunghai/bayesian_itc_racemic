@@ -8,7 +8,7 @@ import copy
 
 import numpy as np
 
-from _models import normal_likelihood
+from _models import log_likelihood_normal
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 from _models import log_prior_likelihood_2cbm, log_prior_likelihood_rmbm, log_prior_likelihood_embm
 
@@ -45,7 +45,7 @@ def average_likelihood_from_prior_2cbm(q_actual, V0, DeltaVn, beta, n_injections
         sigma_cal = np.exp(log_sigma)
         sigma_micro_cal = sigma_cal * 10**6
 
-        aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
+        aver_likelihood += log_likelihood_normal(q_actual, q_model_micro_cal, sigma_micro_cal)
 
     return aver_likelihood / len(P0_trace)
 
@@ -88,7 +88,7 @@ def average_likelihood_from_prior_rmbm(q_actual, V0, DeltaVn, beta, n_injections
         sigma_cal = np.exp(log_sigma)
         sigma_micro_cal = sigma_cal * 10 ** 6
 
-        aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
+        aver_likelihood += log_likelihood_normal(q_actual, q_model_micro_cal, sigma_micro_cal)
 
     return aver_likelihood / len(P0_trace)
 
@@ -130,7 +130,7 @@ def average_likelihood_from_prior_embm(q_actual, V0, DeltaVn, beta, n_injections
         sigma_cal = np.exp(log_sigma)
         sigma_micro_cal = sigma_cal * 10 ** 6
 
-        aver_likelihood += normal_likelihood(q_actual, q_model_micro_cal, sigma_micro_cal)
+        aver_likelihood += log_likelihood_normal(q_actual, q_model_micro_cal, sigma_micro_cal)
 
     return aver_likelihood / len(P0_trace)
 
