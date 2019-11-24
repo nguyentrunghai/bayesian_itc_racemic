@@ -179,7 +179,7 @@ def heats_RacemicMixtureBindingModel(V0, DeltaVn, P0, Ls, rho, DeltaH1, DeltaH2,
     return np.array(q_n)
 
 
-def log_normal_likelihood(q_actual, q_model, sigma):
+def log_likelihood_normal(q_actual, q_model, sigma):
     """
     :param q_actual: 1d ndarray, actual or observed values of heats
     :param q_model: heat calculated from a model
