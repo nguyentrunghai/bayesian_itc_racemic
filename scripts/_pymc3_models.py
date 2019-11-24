@@ -7,6 +7,7 @@ import numpy as np
 import pymc3
 import theano.tensor as tt
 
+from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import logsigma_guesses, deltaH0_guesses
 from _models import KB
 
@@ -241,7 +242,7 @@ def uniform_prior(name, lower, upper, auto_transform=True):
 
 def make_TwoComponentBindingModel(q_actual_cal, exper_info,
                                   dcell=0.1, dsyringe=0.1,
-                                  uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                  uniform_P0=False, uniform_Ls=False, concentration_range_factor=10.,
                                   auto_transform=True):
     """
     :param q_actual_cal: observed heats in calorie
@@ -337,7 +338,7 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 
 def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                     dcell=0.1, dsyringe=0.1,
-                                    uniform_P0=False, uniform_Ls=False, concentration_range_factor=10,
+                                    uniform_P0=False, uniform_Ls=False, concentration_range_factor=10.,
                                     is_rho_free_param=False,
                                     auto_transform=True):
     """
@@ -481,3 +482,52 @@ def marginal_likelihood_v3(log_likelihoods):
     sum_weight = np.sum(np.exp(-log_likelihoods))
     marg_llh = 1. / sum_weight
     return marg_llh
+
+
+def likelihood_from_traces(traces, model_name, exper_info_file, heat_file,
+                           dcell=0.1, dsyringe=0.1,
+                           uniform_P0=False, uniform_Ls=False,
+                           concentration_range_factor=10.,
+                           auto_transform=False):
+    """
+    :param traces: dict, variable_name -> 1d array
+    :param model_name: str, in ["2cbm", "rmbm", "embm"]
+    :param exper_info_file: str
+    :param heat_file: str
+    :param dcell: float in (0, 1)
+    :param dsyringe: float in (0, 1)
+    :param uniform_P0: bool
+    :param uniform_Ls: bool
+    :param concentration_range_factor: float
+    :param auto_transform: bool
+    :return: llhs, 1d array
+    """
+
+    exper_info = ITCExperiment(exper_info_file)
+    q_actual_micro_cal = load_heat_micro_cal(heat_file)
+    q_actual_cal = q_actual_micro_cal * 10. ** (-6)
+
+    if model_name == "2cbm":
+        pm_model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
+                                                 dcell=dcell, dsyringe=dsyringe,
+                                                 uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                 concentration_range_factor=concentration_range_factor,
+                                                 auto_transform=auto_transform)
+
+    elif model_name == "rmbm":
+        pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                   concentration_range_factor=concentration_range_factor,
+                                                   is_rho_free_param=False,
+                                                   auto_transform=auto_transform)
+
+    elif model_name == "embm":
+        pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
+                                                   dcell=dcell, dsyringe=dsyringe,
+                                                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                   concentration_range_factor=concentration_range_factor,
+                                                   is_rho_free_param=True,
+                                                   auto_transform=auto_transform)
+    else:
+        raise ValueError("Unknown model: " + model_name)
