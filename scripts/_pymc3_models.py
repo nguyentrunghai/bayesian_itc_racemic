@@ -484,11 +484,11 @@ def marginal_likelihood_v3(log_likelihoods):
     return marg_llh
 
 
-def likelihood_from_traces(traces, model_name, exper_info_file, heat_file,
-                           dcell=0.1, dsyringe=0.1,
-                           uniform_P0=False, uniform_Ls=False,
-                           concentration_range_factor=10.,
-                           auto_transform=False):
+def extract_loglhs_from_traces_pymc3(traces, model_name, exper_info_file, heat_file,
+                                     dcell=0.1, dsyringe=0.1,
+                                     uniform_P0=False, uniform_Ls=False,
+                                     concentration_range_factor=10.,
+                                     auto_transform=False):
     """
     :param traces: dict, variable_name -> 1d array
     :param model_name: str, in ["2cbm", "rmbm", "embm"]
@@ -531,3 +531,11 @@ def likelihood_from_traces(traces, model_name, exper_info_file, heat_file,
                                                    auto_transform=auto_transform)
     else:
         raise ValueError("Unknown model: " + model_name)
+
+    trace_len = len(traces[traces.keys()[0]])
+    loglhs = []
+    for i in range(trace_len):
+        inp_data = {key: traces[key][i] for key in traces}
+        loglhs.append(pm_model.q_obs.logp(**inp_data))
+
+    return np.array(loglhs)
