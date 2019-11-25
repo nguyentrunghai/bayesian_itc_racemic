@@ -108,6 +108,23 @@ for exper in experiments:
     marg_lh_embm[exper]["bootstrap_samples"] = bootstrap_samples
 
 
+bf_rmbm_vs_2cbm = {}
+bf_embm_vs_2cbm = {}
+bf_embm_vs_rmbm = {}
+for exper in experiments:
+    bf_rmbm_vs_2cbm[exper] = {}
+    bf_embm_vs_2cbm[exper] = {}
+    bf_embm_vs_rmbm[exper] = {}
+
+    bf_rmbm_vs_2cbm[exper]["bf"] = marg_lh_rmbm[exper]["all_sample_estimate"] / marg_lh_2cbm[exper]["all_sample_estimate"]
+    bf_rmbm_vs_2cbm[exper]["err"] = np.std(marg_lh_rmbm[exper]["bootstrap_samples"] / marg_lh_2cbm[exper]["bootstrap_samples"])
+
+    bf_embm_vs_2cbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_2cbm[exper]["all_sample_estimate"]
+    bf_embm_vs_2cbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_2cbm[exper]["bootstrap_samples"])
+
+    bf_embm_vs_rmbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_rmbm[exper]["all_sample_estimate"]
+    bf_embm_vs_rmbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_rmbm[exper]["bootstrap_samples"])
+
 """
 bf_rmbm_vs_2cbm = pd.Series(bf_rmbm_vs_2cbm)
 bf_rmbm_vs_2cbm.sort_values(ascending=True, inplace=True)
