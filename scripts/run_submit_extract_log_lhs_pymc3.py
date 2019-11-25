@@ -62,9 +62,13 @@ if args.write_qsub_script:
     print("xperiments_unif_conc_prior", experiments_unif_conc_prior)
 
     traces_files = glob.glob(os.path.join("*", args.traces_file))
+    traces_files = [os.path.abspath(f) for f in traces_files]
     print("traces_files", traces_files)
 
-    experiments = [os.path.basename(path) for path in traces_files]
+    mcmc_dirs = [os.path.dirname(f) for f in traces_files]
+    print("mcmc_dirs", mcmc_dirs)
+
+    experiments = [os.path.basename(d) for d in mcmc_dirs]
     print("experiments", experiments)
 
     mcmc_dirs = [os.path.abspath(e) for e in experiments]
