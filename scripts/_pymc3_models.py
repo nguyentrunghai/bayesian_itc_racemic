@@ -531,7 +531,7 @@ def extract_loglhs_from_traces_pymc3_v1(traces, model_name, exper_info_file, hea
 
         log_posteriors.append(pm_model.logp(**inp_data))
 
-    return np.array(log_priors), np.array(log_lhs)
+    return np.array(log_priors), np.array(log_lhs), np.array(log_posteriors)
 
 
 # TODO v1 and v2 do not give the same result, But I should trust more on v1
