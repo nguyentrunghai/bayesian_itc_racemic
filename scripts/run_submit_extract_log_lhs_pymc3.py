@@ -153,7 +153,7 @@ else:
     nsamples = args.nsamples
     print("nsamples", nsamples)
 
-    our_dir = args.our_dir
+    our_dir = args.out_dir
 
     traces = pickle.load(open(traces_file))
     if nsamples > 0:
