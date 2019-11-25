@@ -40,6 +40,7 @@ parser.add_argument("--step_method", type=str, default="SMC")
 parser.add_argument("--draws", type=int, default=10000)
 parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=1)
+parser.add_argument("--chains", type=int, default=2)
 
 parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
 parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
@@ -73,6 +74,7 @@ if args.write_qsub_script:
     draws = args.draws
     tune = args.tune
     cores = args.cores
+    chains = args.chains
 
     for experiment in experiments:
         exper_info_file = os.path.join(args.exper_info_dir, experiment, args.exper_info_file)
@@ -115,6 +117,7 @@ python ''' + this_script + \
         ''' --draws %d''' % draws + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
+        ''' --chains %d''' % chains + \
         ''' --downsampling_freq %d''' % downsampling_freq + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
@@ -161,6 +164,9 @@ else:
 
     cores = args.cores
     print("cores", cores)
+
+    chains = args.chains
+    print("chains", chains)
 
     downsampling_freq = args.downsampling_freq
     print("downsampling_freq", downsampling_freq)
@@ -211,7 +217,7 @@ else:
         else:
             raise ValueError("Unknown step method", step_method)
 
-        trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, progressbar=False)
+        trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, chains=chains progressbar=False)
 
     out_trace_obj = os.path.join(out_dir, "trace_obj.pickle")
     pickle.dump(trace, open(out_trace_obj, "w"))
