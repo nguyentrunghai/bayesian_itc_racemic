@@ -114,7 +114,8 @@ python ''' + this_script + \
         uniform_P0 + uniform_Ls + \
         ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
         ''' --nsamples %d''' % nsamples + \
-        ''' --out_dir ''' + out_dir
+        ''' --out_dir ''' + out_dir + \
+        '''\ndate\n'''
 
         print("Writing qsub file", qsub_file)
         open(qsub_file, "w").write(qsub_script)
