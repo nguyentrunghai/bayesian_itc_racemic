@@ -125,6 +125,11 @@ for exper in experiments:
     bf_embm_vs_rmbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_rmbm[exper]["all_sample_estimate"]
     bf_embm_vs_rmbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_rmbm[exper]["bootstrap_samples"])
 
+
+bf_rmbm_vs_2cbm = pd.DataFrame.from_dict(bf_rmbm_vs_2cbm, orient="index")
+bf_embm_vs_2cbm = pd.DataFrame.from_dict(bf_embm_vs_2cbm, orient="index")
+bf_embm_vs_rmbm = pd.DataFrame.from_dict(bf_embm_vs_rmbm, orient="index")
+
 """
 bf_rmbm_vs_2cbm = pd.Series(bf_rmbm_vs_2cbm)
 bf_rmbm_vs_2cbm.sort_values(ascending=True, inplace=True)
