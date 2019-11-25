@@ -513,13 +513,26 @@ def extract_loglhs_from_traces_pymc3_v1(traces, model_name, exper_info_file, hea
     else:
         raise ValueError("Unknown model: " + model_name)
 
+    print("free_RVs:", pm_model.free_RVs)
+
     trace_len = len(traces[traces.keys()[0]])
-    loglhs = []
+
+    log_lhs = []
+    log_priors = []
+    log_posteriors = []
+
     for i in range(trace_len):
         inp_data = {key: traces[key][i] for key in traces}
-        loglhs.append(pm_model.q_obs.logp(**inp_data))
 
-    return np.array(loglhs)
+        log_lhs.append(pm_model.q_obs.logp(**inp_data))
+
+        log_prior = np.sum([rv.logp(**inp_data) for rv in pm_model.free_RVs])
+        log_priors.append(log_prior)
+
+        log_posteriors.append(pm_model.logp(**inp_data))
+
+    return np.array(log_priors), np.array(log_lhs)
+
 
 # TODO v1 and v2 do not give the same result, But I should trust more on v1
 # However, it runs slowly.
@@ -616,3 +629,4 @@ def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, hea
     return np.array(llhs)
 
 
+extract_loglhs_from_traces_pymc3 = extract_loglhs_from_traces_pymc3_v1
