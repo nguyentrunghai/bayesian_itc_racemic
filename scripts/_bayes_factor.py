@@ -23,7 +23,8 @@ def marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_repeats
     bootstrap_samples = []
     for _ in range(bootstrap_repeats):
         drawn_loglhs = np.random.choice(extracted_loglhs, size=sample_size, replace=True)
-        bootstrap_samples.append(drawn_loglhs)
+
+        bootstrap_samples.append(marginal_likelihood(drawn_loglhs))
 
     bootstrap_samples = np.array(bootstrap_samples)
 
