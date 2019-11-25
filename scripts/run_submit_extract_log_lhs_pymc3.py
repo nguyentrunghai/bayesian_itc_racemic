@@ -7,7 +7,11 @@ import os
 import glob
 import sys
 import argparse
+import pickle
 
+import pandas as pd
+
+from _pymc3_models import extract_loglhs_from_traces_pymc3
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
@@ -114,4 +118,52 @@ python ''' + this_script + \
             print("Submitting " + exper)
             os.system("qsub %s" % qsub_file)
 
+else:
+    exper_info_file = args.exper_info_file
+    print("exper_info_file", exper_info_file)
+    heat_file = args.heat_file
+    print("heat_file", heat_file)
 
+    model_name = args.model
+    print("model_name", model_name)
+
+    traces_file = args.traces_file
+    print("traces_file", traces_file)
+
+    dcell = args.dP0
+    print("dcell", dcell)
+
+    dsyringe = args.dLs
+    print("dsyringe", dsyringe)
+
+    uniform_P0 = args.uniform_P0
+    print("uniform_P0", uniform_P0)
+
+    uniform_Ls = args.uniform_Ls
+    print("uniform_Ls", uniform_Ls)
+
+    concentration_range_factor = args.concentration_range_factor
+    print("concentration_range_factor", concentration_range_factor)
+
+    nsamples = args.nsamples
+    print("nsamples", nsamples)
+
+    our_dir = args.our_dir
+
+    traces = pickle.load(open(traces_file))
+    if nsamples > 0:
+        for key in traces:
+            traces[key] = traces[key][:nsamples]
+
+    log_priors, log_lhs = extract_loglhs_from_traces_pymc3(traces, model_name, exper_info_file, heat_file,
+                                                           dcell=dcell, dsyringe=dsyringe,
+                                                           uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                                                           concentration_range_factor=concentration_range_factor,
+                                                           auto_transform=False)
+
+    data_df = pd.DataFrame(data={"log_priors": log_priors, "log_lhs": log_lhs})
+    out_file = os.path.join(our_dir, "log_priors_llhs.csv")
+    print("Writing results to", out_file)
+    data_df.to_csv(out_file, sep=",", float_format="%0.10f", header=True, index=False)
+
+print("DONE")
