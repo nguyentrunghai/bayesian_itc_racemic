@@ -6,6 +6,8 @@ from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBind
 from _pymc3_models import extract_loglhs_from_traces_pymc3_v1, extract_loglhs_from_traces_pymc3_v2
 from _models import extract_loglhs_from_traces_manual
 
+from _models import marginal_likelihood_v1, marginal_likelihood_v2, marginal_likelihood_v3
+
 exper_info_file = "/home/tnguye46/bayesian_itc_racemic/05.exper_info/Baum_59/experimental_information.pickle"
 heat_file = "/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format/Baum_59.DAT"
 
@@ -73,4 +75,8 @@ logllhs_pymc3_v1 = extract_loglhs_from_traces_pymc3_v1(traces_10, model_name, ex
 list_q_model_cal, list_sigma_cal = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file)
 
 logllhs_manual = extract_loglhs_from_traces_manual(traces_100, model_name, exper_info_file, heat_file)
+marginal_likelihood_v1(logllhs_manual)
+marginal_likelihood_v2(logllhs_manual)
+marginal_likelihood_v3(logllhs_manual)
+
 """
