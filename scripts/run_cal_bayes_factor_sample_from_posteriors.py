@@ -6,6 +6,7 @@ from __future__ import print_function
 import os
 import argparse
 import pickle
+import glob
 
 import numpy as np
 import pandas as pd
@@ -13,106 +14,76 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _bayes_factor import average_likelihood_from_posterior
+from _models import extract_loglhs_from_traces_manual
+from _bayes_factor import marginal_lhs_bootstrap
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--two_component_mcmc_dir", type=str, default="twocomponent_mcmc")
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="racemicmixture_mcmc")
-parser.add_argument("--enantiomer_mcmc_dir", type=str, default="enantiomer_mcmc")
+parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc2")
 
-parser.add_argument("--exper_info_dir", type=str, default="exper_info")
-parser.add_argument("--heat_dir", type=str, default="heat_in_origin_format")
+parser.add_argument("--repeat_prefix", type=str, default="repeat_")
+
+parser.add_argument("--exper_info_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/05.exper_info")
+parser.add_argument("--heat_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format")
 
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
-parser.add_argument("--concentration_range_factor", type=float, default=10.)
+parser.add_argument("--experiments", type=str,
+                    default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
-parser.add_argument("--experiments_with_unif_concen_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
-
+parser.add_argument("--bootstrap_repeats", type=int, default=1000)
 
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
 
-KB = 0.0019872041      # in kcal/mol/K
 
-assert os.path.exists(args.two_component_mcmc_dir), args.two_component_mcmc_dir + " does not exists."
-assert os.path.exists(args.racemic_mixture_mcmc_dir), args.racemic_mixture_mcmc_dir + " does not exists."
-assert os.path.exists(args.enantiomer_mcmc_dir), args.enantiomer_mcmc_dir + " does not exists."
-assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
-assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
+def _load_and_combine_traces(trace_files):
+    list_traces = [pickle.load(open(trace_file)) for trace_file in trace_files]
+    keys = list_traces[0].keys()
+    result = {}
+    for key in keys:
+        result[key] = np.concatenate([trace[key] for trace in list_traces])
+    return result
+
+
+two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
+print("two_component_dirs:", two_component_dirs)
+
+racemic_mixture_dirs = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*"))
+print("racemic_mixture_dir:", racemic_mixture_dirs)
+
+enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
+print("enantiomer_dir:", enantiomer_dirs)
 
 experiments = args.experiments.split()
 print("experiments", experiments)
-experiments_with_unif_concen_prior = args.experiments_with_unif_concen_prior.split()
-print("experiments_with_unif_concen_prior", experiments_with_unif_concen_prior)
+
+marg_lh_2cbm = {}
+marg_lh_rmbm = {}
+marg_lh_embm = {}
+
+for exper in experiments:
+    print(exper)
+    exper_info_file = os.path.join(args.exper_info_dir, exper, args.exper_info_file)
+    heat_file = os.path.join(args.heat_dir, exper + ".DAT")
+
+    marg_lh_2cbm[exper] = {}
+    marg_lh_rmbm[exper] = {}
+    marg_lh_embm[exper] = {}
+
+    traces_file_2cbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in two_component_dirs]
+    print("loading:\n", traces_file_2cbm)
+    traces_2cbm = _load_and_combine_traces(traces_file_2cbm)
+    print("Length of trace", len(traces_2cbm[traces_2cbm.keys()[0]]))
+    loglhs_2cbm = extract_loglhs_from_traces_manual(traces_2cbm, "2cbm", exper_info_file, heat_file)
+    all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_2cbm, sample_size=None,
+                                                                    bootstrap_repeats=args.bootstrap_repeats)
 
 
-bf_rmbm_vs_2cbm = {}
-bf_embm_vs_2cbm = {}
-bf_embm_vs_rmbm = {}
-
-for experiment in experiments:
-    print(experiment)
-
-    if experiment in experiments_with_unif_concen_prior:
-        print("Uniform prior for P0 and Ls")
-        uniform_P0 = True
-        uniform_Ls = True
-    else:
-        print("LogNormal prior for P0 and Ls")
-        uniform_P0 = False
-        uniform_Ls = False
-
-    q_actual_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, experiment + ".DAT"))
-    q_actual_cal = q_actual_micro_cal * 10**(-6)
-
-    exper_info = ITCExperiment(os.path.join(args.exper_info_dir, experiment, args.exper_info_file))
-
-    trace_2cbm = pickle.load(open(os.path.join(args.two_component_mcmc_dir, experiment, args.mcmc_trace_file)))
-    trace_rmbm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, experiment, args.mcmc_trace_file)))
-    trace_embm = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, experiment, args.mcmc_trace_file)))
-
-    llh_mean_2cbm, llh_max_log_2cbm = average_likelihood_from_posterior("2cbm", q_actual_cal, exper_info,
-                                                                        trace_2cbm,
-                                                                        dcell=0.1, dsyringe=0.1,
-                                                                        uniform_P0=uniform_P0,
-                                                                        uniform_Ls=uniform_Ls,
-                                                                        concentration_range_factor=args.concentration_range_factor,
-                                                                        nsamples=None)
-
-    llh_mean_rmbm, llh_max_log_rmbm = average_likelihood_from_posterior("rmbm", q_actual_cal, exper_info,
-                                                                        trace_rmbm,
-                                                                        dcell=0.1, dsyringe=0.1,
-                                                                        uniform_P0=uniform_P0,
-                                                                        uniform_Ls=uniform_Ls,
-                                                                        concentration_range_factor=args.concentration_range_factor,
-                                                                        nsamples=None)
-
-    llh_mean_embm, llh_max_log_embm = average_likelihood_from_posterior("embm", q_actual_cal, exper_info,
-                                                                        trace_embm,
-                                                                        dcell=0.1, dsyringe=0.1,
-                                                                        uniform_P0=uniform_P0,
-                                                                        uniform_Ls=uniform_Ls,
-                                                                        concentration_range_factor=args.concentration_range_factor,
-                                                                        nsamples=None)
-
-    bf_rmbm_vs_2cbm[experiment] = llh_mean_rmbm / llh_mean_2cbm * np.exp(llh_max_log_rmbm - llh_max_log_2cbm)
-    bf_embm_vs_2cbm[experiment] = llh_mean_embm / llh_mean_2cbm * np.exp(llh_max_log_embm - llh_max_log_2cbm)
-    bf_embm_vs_rmbm[experiment] = llh_mean_embm / llh_mean_rmbm * np.exp(llh_max_log_embm - llh_max_log_rmbm)
-
-    print("aver_likelihood_2cbm: %0.5e" % (llh_mean_2cbm * np.exp(llh_max_log_2cbm)))
-    print("aver_likelihood_rmbm: %0.5e" % (llh_mean_rmbm * np.exp(llh_max_log_rmbm)))
-    print("aver_likelihood_embm: %0.5e" % (llh_mean_embm * np.exp(llh_max_log_embm)))
-    print("Bayes factor rmbm vs 2cbm: %0.5e" % bf_rmbm_vs_2cbm[experiment])
-    print("Bayes factor embm vs 2cbm: %0.5e" % bf_embm_vs_2cbm[experiment])
-    print("Bayes factor embm vs rmbm: %0.5e" % bf_embm_vs_rmbm[experiment])
-    print("")
-    print("")
-
-
+"""
 bf_rmbm_vs_2cbm = pd.Series(bf_rmbm_vs_2cbm)
 bf_rmbm_vs_2cbm.sort_values(ascending=True, inplace=True)
 bf_rmbm_vs_2cbm_log = np.log10(bf_rmbm_vs_2cbm)
@@ -148,3 +119,4 @@ fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
 
 print("DONE!")
+"""
