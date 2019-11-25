@@ -65,7 +65,7 @@ for rv in pm_model.observed_RVs:
 traces_10 = {key: traces[key][:10] for key in traces}
 traces_100 = {key: traces[key][:100] for key in traces}
 
-logllhs_pymc3_v1 = extract_loglhs_from_traces_pymc3_v1(traces_10, model_name, exper_info_file, heat_file,
+logps_pymc3_v1 = extract_loglhs_from_traces_pymc3_v1(traces_10, model_name, exper_info_file, heat_file,
                                      dcell=dcell, dsyringe=dsyringe,
                                      uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                      concentration_range_factor=concentration_range_factor,
@@ -74,7 +74,7 @@ logllhs_pymc3_v1 = extract_loglhs_from_traces_pymc3_v1(traces_10, model_name, ex
 #logllhs_pymc3_v2 = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file)
 list_q_model_cal, list_sigma_cal = extract_loglhs_from_traces_pymc3_v2(traces_10, model_name, exper_info_file, heat_file)
 
-logllhs_manual = extract_loglhs_from_traces_manual(traces_100, model_name, exper_info_file, heat_file)
+logllhs_manual = extract_loglhs_from_traces_manual(traces, model_name, exper_info_file, heat_file)
 marginal_likelihood_v1(logllhs_manual)
 marginal_likelihood_v2(logllhs_manual)
 marginal_likelihood_v3(logllhs_manual)
