@@ -28,6 +28,9 @@ parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
+parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
+
+parser.add_argument("--nsamples", type=int, default=-1)
 
 parser.add_argument("--out_dir", type=str, default="out")
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
@@ -41,4 +44,74 @@ if args.write_qsub_script:
     assert os.path.exists(args.heat_dir), args.heat_dir + " does not exist."
 
     this_script = os.path.abspath(sys.argv[0])
-    
+
+    model = args.model
+
+    dP0 = args.dP0
+    dLs = args.dLs
+
+    concentration_range_factor = args.concentration_range_factor
+
+    nsamples = args.nsamples
+
+    experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
+    print("xperiments_unif_conc_prior", experiments_unif_conc_prior)
+
+    traces_files = glob.glob(os.path.join("*", args.traces_file))
+    print("traces_files", traces_files)
+
+    experiments = [os.path.basename(path) for path in traces_files]
+    print("experiments", experiments)
+
+    mcmc_dirs = [os.path.abspath(e) for e in experiments]
+    print("mcmc_dirs", mcmc_dirs)
+
+    for mcmc_dir, exper, traces_file in zip(mcmc_dirs, experiments, traces_files):
+        print("Working on " + mcmc_dir)
+        print("with", exper)
+        print("using", traces_file)
+
+        exper_info_file = os.path.join(args.exper_info_dir, exper, args.exper_info_file)
+        assert os.path.exists(exper_info_file), exper_info_file + " does not exist."
+
+        heat_file = os.path.join(args.heat_dir, exper + ".DAT")
+        assert os.path.exists(heat_file), heat_file + " does not exist."
+
+        out_dir = mcmc_dir
+
+        if exper in experiments_unif_conc_prior:
+            uniform_P0 = " --uniform_P0 "
+            uniform_Ls = " --uniform_Ls "
+        else:
+            uniform_P0 = " "
+            uniform_Ls = " "
+
+        qsub_file = os.path.join(out_dir, exper + "_logllhs.job")
+        log_file = os.path.join(out_dir, exper + "_logllhs.log")
+        qsub_script = '''#!/bin/bash
+#PBS -S /bin/bash
+#PBS -o %s ''' % log_file + '''
+#PBS -j oe
+#PBS -l nodes=1:ppn=1,walltime=300:00:00
+
+source /home/tnguye46/opt/module/anaconda2019.10.sh
+date
+python ''' + this_script + \
+        ''' --exper_info_file ''' + exper_info_file + \
+        ''' --heat_file ''' + heat_file + \
+        ''' --traces_file ''' + traces_file + \
+        ''' --model ''' + model + \
+        ''' --dP0 %0.5f''' % dP0 + \
+        ''' --dLs %0.5f''' % dLs + \
+        uniform_P0 + uniform_Ls + \
+        ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
+        ''' --nsamples %d''' % nsamples + \
+        ''' --out_dir ''' + out_dir
+
+        print("Writing qsub file", qsub_file)
+        open(qsub_file, "w").write(qsub_script)
+        if args.submit:
+            print("Submitting " + exper)
+            os.system("qsub %s" % qsub_file)
+
+
