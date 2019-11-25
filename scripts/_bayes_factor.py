@@ -16,6 +16,8 @@ def marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_repeats
     :param bootstrap_repeats: int
     :return: all_sample_estimate, bootstrap_samples
     """
+    if sample_size is None:
+        sample_size = len(extracted_loglhs)
     all_sample_estimate = marginal_likelihood(extracted_loglhs)
 
     bootstrap_samples = []
@@ -24,6 +26,6 @@ def marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_repeats
         bootstrap_samples.append(drawn_loglhs)
 
     bootstrap_samples = np.array(bootstrap_samples)
-    
+
     return all_sample_estimate, bootstrap_samples
 
