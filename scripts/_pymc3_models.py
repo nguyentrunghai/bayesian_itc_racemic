@@ -521,7 +521,8 @@ def extract_loglhs_from_traces_pymc3_v1(traces, model_name, exper_info_file, hea
 
     return np.array(loglhs)
 
-# TODO v1 and v2 do not give the same result
+# TODO v1 and v2 do not give the same result, But I should trust more on v1
+# However, it runs slowly.
 def extract_loglhs_from_traces_pymc3_v2(traces, model_name, exper_info_file, heat_file):
     """
     :param traces: dict, variable_name -> 1d array
