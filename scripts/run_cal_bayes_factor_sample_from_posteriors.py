@@ -81,6 +81,8 @@ for exper in experiments:
     loglhs_2cbm = extract_loglhs_from_traces_manual(traces_2cbm, "2cbm", exper_info_file, heat_file)
     all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_2cbm, sample_size=None,
                                                                     bootstrap_repeats=args.bootstrap_repeats)
+    marg_lh_2cbm[exper]["all_sample_estimate"] = all_sample_estimate
+    marg_lh_2cbm[exper]["bootstrap_samples"] = bootstrap_samples
 
 
 """
