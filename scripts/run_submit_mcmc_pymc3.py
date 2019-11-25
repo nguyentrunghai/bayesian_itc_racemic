@@ -217,7 +217,7 @@ else:
         else:
             raise ValueError("Unknown step method", step_method)
 
-        trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, chains=chains progressbar=False)
+        trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, chains=chains, progressbar=False)
 
     out_trace_obj = os.path.join(out_dir, "trace_obj.pickle")
     pickle.dump(trace, open(out_trace_obj, "w"))
