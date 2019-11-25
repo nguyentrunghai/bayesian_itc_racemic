@@ -14,7 +14,7 @@ def marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_repeats
     :param extracted_loglhs: 1d array
     :param sample_size: int
     :param bootstrap_repeats: int
-    :return: all_sample_estimate, bootstrap_mean, bootstrap_std
+    :return: all_sample_estimate, bootstrap_samples
     """
     all_sample_estimate = marginal_likelihood(extracted_loglhs)
 
@@ -23,5 +23,7 @@ def marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_repeats
         drawn_loglhs = np.random.choice(extracted_loglhs, size=sample_size, replace=True)
         bootstrap_samples.append(drawn_loglhs)
 
-    return all_sample_estimate, bootstrap_samples.mean(), bootstrap_samples.std()
+    bootstrap_samples = np.array(bootstrap_samples)
+    
+    return all_sample_estimate, bootstrap_samples
 
