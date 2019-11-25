@@ -74,15 +74,38 @@ for exper in experiments:
     marg_lh_rmbm[exper] = {}
     marg_lh_embm[exper] = {}
 
-    traces_file_2cbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in two_component_dirs]
-    print("loading:\n", traces_file_2cbm)
-    traces_2cbm = _load_and_combine_traces(traces_file_2cbm)
+    # 2cbm
+    traces_files_2cbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in two_component_dirs]
+    print("loading:\n", traces_files_2cbm)
+    traces_2cbm = _load_and_combine_traces(traces_files_2cbm)
     print("Length of trace", len(traces_2cbm[traces_2cbm.keys()[0]]))
     loglhs_2cbm = extract_loglhs_from_traces_manual(traces_2cbm, "2cbm", exper_info_file, heat_file)
     all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_2cbm, sample_size=None,
                                                                     bootstrap_repeats=args.bootstrap_repeats)
     marg_lh_2cbm[exper]["all_sample_estimate"] = all_sample_estimate
     marg_lh_2cbm[exper]["bootstrap_samples"] = bootstrap_samples
+
+    # rmbm
+    traces_files_rmbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in racemic_mixture_dirs]
+    print("loading:\n", traces_files_rmbm)
+    traces_rmbm = _load_and_combine_traces(traces_files_rmbm)
+    print("Length of trace", len(traces_rmbm[traces_rmbm.keys()[0]]))
+    loglhs_rmbm = extract_loglhs_from_traces_manual(traces_rmbm, "rmbm", exper_info_file, heat_file)
+    all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_rmbm, sample_size=None,
+                                                                    bootstrap_repeats=args.bootstrap_repeats)
+    marg_lh_rmbm[exper]["all_sample_estimate"] = all_sample_estimate
+    marg_lh_rmbm[exper]["bootstrap_samples"] = bootstrap_samples
+
+    # embm
+    traces_files_embm = [os.path.join(d, exper, args.mcmc_trace_file) for d in enantiomer_dirs]
+    print("loading:\n", traces_files_embm)
+    traces_embm = _load_and_combine_traces(traces_files_embm)
+    print("Length of trace", len(traces_embm[traces_embm.keys()[0]]))
+    loglhs_embm = extract_loglhs_from_traces_manual(traces_embm, "embm", exper_info_file, heat_file)
+    all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_embm, sample_size=None,
+                                                                    bootstrap_repeats=args.bootstrap_repeats)
+    marg_lh_embm[exper]["all_sample_estimate"] = all_sample_estimate
+    marg_lh_embm[exper]["bootstrap_samples"] = bootstrap_samples
 
 
 """
