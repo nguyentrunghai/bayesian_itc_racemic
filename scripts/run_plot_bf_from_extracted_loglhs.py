@@ -54,3 +54,37 @@ marg_lh_embm = {}
 
 for exper in experiments:
     print(exper)
+
+    marg_lh_2cbm[exper] = {}
+    marg_lh_rmbm[exper] = {}
+    marg_lh_embm[exper] = {}
+
+    # 2cbm
+    loglhs_files_2cbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in two_component_dirs]
+    print("loading:\n", loglhs_files_2cbm)
+    loglhs_2cbm = _load_combine_dfs(loglhs_files_2cbm)["log_lhs"]
+    print("Length loglhs_2cbm", len(loglhs_2cbm))
+    all_samp_est_2cbm, bootstr_samp_2cbm = marginal_lhs_bootstrap(loglhs_2cbm, sample_size=None,
+                                                                  bootstrap_repeats=args.bootstrap_repeats)
+    marg_lh_2cbm[exper]["all_sample_estimate"] = all_samp_est_2cbm
+    marg_lh_2cbm[exper]["bootstrap_samples"] = bootstr_samp_2cbm
+
+    # rmbm
+    loglhs_files_rmbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in racemic_mixture_dirs]
+    print("loading:\n", loglhs_files_rmbm)
+    loglhs_rmbm = _load_combine_dfs(loglhs_files_rmbm)["log_lhs"]
+    print("Length loglhs_rmbm", len(loglhs_rmbm))
+    all_samp_est_rmbm, bootstr_samp_rmbm = marginal_lhs_bootstrap(loglhs_rmbm, sample_size=None,
+                                                                  bootstrap_repeats=args.bootstrap_repeats)
+    marg_lh_rmbm[exper]["all_sample_estimate"] = all_samp_est_rmbm
+    marg_lh_rmbm[exper]["bootstrap_samples"] = bootstr_samp_rmbm
+
+    # embm
+    loglhs_files_embm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in enantiomer_dirs]
+    print("loading:\n", loglhs_files_embm)
+    loglhs_embm = _load_combine_dfs(loglhs_files_embm)["log_lhs"]
+    print("Length loglhs_embm", len(loglhs_embm))
+    all_samp_est_embm, bootstr_samp_embm = marginal_lhs_bootstrap(loglhs_embm, sample_size=None,
+                                                                 bootstrap_repeats=args.bootstrap_repeats)
+    marg_lh_embm[exper]["all_sample_estimate"] = all_samp_est_embm
+    marg_lh_embm[exper]["bootstrap_samples"] = bootstr_samp_embm
