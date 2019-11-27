@@ -1,5 +1,6 @@
 """
-calculate bayes factor
+calculate and plot bayes factors from traces files
+the likelihood for each mcmc sample is calculated using manually implemented gaussian PDF
 """
 from __future__ import print_function
 
