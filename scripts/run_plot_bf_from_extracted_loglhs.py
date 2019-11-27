@@ -3,8 +3,13 @@ calculate and plot Bayes factors from extracted log likelihoods
 """
 
 import argparse
+import glob
+import os
 
+import numpy as np
 import pandas as pd
+
+from _bayes_factor import marginal_lhs_bootstrap
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2")
@@ -13,10 +18,6 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/b
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 
-parser.add_argument("--exper_info_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/05.exper_info")
-parser.add_argument("--heat_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format")
-
-parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 parser.add_argument("--extracted_loglhs_file", type=str, default="log_priors_llhs.csv")
 
 parser.add_argument("--experiments", type=str,
@@ -35,3 +36,21 @@ def _load_combine_dfs(csv_files):
     return comb_df
 
 
+two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
+print("two_component_dirs:", two_component_dirs)
+
+racemic_mixture_dirs = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*"))
+print("racemic_mixture_dir:", racemic_mixture_dirs)
+
+enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
+print("enantiomer_dir:", enantiomer_dirs)
+
+experiments = args.experiments.split()
+print("experiments", experiments)
+
+marg_lh_2cbm = {}
+marg_lh_rmbm = {}
+marg_lh_embm = {}
+
+for exper in experiments:
+    print(exper)
