@@ -42,8 +42,9 @@ parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=1)
 parser.add_argument("--chains", type=int, default=2)
 
-parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d")
-parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
+parser.add_argument("--experiments", type=str, default=" ")
+parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
+parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
 parser.add_argument("--downsampling_freq", type=int, default=1)
 parser.add_argument("--out_dir", type=str, default="out")
@@ -61,7 +62,8 @@ if args.write_qsub_script:
 
     this_script = os.path.abspath(sys.argv[0])
     experiments = args.experiments.split()
-    experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
+    experiments_flat_prior_P0 = args.experiments_flat_prior_P0.split()
+    experiments_flat_prior_Ls = args.experiments_flat_prior_Ls.split()
 
     model = args.model
 
@@ -86,11 +88,14 @@ if args.write_qsub_script:
 
         out_dir = os.path.abspath(out_dir)
 
-        if experiment in experiments_unif_conc_prior:
+        if experiment in experiments_flat_prior_P0:
             uniform_P0 = " --uniform_P0 "
-            uniform_Ls = " --uniform_Ls "
         else:
             uniform_P0 = " "
+
+        if experiment in experiments_flat_prior_Ls:
+            uniform_Ls = " --uniform_Ls "
+        else:
             uniform_Ls = " "
 
         downsampling_freq = args.downsampling_freq
