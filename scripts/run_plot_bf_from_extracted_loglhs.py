@@ -85,6 +85,29 @@ for exper in experiments:
     loglhs_embm = _load_combine_dfs(loglhs_files_embm)["log_lhs"]
     print("Length loglhs_embm", len(loglhs_embm))
     all_samp_est_embm, bootstr_samp_embm = marginal_lhs_bootstrap(loglhs_embm, sample_size=None,
-                                                                 bootstrap_repeats=args.bootstrap_repeats)
+                                                                  bootstrap_repeats=args.bootstrap_repeats)
     marg_lh_embm[exper]["all_sample_estimate"] = all_samp_est_embm
     marg_lh_embm[exper]["bootstrap_samples"] = bootstr_samp_embm
+
+
+bf_rmbm_vs_2cbm = {}
+bf_embm_vs_2cbm = {}
+bf_embm_vs_rmbm = {}
+for exper in experiments:
+    bf_rmbm_vs_2cbm[exper] = {}
+    bf_embm_vs_2cbm[exper] = {}
+    bf_embm_vs_rmbm[exper] = {}
+
+    bf_rmbm_vs_2cbm[exper]["bf"] = marg_lh_rmbm[exper]["all_sample_estimate"] / marg_lh_2cbm[exper]["all_sample_estimate"]
+    bf_rmbm_vs_2cbm[exper]["err"] = np.std(marg_lh_rmbm[exper]["bootstrap_samples"] / marg_lh_2cbm[exper]["bootstrap_samples"])
+
+    bf_embm_vs_2cbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_2cbm[exper]["all_sample_estimate"]
+    bf_embm_vs_2cbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_2cbm[exper]["bootstrap_samples"])
+
+    bf_embm_vs_rmbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_rmbm[exper]["all_sample_estimate"]
+    bf_embm_vs_rmbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_rmbm[exper]["bootstrap_samples"])
+
+
+bf_rmbm_vs_2cbm = pd.DataFrame.from_dict(bf_rmbm_vs_2cbm, orient="index")
+bf_embm_vs_2cbm = pd.DataFrame.from_dict(bf_embm_vs_2cbm, orient="index")
+bf_embm_vs_rmbm = pd.DataFrame.from_dict(bf_embm_vs_rmbm, orient="index")
