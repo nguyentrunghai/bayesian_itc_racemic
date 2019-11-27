@@ -8,7 +8,8 @@ parser.add_argument("--itc_data_dir", type=str, default="itc_origin_heat_files")
 parser.add_argument("--heat_data_dir", type=str, default="itc_origin_heat_files")
 
 parser.add_argument("--experiments", type=str, default="")
-parser.add_argument("--experiments_unif_conc_prior", type=str, default="")
+parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
+parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
 parser.add_argument("--script", type=str, default="/home/tnguye46/opt/src/bayesian-itc/scripts/bitc_mcmc.py")
 
@@ -59,7 +60,8 @@ for experiment in experiments_to_run:
 
 print("Will run these ", exper_names)
 
-experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
+experiments_flat_prior_P0 = args.experiments_flat_prior_P0.split()
+experiments_flat_prior_Ls = args.experiments_flat_prior_Ls.split()
 
 for name in experiments_to_run:
     out_dir = os.path.abspath(name)
@@ -76,11 +78,14 @@ for name in experiments_to_run:
     else:
         dummy_itc_file = ''' '''
 
-    if name in experiments_unif_conc_prior:
+    if name in experiments_flat_prior_P0:
         uniform_cell_concentration = ''' --uniform_cell_concentration '''
-        uniform_syringe_concentration = ''' --uniform_syringe_concentration '''
     else:
         uniform_cell_concentration = ''' '''
+
+    if name in experiments_flat_prior_Ls:
+        uniform_syringe_concentration = ''' --uniform_syringe_concentration '''
+    else:
         uniform_syringe_concentration = ''' '''
 
     qsub_script = '''#!/bin/bash
