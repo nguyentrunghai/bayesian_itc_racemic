@@ -4,6 +4,8 @@ calculate and plot Bayes factors from extracted log likelihoods
 
 import argparse
 
+import pandas as pd
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2")
@@ -25,3 +27,11 @@ parser.add_argument("--bootstrap_repeats", type=int, default=1000)
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
+
+
+def _load_combine_dfs(csv_files):
+    df_list = [pd.read_csv(f) for f in csv_files]
+    comb_df = pd.concat(df_list, axis=0, ignore_index=True)
+    return comb_df
+
+
