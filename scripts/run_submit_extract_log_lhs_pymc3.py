@@ -32,7 +32,8 @@ parser.add_argument("--uniform_P0", action="store_true", default=False)
 parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
-parser.add_argument("--experiments_unif_conc_prior", type=str, default="Fokkens_1_a Fokkens_1_b")
+parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
+parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
 parser.add_argument("--nsamples", type=int, default=-1)
 
@@ -58,8 +59,11 @@ if args.write_qsub_script:
 
     nsamples = args.nsamples
 
-    experiments_unif_conc_prior = args.experiments_unif_conc_prior.split()
-    print("xperiments_unif_conc_prior", experiments_unif_conc_prior)
+    experiments_flat_prior_P0 = args.experiments_flat_prior_P0.split()
+    print("experiments_flat_prior_P0", experiments_flat_prior_P0)
+
+    experiments_flat_prior_Ls = args.experiments_flat_prior_Ls.split()
+    print("experiments_flat_prior_Ls", experiments_flat_prior_Ls)
 
     traces_files = glob.glob(os.path.join("*", args.traces_file))
     traces_files = [os.path.abspath(f) for f in traces_files]
@@ -87,11 +91,14 @@ if args.write_qsub_script:
 
         out_dir = mcmc_dir
 
-        if exper in experiments_unif_conc_prior:
+        if exper in experiments_flat_prior_P0:
             uniform_P0 = " --uniform_P0 "
-            uniform_Ls = " --uniform_Ls "
         else:
             uniform_P0 = " "
+
+        if exper in experiments_flat_prior_Ls:
+            uniform_Ls = " --uniform_Ls "
+        else:
             uniform_Ls = " "
 
         qsub_file = os.path.join(out_dir, exper + "_logllhs.job")
