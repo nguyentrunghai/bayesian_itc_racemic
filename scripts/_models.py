@@ -765,3 +765,22 @@ def marginal_likelihood_v3(log_likelihoods):
 
 
 marginal_likelihood = marginal_likelihood_v2
+
+
+def log_marginal_likelihood_v2(log_likelihoods):
+    """
+    :param log_likelihoods: 1d array
+    :return: log_marg_llh, float, log of marginal likelihood
+    """
+    log_weights = -log_likelihoods
+    log_weights = log_weights - log_weights.max()
+    total_weight = np.sum(np.exp(log_weights))
+
+    a_const = log_likelihoods.max()
+    log_likelihoods = log_likelihoods - a_const
+
+    weighted_llhs = np.exp(log_weights + log_likelihoods)
+    total_weighted_llh = np.sum(weighted_llhs)
+
+    log_marg_llh = a_const + np.log(total_weighted_llh) - np.log(total_weight)
+    return log_marg_llh
