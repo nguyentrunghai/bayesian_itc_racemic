@@ -799,3 +799,6 @@ def log_marginal_likelihood_v3(log_likelihoods):
 
     log_marg_llh = np.log(n) - a_const - np.log(total_weight)
     return log_marg_llh
+
+
+log_marginal_likelihood = log_marginal_likelihood_v3
