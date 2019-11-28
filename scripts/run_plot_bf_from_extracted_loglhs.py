@@ -1,6 +1,7 @@
 """
 calculate and plot Bayes factors from extracted log likelihoods
 """
+from __future__ import print_function
 
 import argparse
 import glob
