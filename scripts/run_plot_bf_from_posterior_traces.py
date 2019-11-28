@@ -16,7 +16,7 @@ import seaborn as sns
 
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import extract_loglhs_from_traces_manual
-from _bayes_factor import marginal_lhs_bootstrap
+from _bayes_factor import log_marginal_lhs_bootstrap
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2")
@@ -81,8 +81,8 @@ for exper in experiments:
     traces_2cbm = _load_and_combine_traces(traces_files_2cbm)
     print("Length of trace", len(traces_2cbm[traces_2cbm.keys()[0]]))
     loglhs_2cbm = extract_loglhs_from_traces_manual(traces_2cbm, "2cbm", exper_info_file, heat_file)
-    all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_2cbm, sample_size=None,
-                                                                    bootstrap_repeats=args.bootstrap_repeats)
+    all_sample_estimate, bootstrap_samples = log_marginal_lhs_bootstrap(loglhs_2cbm, sample_size=None,
+                                                                        bootstrap_repeats=args.bootstrap_repeats)
     marg_lh_2cbm[exper]["all_sample_estimate"] = all_sample_estimate
     marg_lh_2cbm[exper]["bootstrap_samples"] = bootstrap_samples
 
@@ -92,8 +92,8 @@ for exper in experiments:
     traces_rmbm = _load_and_combine_traces(traces_files_rmbm)
     print("Length of trace", len(traces_rmbm[traces_rmbm.keys()[0]]))
     loglhs_rmbm = extract_loglhs_from_traces_manual(traces_rmbm, "rmbm", exper_info_file, heat_file)
-    all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_rmbm, sample_size=None,
-                                                                    bootstrap_repeats=args.bootstrap_repeats)
+    all_sample_estimate, bootstrap_samples = log_marginal_lhs_bootstrap(loglhs_rmbm, sample_size=None,
+                                                                        bootstrap_repeats=args.bootstrap_repeats)
     marg_lh_rmbm[exper]["all_sample_estimate"] = all_sample_estimate
     marg_lh_rmbm[exper]["bootstrap_samples"] = bootstrap_samples
 
@@ -103,8 +103,8 @@ for exper in experiments:
     traces_embm = _load_and_combine_traces(traces_files_embm)
     print("Length of trace", len(traces_embm[traces_embm.keys()[0]]))
     loglhs_embm = extract_loglhs_from_traces_manual(traces_embm, "embm", exper_info_file, heat_file)
-    all_sample_estimate, bootstrap_samples = marginal_lhs_bootstrap(loglhs_embm, sample_size=None,
-                                                                    bootstrap_repeats=args.bootstrap_repeats)
+    all_sample_estimate, bootstrap_samples = log_marginal_lhs_bootstrap(loglhs_embm, sample_size=None,
+                                                                        bootstrap_repeats=args.bootstrap_repeats)
     marg_lh_embm[exper]["all_sample_estimate"] = all_sample_estimate
     marg_lh_embm[exper]["bootstrap_samples"] = bootstrap_samples
 
@@ -117,14 +117,20 @@ for exper in experiments:
     bf_embm_vs_2cbm[exper] = {}
     bf_embm_vs_rmbm[exper] = {}
 
-    bf_rmbm_vs_2cbm[exper]["bf"] = marg_lh_rmbm[exper]["all_sample_estimate"] / marg_lh_2cbm[exper]["all_sample_estimate"]
-    bf_rmbm_vs_2cbm[exper]["err"] = np.std(marg_lh_rmbm[exper]["bootstrap_samples"] / marg_lh_2cbm[exper]["bootstrap_samples"])
+    bf_rmbm_vs_2cbm[exper]["bf"] = np.exp(
+        marg_lh_rmbm[exper]["all_sample_estimate"] - marg_lh_2cbm[exper]["all_sample_estimate"])
+    bf_rmbm_vs_2cbm[exper]["err"] = np.std(np.exp(
+        marg_lh_rmbm[exper]["bootstrap_samples"] - marg_lh_2cbm[exper]["bootstrap_samples"]))
 
-    bf_embm_vs_2cbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_2cbm[exper]["all_sample_estimate"]
-    bf_embm_vs_2cbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_2cbm[exper]["bootstrap_samples"])
+    bf_embm_vs_2cbm[exper]["bf"] = np.exp(
+        marg_lh_embm[exper]["all_sample_estimate"] - marg_lh_2cbm[exper]["all_sample_estimate"])
+    bf_embm_vs_2cbm[exper]["err"] = np.std(np.exp(
+        marg_lh_embm[exper]["bootstrap_samples"] - marg_lh_2cbm[exper]["bootstrap_samples"]))
 
-    bf_embm_vs_rmbm[exper]["bf"] = marg_lh_embm[exper]["all_sample_estimate"] / marg_lh_rmbm[exper]["all_sample_estimate"]
-    bf_embm_vs_rmbm[exper]["err"] = np.std(marg_lh_embm[exper]["bootstrap_samples"] / marg_lh_rmbm[exper]["bootstrap_samples"])
+    bf_embm_vs_rmbm[exper]["bf"] = np.exp(
+        marg_lh_embm[exper]["all_sample_estimate"] - marg_lh_rmbm[exper]["all_sample_estimate"])
+    bf_embm_vs_rmbm[exper]["err"] = np.std(np.exp(
+        marg_lh_embm[exper]["bootstrap_samples"] - marg_lh_rmbm[exper]["bootstrap_samples"]))
 
 
 bf_rmbm_vs_2cbm = pd.DataFrame.from_dict(bf_rmbm_vs_2cbm, orient="index")
