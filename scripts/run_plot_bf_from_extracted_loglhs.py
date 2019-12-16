@@ -26,7 +26,7 @@ parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 parser.add_argument("--extracted_loglhs_file", type=str, default="log_priors_llhs.csv")
 
 parser.add_argument("--experiments", type=str,
-                    default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
+                    default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_59 Baum_60_1 Baum_60_4")
 
 parser.add_argument("--bootstrap_repeats", type=int, default=1000)
 
@@ -141,7 +141,7 @@ bf_embm_vs_rmbm["bf_log"] = np.log10(bf_embm_vs_rmbm["bf"])
 bf_embm_vs_rmbm["err_log"] = np.log10(bf_embm_vs_rmbm["err"])
 bf_embm_vs_rmbm = bf_embm_vs_rmbm.sort_values(by="bf_log", ascending=True)
 
-"""
+
 error_scale = 0.5
 sns.set(font_scale=args.font_scale)
 
@@ -153,12 +153,19 @@ fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-ax.barh(list(bf_embm_vs_2cbm.index), bf_embm_vs_2cbm["mean_log"],
-        xerr=error_scale*bf_embm_vs_2cbm["std_log"])
+ax.barh(list(bf_embm_vs_2cbm.index), bf_embm_vs_2cbm["bf_log"],
+        xerr=error_scale*bf_embm_vs_2cbm["err_log"])
 ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
-"""
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+ax.barh(list(bf_embm_vs_rmbm.index), bf_embm_vs_rmbm["bf_log"],
+        xerr=error_scale*bf_embm_vs_rmbm["err_log"])
+ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
+
+
 
 
