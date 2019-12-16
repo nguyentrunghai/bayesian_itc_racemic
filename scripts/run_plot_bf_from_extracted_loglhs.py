@@ -53,7 +53,8 @@ marg_lh_2cbm = {}
 marg_lh_rmbm = {}
 marg_lh_embm = {}
 
-for exper in experiments:
+# TODO remove [:3] below
+for exper in experiments[:3]:
     print(exper)
 
     marg_lh_2cbm[exper] = {}
@@ -94,6 +95,7 @@ for exper in experiments:
 bf_rmbm_vs_2cbm = {}
 bf_embm_vs_2cbm = {}
 bf_embm_vs_rmbm = {}
+
 for exper in experiments:
     bf_rmbm_vs_2cbm[exper] = {}
     bf_embm_vs_2cbm[exper] = {}
@@ -118,3 +120,13 @@ for exper in experiments:
 bf_rmbm_vs_2cbm = pd.DataFrame.from_dict(bf_rmbm_vs_2cbm, orient="index")
 bf_embm_vs_2cbm = pd.DataFrame.from_dict(bf_embm_vs_2cbm, orient="index")
 bf_embm_vs_rmbm = pd.DataFrame.from_dict(bf_embm_vs_rmbm, orient="index")
+
+bf_rmbm_vs_2cbm["all_sample_estimate_log"] = np.log10(bf_rmbm_vs_2cbm["all_sample_estimate"])
+bf_rmbm_vs_2cbm["err_log"] = np.log10(bf_rmbm_vs_2cbm["err"])
+
+bf_embm_vs_2cbm["all_sample_estimate_log"] = np.log10(bf_embm_vs_2cbm["all_sample_estimate"])
+bf_embm_vs_2cbm["error_log"] = np.log10(bf_embm_vs_2cbm["error"])
+
+bf_embm_vs_rmbm["all_sample_estimate_log"] = np.log10(bf_embm_vs_rmbm["all_sample_estimate"])
+bf_embm_vs_rmbm["err_log"] = np.log10(bf_embm_vs_rmbm["err"])
+
