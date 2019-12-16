@@ -15,6 +15,9 @@ import pickle
 import numpy as np
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 
@@ -77,7 +80,7 @@ pr_lh_2cbm = {}
 pr_lh_rmbm = {}
 pr_lh_embm = {}
 
-for exper in experiments[:2]:
+for exper in experiments:
     print("\n\n", exper)
 
     # 2cbm
@@ -126,7 +129,6 @@ for exper in experiments[:2]:
 
 
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
-    actual_q_cal = actual_q_micro_cal * 10 ** (-6)
 
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
 
@@ -156,3 +158,27 @@ for exper in experiments[:2]:
                                                   beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                                   N=exper_info.get_number_injections())
     q_embm_micro_cal = q_embm_cal * 10 ** 6
+
+    print("actual_q_micro_cal:", actual_q_micro_cal)
+    print("q_2cbm_micro_cal:", q_2cbm_micro_cal)
+    print("q_rmbm_micro_cal:", q_rmbm_micro_cal)
+    print("q_embm_micro_cal:", q_embm_micro_cal)
+
+    assert len(actual_q_micro_cal) == len(q_2cbm_micro_cal) == len(q_rmbm_micro_cal) == len(
+        q_embm_micro_cal), "heats do not have the same len"
+    n_inj = len(actual_q_micro_cal)
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+    ax.scatter(range(1, n_inj + 1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
+    ax.plot(range(1, n_inj + 1), q_2cbm_micro_cal, c="r", linestyle="-", label="2cbm")
+    ax.plot(range(1, n_inj + 1), q_rmbm_micro_cal, c="b", linestyle="-", label="rmbm")
+    ax.plot(range(1, n_inj + 1), q_embm_micro_cal, c="g", linestyle="-", label="embm")
+
+    ax.set_xlabel(args.xlabel)
+    ax.set_ylabel(args.ylabel)
+    ax.legend(loc="lower right")
+
+    fig.tight_layout()
+    fig.savefig(exper + ".pdf", dpi=300)
+
+print("DONE!")
