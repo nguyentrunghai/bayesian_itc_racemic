@@ -15,12 +15,20 @@ import pickle
 import numpy as np
 import pandas as pd
 
+from _data_io import ITCExperiment, load_heat_micro_cal
+from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2_2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2_2")
 parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc2_2")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
+
+parser.add_argument("--exper_info_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/05.exper_info")
+parser.add_argument("--heat_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format")
+
+parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
 parser.add_argument("--extracted_loglhs_file", type=str, default="log_priors_llhs.csv")
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
@@ -31,6 +39,8 @@ parser.add_argument("--experiments", type=str,
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
+
+KB = 0.0019872041      # in kcal/mol/K
 
 
 def _load_combine_dfs(csv_files):
@@ -47,7 +57,7 @@ def _load_and_combine_traces(trace_files):
         result[key] = np.concatenate([trace[key] for trace in list_traces])
     return result
 
-
+# TODO: remove [:3] below
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
 two_component_dirs = two_component_dirs[:3]
 print("two_component_dirs:", two_component_dirs)
@@ -67,14 +77,14 @@ pr_lh_2cbm = {}
 pr_lh_rmbm = {}
 pr_lh_embm = {}
 
-for exper in experiments[:1]:
+for exper in experiments[:2]:
     print("\n\n", exper)
 
     # 2cbm
     loglhs_files_2cbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in two_component_dirs]
     print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
     trace_files_2cbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in two_component_dirs]
-    print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
+    print("trace_files_2cbm:\n", trace_files_2cbm)
 
     loglhs_2cbm = _load_combine_dfs(loglhs_files_2cbm)
     traces_2cbm = _load_and_combine_traces(trace_files_2cbm)
@@ -85,11 +95,11 @@ for exper in experiments[:1]:
     print("map_2cbm:", map_2cbm)
 
     # rmbm
-    print("\n")
+    print(" ")
     loglhs_files_rmbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in racemic_mixture_dirs]
     print("loglhs_files_rmbm:\n", loglhs_files_rmbm)
     trace_files_rmbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in racemic_mixture_dirs]
-    print("loglhs_files_rmbm:\n", loglhs_files_rmbm)
+    print("trace_files_rmbm:\n", trace_files_rmbm)
 
     loglhs_rmbm = _load_combine_dfs(loglhs_files_rmbm)
     traces_rmbm = _load_and_combine_traces(trace_files_rmbm)
@@ -100,10 +110,11 @@ for exper in experiments[:1]:
     print("map_rmbm:", map_rmbm)
 
     # embm
+    print(" ")
     loglhs_files_embm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in enantiomer_dirs]
     print("loglhs_files_embm:\n", loglhs_files_embm)
     trace_files_embm = [os.path.join(d, exper, args.mcmc_trace_file) for d in enantiomer_dirs]
-    print("loglhs_files_embm:\n", loglhs_files_embm)
+    print("trace_files_embm:\n", trace_files_embm)
 
     loglhs_embm = _load_combine_dfs(loglhs_files_embm)
     traces_embm = _load_and_combine_traces(trace_files_embm)
@@ -113,3 +124,35 @@ for exper in experiments[:1]:
     map_embm = {param: traces_embm[param][max_idx_embm] for param in traces_embm}
     print("map_embm:", map_embm)
 
+
+    actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
+    actual_q_cal = actual_q_micro_cal * 10 ** (-6)
+
+    exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
+
+    # heat calculation using map parameters
+    q_2cbm_cal = heats_TwoComponentBindingModel(exper_info.get_cell_volume_liter(),
+                                                exper_info.get_injection_volumes_liter(),
+                                                map_2cbm["P0"], map_2cbm["Ls"], map_2cbm["DeltaG"], map_2cbm["DeltaH"],
+                                                map_2cbm["DeltaH_0"],
+                                                beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                N=exper_info.get_number_injections())
+    q_2cbm_micro_cal = q_2cbm_cal * 10 ** 6
+
+    q_rmbm_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                  exper_info.get_injection_volumes_liter(),
+                                                  map_rmbm["P0"], map_rmbm["Ls"], 0.5,
+                                                  map_rmbm["DeltaH1"], map_rmbm["DeltaH2"], map_rmbm["DeltaH_0"],
+                                                  map_rmbm["DeltaG1"], map_rmbm["DeltaDeltaG"],
+                                                  beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                  N=exper_info.get_number_injections())
+    q_rmbm_micro_cal = q_rmbm_cal * 10 ** 6
+
+    q_embm_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                  exper_info.get_injection_volumes_liter(),
+                                                  map_embm["P0"], map_embm["Ls"], map_embm["rho"],
+                                                  map_embm["DeltaH1"], map_embm["DeltaH2"], map_embm["DeltaH_0"],
+                                                  map_embm["DeltaG1"], map_embm["DeltaDeltaG"],
+                                                  beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                  N=exper_info.get_number_injections())
+    q_embm_micro_cal = q_embm_cal * 10 ** 6
