@@ -10,12 +10,16 @@ import os
 import numpy as np
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
 from _bayes_factor import log_marginal_lhs_bootstrap
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2")
-parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2")
-parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc2")
+parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2_2")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2_2")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc2_2")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 
@@ -127,10 +131,34 @@ bf_embm_vs_rmbm = pd.DataFrame.from_dict(bf_embm_vs_rmbm, orient="index")
 
 bf_rmbm_vs_2cbm["bf_log"] = np.log10(bf_rmbm_vs_2cbm["bf"])
 bf_rmbm_vs_2cbm["err_log"] = np.log10(bf_rmbm_vs_2cbm["err"])
+bf_rmbm_vs_2cbm = bf_rmbm_vs_2cbm.sort_values(by="mean_log", ascending=True)
 
 bf_embm_vs_2cbm["bf_log"] = np.log10(bf_embm_vs_2cbm["bf"])
 bf_embm_vs_2cbm["err_log"] = np.log10(bf_embm_vs_2cbm["err"])
+bf_embm_vs_2cbm = bf_embm_vs_2cbm.sort_values(by="mean_log", ascending=True)
 
 bf_embm_vs_rmbm["bf_log"] = np.log10(bf_embm_vs_rmbm["bf"])
 bf_embm_vs_rmbm["err_log"] = np.log10(bf_embm_vs_rmbm["err"])
+bf_embm_vs_rmbm = bf_embm_vs_rmbm.sort_values(by="mean_log", ascending=True)
+
+"""
+error_scale = 0.5
+sns.set(font_scale=args.font_scale)
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+ax.barh(list(bf_rmbm_vs_2cbm.index), bf_rmbm_vs_2cbm["bf_log"],
+        xerr=error_scale*bf_rmbm_vs_2cbm["err_log"])
+ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+ax.barh(list(bf_embm_vs_2cbm.index), bf_embm_vs_2cbm["mean_log"],
+        xerr=error_scale*bf_embm_vs_2cbm["std_log"])
+ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
+fig.tight_layout()
+fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
+
+"""
+
 
