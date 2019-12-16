@@ -125,12 +125,12 @@ bf_rmbm_vs_2cbm = pd.DataFrame.from_dict(bf_rmbm_vs_2cbm, orient="index")
 bf_embm_vs_2cbm = pd.DataFrame.from_dict(bf_embm_vs_2cbm, orient="index")
 bf_embm_vs_rmbm = pd.DataFrame.from_dict(bf_embm_vs_rmbm, orient="index")
 
-bf_rmbm_vs_2cbm["all_sample_estimate_log"] = np.log10(bf_rmbm_vs_2cbm["all_sample_estimate"])
+bf_rmbm_vs_2cbm["bf_log"] = np.log10(bf_rmbm_vs_2cbm["bf"])
 bf_rmbm_vs_2cbm["err_log"] = np.log10(bf_rmbm_vs_2cbm["err"])
 
-bf_embm_vs_2cbm["all_sample_estimate_log"] = np.log10(bf_embm_vs_2cbm["all_sample_estimate"])
+bf_embm_vs_2cbm["bf_log"] = np.log10(bf_embm_vs_2cbm["bf"])
 bf_embm_vs_2cbm["error_log"] = np.log10(bf_embm_vs_2cbm["error"])
 
-bf_embm_vs_rmbm["all_sample_estimate_log"] = np.log10(bf_embm_vs_rmbm["all_sample_estimate"])
+bf_embm_vs_rmbm["bf_log"] = np.log10(bf_embm_vs_rmbm["bf"])
 bf_embm_vs_rmbm["err_log"] = np.log10(bf_embm_vs_rmbm["err"])
 
