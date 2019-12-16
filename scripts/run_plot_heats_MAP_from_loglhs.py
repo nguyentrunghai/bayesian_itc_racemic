@@ -72,7 +72,7 @@ for exper in experiments:
 
     loglhs_files_2cbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in two_component_dirs]
     print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
-    trace_files_2cbm = [os.path.join(d, exper, args.loglhs_files_2cbm) for d in two_component_dirs]
+    trace_files_2cbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in two_component_dirs]
     print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
 
     loglhs_2cbm = _load_combine_dfs(loglhs_files_2cbm)
