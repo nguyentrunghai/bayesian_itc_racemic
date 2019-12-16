@@ -13,6 +13,7 @@ import os
 import pickle
 
 import numpy as np
+import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2")
@@ -30,6 +31,12 @@ parser.add_argument("--experiments", type=str,
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
+
+
+def _load_combine_dfs(csv_files):
+    df_list = [pd.read_csv(f) for f in csv_files]
+    comb_df = pd.concat(df_list, axis=0, ignore_index=True)
+    return comb_df
 
 
 def _load_and_combine_traces(trace_files):
@@ -52,3 +59,24 @@ print("enantiomer_dir:", enantiomer_dirs)
 
 experiments = args.experiments.split()
 print("experiments", experiments)
+
+pr_lh_2cbm = {}
+pr_lh_rmbm = {}
+pr_lh_embm = {}
+
+for exper in experiments:
+    print(exper)
+
+    loglhs_files_2cbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in two_component_dirs]
+    print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
+    trace_files_2cbm = [os.path.join(d, exper, args.loglhs_files_2cbm) for d in two_component_dirs]
+    print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
+
+    loglhs_2cbm = _load_combine_dfs(loglhs_files_2cbm)
+    traces_2cbm = _load_and_combine_traces(trace_files_2cbm)
+    log_posterior = loglhs_2cbm["log_lhs"] + loglhs_2cbm["log_priors"]
+    log_posterior = log_posterior.to_numpy()
+    max_idx_2cbm = np.argmax(log_posterior)
+    map_2cbm = {param: traces_2cbm[param][max_idx_2cbm] for param in traces_2cbm}
+    print("map_2cbm:", map_2cbm)
+
