@@ -32,7 +32,7 @@ parser.add_argument("--exper_info_file", type=str, default="experimental_informa
 parser.add_argument("--mcmc_trace_file", type=str, default="traces.pickle")
 
 parser.add_argument("--experiments", type=str,
-                    default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
+                    default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_59 Baum_60_1 Baum_60_4")
 
 parser.add_argument("--bootstrap_repeats", type=int, default=1000)
 
@@ -149,40 +149,27 @@ bf_embm_vs_rmbm["bf_log"] = np.log10(bf_embm_vs_rmbm["bf"])
 bf_embm_vs_rmbm["err_log"] = np.log10(bf_embm_vs_rmbm["err"])
 bf_embm_vs_rmbm = bf_embm_vs_rmbm.sort_values(by="bf_log", ascending=True)
 
-"""
-bf_rmbm_vs_2cbm = pd.Series(bf_rmbm_vs_2cbm)
-bf_rmbm_vs_2cbm.sort_values(ascending=True, inplace=True)
-bf_rmbm_vs_2cbm_log = np.log10(bf_rmbm_vs_2cbm)
 
-bf_embm_vs_2cbm = pd.Series(bf_embm_vs_2cbm)
-bf_embm_vs_2cbm.sort_values(ascending=True, inplace=True)
-bf_embm_vs_2cbm_log = np.log10(bf_embm_vs_2cbm)
-
-bf_embm_vs_rmbm = pd.Series(bf_embm_vs_rmbm)
-bf_embm_vs_rmbm.sort_values(ascending=True, inplace=True)
-bf_embm_vs_rmbm_log = np.log10(bf_embm_vs_rmbm)
-
-# plot
+error_scale = 0.5
 sns.set(font_scale=args.font_scale)
+
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-bf_rmbm_vs_2cbm_log.plot(kind="barh", ax=ax)
-ax.set_xlabel("$log \\frac{P(D|rmbm)}{P(D|2cbm)}$")
+ax.barh(list(bf_rmbm_vs_2cbm.index), bf_rmbm_vs_2cbm["bf"],
+        xerr=error_scale*bf_rmbm_vs_2cbm["err"])
+ax.set_xlabel("$\\frac{P(D|rmbm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_rmbm_vs_2cbm.pdf", dpi=300)
 
-
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-bf_embm_vs_2cbm_log.plot(kind="barh", ax=ax)
-ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
+ax.barh(list(bf_embm_vs_2cbm.index), bf_embm_vs_2cbm["bf"],
+        xerr=error_scale*bf_embm_vs_2cbm["err"])
+ax.set_xlabel("$\\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 
-
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-bf_embm_vs_rmbm_log.plot(kind="barh", ax=ax)
-ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
+ax.barh(list(bf_embm_vs_rmbm.index), bf_embm_vs_rmbm["bf"],
+        xerr=error_scale*bf_embm_vs_rmbm["err"])
+ax.set_xlabel("$\\frac{P(D|embm)}{P(D|2cbm)}$")
 fig.tight_layout()
 fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
-
-print("DONE!")
-"""
