@@ -162,9 +162,9 @@ fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 ax.barh(list(bf_embm_vs_rmbm.index), bf_embm_vs_rmbm["bf_log"],
         xerr=error_scale*bf_embm_vs_rmbm["err_log"])
-ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|2cbm)}$")
+ax.set_xlabel("$log \\frac{P(D|embm)}{P(D|rmbm)}$")
 fig.tight_layout()
-fig.savefig("bf_embm_vs_2cbm.pdf", dpi=300)
+fig.savefig("bf_embm_vs_rmbm.pdf", dpi=300)
 
 
 
