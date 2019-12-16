@@ -40,8 +40,12 @@ parser.add_argument("--experiments", type=str,
                     default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--xlabel", type=str, default="# injections")
+parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
+
+sns.set(font_scale=args.font_scale)
 
 KB = 0.0019872041      # in kcal/mol/K
 
