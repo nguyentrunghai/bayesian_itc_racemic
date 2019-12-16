@@ -41,17 +41,13 @@ def _load_combine_dfs(csv_files):
     return comb_df
 
 
-# TODO [:3] below
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
-two_component_dirs = two_component_dirs[:3]
 print("two_component_dirs:", two_component_dirs)
 
 racemic_mixture_dirs = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*"))
-racemic_mixture_dirs = racemic_mixture_dirs[:3]
 print("racemic_mixture_dir:", racemic_mixture_dirs)
 
 enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
-enantiomer_dirs = enantiomer_dirs[:3]
 print("enantiomer_dir:", enantiomer_dirs)
 
 experiments = args.experiments.split()
