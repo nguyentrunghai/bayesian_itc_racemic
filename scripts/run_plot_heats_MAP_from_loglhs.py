@@ -67,9 +67,10 @@ pr_lh_2cbm = {}
 pr_lh_rmbm = {}
 pr_lh_embm = {}
 
-for exper in experiments:
-    print(exper)
+for exper in experiments[:1]:
+    print("\n\n", exper)
 
+    # 2cbm
     loglhs_files_2cbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in two_component_dirs]
     print("loglhs_files_2cbm:\n", loglhs_files_2cbm)
     trace_files_2cbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in two_component_dirs]
@@ -77,9 +78,38 @@ for exper in experiments:
 
     loglhs_2cbm = _load_combine_dfs(loglhs_files_2cbm)
     traces_2cbm = _load_and_combine_traces(trace_files_2cbm)
-    log_posterior = loglhs_2cbm["log_lhs"] + loglhs_2cbm["log_priors"]
-    log_posterior = log_posterior.to_numpy()
-    max_idx_2cbm = np.argmax(log_posterior)
+    log_posterior_2cbm = (loglhs_2cbm["log_lhs"] + loglhs_2cbm["log_priors"]).to_numpy()
+    max_idx_2cbm = np.argmax(log_posterior_2cbm)
+    print("max_idx_2cbm:", max_idx_2cbm)
     map_2cbm = {param: traces_2cbm[param][max_idx_2cbm] for param in traces_2cbm}
     print("map_2cbm:", map_2cbm)
+
+    # rmbm
+    print("\n")
+    loglhs_files_rmbm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in racemic_mixture_dirs]
+    print("loglhs_files_rmbm:\n", loglhs_files_rmbm)
+    trace_files_rmbm = [os.path.join(d, exper, args.mcmc_trace_file) for d in racemic_mixture_dirs]
+    print("loglhs_files_rmbm:\n", loglhs_files_rmbm)
+
+    loglhs_rmbm = _load_combine_dfs(loglhs_files_rmbm)
+    traces_rmbm = _load_and_combine_traces(trace_files_rmbm)
+    log_posterior_rmbm = (loglhs_rmbm["log_lhs"] + loglhs_rmbm["log_priors"]).to_numpy()
+    max_idx_rmbm = np.argmax(log_posterior_rmbm)
+    print("max_idx_rmbm:", max_idx_rmbm)
+    map_rmbm = {param: traces_rmbm[param][max_idx_rmbm] for param in traces_rmbm}
+    print("map_rmbm:", map_rmbm)
+
+    # embm
+    loglhs_files_embm = [os.path.join(d, exper, args.extracted_loglhs_file) for d in enantiomer_dirs]
+    print("loglhs_files_embm:\n", loglhs_files_embm)
+    trace_files_embm = [os.path.join(d, exper, args.mcmc_trace_file) for d in enantiomer_dirs]
+    print("loglhs_files_embm:\n", loglhs_files_embm)
+
+    loglhs_embm = _load_combine_dfs(loglhs_files_embm)
+    traces_embm = _load_and_combine_traces(trace_files_embm)
+    log_posterior_embm = (loglhs_embm["log_lhs"] + loglhs_embm["log_priors"]).to_numpy()
+    max_idx_embm = np.argmax(log_posterior_embm)
+    print("max_idx_embm:", max_idx_embm)
+    map_embm = {param: traces_embm[param][max_idx_embm] for param in traces_embm}
+    print("map_embm:", map_embm)
 
