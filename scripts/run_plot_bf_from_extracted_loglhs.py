@@ -131,15 +131,15 @@ bf_embm_vs_rmbm = pd.DataFrame.from_dict(bf_embm_vs_rmbm, orient="index")
 
 bf_rmbm_vs_2cbm["bf_log"] = np.log10(bf_rmbm_vs_2cbm["bf"])
 bf_rmbm_vs_2cbm["err_log"] = np.log10(bf_rmbm_vs_2cbm["err"])
-bf_rmbm_vs_2cbm = bf_rmbm_vs_2cbm.sort_values(by="mean_log", ascending=True)
+bf_rmbm_vs_2cbm = bf_rmbm_vs_2cbm.sort_values(by="bf_log", ascending=True)
 
 bf_embm_vs_2cbm["bf_log"] = np.log10(bf_embm_vs_2cbm["bf"])
 bf_embm_vs_2cbm["err_log"] = np.log10(bf_embm_vs_2cbm["err"])
-bf_embm_vs_2cbm = bf_embm_vs_2cbm.sort_values(by="mean_log", ascending=True)
+bf_embm_vs_2cbm = bf_embm_vs_2cbm.sort_values(by="bf_log", ascending=True)
 
 bf_embm_vs_rmbm["bf_log"] = np.log10(bf_embm_vs_rmbm["bf"])
 bf_embm_vs_rmbm["err_log"] = np.log10(bf_embm_vs_rmbm["err"])
-bf_embm_vs_rmbm = bf_embm_vs_rmbm.sort_values(by="mean_log", ascending=True)
+bf_embm_vs_rmbm = bf_embm_vs_rmbm.sort_values(by="bf_log", ascending=True)
 
 """
 error_scale = 0.5
