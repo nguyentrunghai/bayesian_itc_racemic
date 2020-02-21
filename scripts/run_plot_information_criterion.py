@@ -116,3 +116,19 @@ def dic_2(traces, log_llhs,
                                                         auto_transform=auto_transform)
     log_llh_bayes = log_llh_bayes[0]
     return -2 * log_llh_bayes + 4 * np.var(log_llhs)
+
+
+two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
+two_component_dirs = two_component_dirs[:3]
+print("two_component_dirs:", two_component_dirs)
+
+racemic_mixture_dirs = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*"))
+print("racemic_mixture_dir:", racemic_mixture_dirs)
+racemic_mixture_dirs = racemic_mixture_dirs[:3]
+
+enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
+print("enantiomer_dir:", enantiomer_dirs)
+enantiomer_dirs = enantiomer_dirs[:3]
+
+experiments = args.experiments.split()
+print("experiments", experiments)
