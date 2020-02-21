@@ -214,8 +214,8 @@ for exper in experiments:
                        auto_transform=False)
             dic_2_s.append(d2)
 
-    info_criteria.append({"exper": exper, "model": model,
-                          "aci": np.mean(aic_s), "aci_err": np.std(aic_s),
-                          "bci": np.mean(bic_s), "abi_err": np.std(bic_s),
-                          "dic_1": np.mean(dic_1_s), "dic_1_err": np.std(dic_1_s),
-                          "dic_2": np.mean(dic_2_s), "dic_2_err": np.std(dic_2_s)})
+        info_criteria.append({"exper": exper, "model": model,
+                              "aci": np.mean(aic_s), "aci_err": np.std(aic_s),
+                              "bci": np.mean(bic_s), "bic_err": np.std(bic_s),
+                              "dic_1": np.mean(dic_1_s), "dic_1_err": np.std(dic_1_s),
+                              "dic_2": np.mean(dic_2_s), "dic_2_err": np.std(dic_2_s)})
