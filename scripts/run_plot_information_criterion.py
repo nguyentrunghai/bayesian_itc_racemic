@@ -2,10 +2,31 @@
 plot AIC (Akaike information criterion), BIC (Bayesian nformation criterion) and
 DIC (deviance information criterion)
 """
+from __future__ import print_function
+
+import argparse
+import glob
+import os
 
 import numpy as np
 
 from _pymc3_models import extract_loglhs_from_traces_pymc3
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2_2")
+parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2_2")
+parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc2_2")
+
+parser.add_argument("--repeat_prefix", type=str, default="repeat_")
+
+parser.add_argument("--extracted_loglhs_file", type=str, default="log_priors_llhs.csv")
+
+parser.add_argument("--experiments", type=str,
+                    default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_59 Baum_60_1 Baum_60_4")
+
+parser.add_argument("--font_scale", type=float, default=0.75)
+
+args = parser.parse_args()
 
 
 def aic(log_llhs, k):
