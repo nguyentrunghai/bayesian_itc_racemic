@@ -13,6 +13,10 @@ import numpy as np
 from _pymc3_models import extract_loglhs_from_traces_pymc3
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--heat_data_dir", type=str, default="itc_origin_heat_files")
+parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
+parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
+
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2_2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2_2")
 parser.add_argument("--enantiomer_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc2_2")
@@ -23,6 +27,8 @@ parser.add_argument("--extracted_loglhs_file", type=str, default="log_priors_llh
 
 parser.add_argument("--experiments", type=str,
                     default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_59 Baum_60_1 Baum_60_4")
+parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
+parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
 
