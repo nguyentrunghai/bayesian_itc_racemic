@@ -71,7 +71,7 @@ def dic_2(traces, log_llhs,
           concentration_range_factor=10.,
           auto_transform=False):
     """
-    dic_1 = 2 \ln p(y|\hat{\theta}_{Bayes}) - 2 \frac{1}{S} \sum_{s=1}^S \ln p(y|\theta^s)
+    dic_2 = -2 \ln p(y|\hat{\theta}_{Bayes}) + 4 \var \ln p(y|\theta)
     where \hat{\theta}_{Bayes} is mean of the posterior
 
     :param traces: dict, variable_name -> 1d array
