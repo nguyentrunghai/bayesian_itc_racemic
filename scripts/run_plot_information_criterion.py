@@ -154,6 +154,9 @@ dP0 = args.dP0
 dLs = args.dLs
 concentration_range_factor = args.concentration_range_factor
 
+models = ["2cbm", "rmbm", "embm"]
+list_data_dirs = [two_component_dirs, racemic_mixture_dirs, enantiomer_dirs]
+
 info_criteria = []
 for exper in experiments:
     print(exper)
@@ -163,11 +166,6 @@ for exper in experiments:
     n_samples = load_heat_micro_cal(heat_file).shape[0]
     print("n_samples:", n_samples)
 
-    # 2cbm
-    aic_s = []
-    bic_s = []
-    dic_1_s = []
-    dic_2_s = []
     if exper in experiments_flat_prior_P0:
         uniform_P0 = True
     else:
@@ -178,34 +176,46 @@ for exper in experiments:
     else:
         uniform_Ls = False
 
-    for data_dir in two_component_dirs:
-        traces_file = os.path.join(data_dir, exper, args.traces_file)
-        loglhs_file = os.path.join(data_dir, exper, args.extracted_loglhs_file)
-        exper_info_file = os.path.join(data_dir, exper, args.exper_info_file)
-        print("traces_file:", traces_file)
-        print("loglhs_file:", loglhs_file)
-        print("exper_info_file", exper_info_file)
+    for model, data_dirs in zip(models, list_data_dirs):
+        aic_s = []
+        bic_s = []
+        dic_1_s = []
+        dic_2_s = []
 
-        traces = pickle.load(open(traces_file))
-        log_llhs = pd.read_csv(loglhs_file)["log_lhs"].values
-        n_params = len(traces.keys())
+        for data_dir in data_dirs:
+            traces_file = os.path.join(data_dir, exper, args.traces_file)
+            loglhs_file = os.path.join(data_dir, exper, args.extracted_loglhs_file)
+            exper_info_file = os.path.join(data_dir, exper, args.exper_info_file)
+            print("traces_file:", traces_file)
+            print("loglhs_file:", loglhs_file)
+            print("exper_info_file", exper_info_file)
 
-        aic_s.append(aic(log_llhs, n_params))
-        bic_s.append(bic(log_llhs, n_samples, n_params))
+            traces = pickle.load(open(traces_file))
+            log_llhs = pd.read_csv(loglhs_file)["log_lhs"].values
+            n_params = len(traces.keys())
 
-        model = "2cbm"
-        d1 = dic_1(traces, log_llhs,
-                   model, exper_info_file, heat_file,
-                   dcell=dP0, dsyringe=dLs,
-                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                   concentration_range_factor=concentration_range_factor,
-                   auto_transform=False)
-        dic_1_s.append(d1)
+            aic_s.append(aic(log_llhs, n_params))
+            bic_s.append(bic(log_llhs, n_samples, n_params))
 
-        d2 = dic_2(traces, log_llhs,
-                   model, exper_info_file, heat_file,
-                   dcell=dP0, dsyringe=dLs,
-                   uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                   concentration_range_factor=concentration_range_factor,
-                   auto_transform=False)
-        dic_2_s.append(d2)
+            d1 = dic_1(traces, log_llhs,
+                       model, exper_info_file, heat_file,
+                       dcell=dP0, dsyringe=dLs,
+                       uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                       concentration_range_factor=concentration_range_factor,
+                       auto_transform=False)
+
+            dic_1_s.append(d1)
+
+            d2 = dic_2(traces, log_llhs,
+                       model, exper_info_file, heat_file,
+                       dcell=dP0, dsyringe=dLs,
+                       uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
+                       concentration_range_factor=concentration_range_factor,
+                       auto_transform=False)
+            dic_2_s.append(d2)
+
+    info_criteria.append({"exper": exper, "model": model,
+                          "aci": np.mean(aic_s), "aci_err": np.std(aic_s),
+                          "bci": np.mean(bic_s), "abi_err": np.std(bic_s),
+                          "dic_1": np.mean(dic_1_s), "dic_1_err": np.std(dic_1_s),
+                          "dic_2": np.mean(dic_2_s), "dic_2_err": np.std(dic_2_s)})
