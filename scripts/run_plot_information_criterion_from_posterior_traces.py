@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from _data_io import load_heat_micro_cal
-from _pymc3_models import extract_loglhs_from_traces_pymc3
+from _models import extract_loglhs_from_traces_manual
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--heat_data_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format")
@@ -21,7 +21,6 @@ parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
 
 parser.add_argument("--traces_file", type=str, default="traces.pickle")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
-parser.add_argument("--extracted_loglhs_file", type=str, default="log_priors_llhs.csv")
 
 parser.add_argument("--two_component_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc2_2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc2_2")
@@ -67,12 +66,7 @@ def bic(log_llhs, n, k):
     return -2 * np.max(log_llhs) + np.log(n) * k
 
 
-def dic_1(traces, log_llhs,
-          model_name, exper_info_file, heat_file,
-          dcell=0.1, dsyringe=0.1,
-          uniform_P0=False, uniform_Ls=False,
-          concentration_range_factor=10.,
-          auto_transform=False):
+def dic_1(traces, log_llhs, model_name, exper_info_file, heat_file):
     """
     dic_1 = 2 \ln p(y|\hat{\theta}_{Bayes}) - 2 \frac{1}{S} \sum_{s=1}^S \ln p(y|\theta^s)
     where \hat{\theta}_{Bayes} is mean of the posterior
@@ -82,20 +76,10 @@ def dic_1(traces, log_llhs,
     :param model_name: str, in ["2cbm", "rmbm", "embm"]
     :param exper_info_file: str
     :param heat_file: str
-    :param dcell: float in (0, 1)
-    :param dsyringe: float in (0, 1)
-    :param uniform_P0: bool
-    :param uniform_Ls: bool
-    :param concentration_range_factor: float
-    :param auto_transform: bool
     :return: llhs, 1d array
     """
     posterior_mean = {var_name: [np.mean(var_trace)] for var_name, var_trace in traces.items()}
-    _, log_llh_bayes = extract_loglhs_from_traces_pymc3(posterior_mean, model_name, exper_info_file, heat_file,
-                                                        dcell=dcell, dsyringe=dsyringe,
-                                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                        concentration_range_factor=concentration_range_factor,
-                                                        auto_transform=auto_transform)
+    log_llh_bayes = extract_loglhs_from_traces_manual(posterior_mean, model_name, exper_info_file, heat_file)
     log_llh_bayes = log_llh_bayes[0]
     return 2 * log_llh_bayes - 2 * np.mean(log_llhs)
 
