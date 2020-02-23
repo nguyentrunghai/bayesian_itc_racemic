@@ -132,7 +132,7 @@ def dic_2(traces, log_llhs,
     log_llh_bayes = log_llh_bayes[0]
     return -2 * log_llh_bayes + 4 * np.var(log_llhs)
 
-
+#TODO: remove shorten lists below
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
 two_component_dirs = two_component_dirs[:4]
 print("two_component_dirs:", two_component_dirs)
