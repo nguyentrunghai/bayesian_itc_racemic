@@ -96,7 +96,7 @@ def dic_2(traces, log_llhs, model_name, exper_info_file, heat_file):
     log_llh_bayes = log_llh_bayes[0]
     return -2 * log_llh_bayes + 4 * np.var(log_llhs)
 
-
+# TODO remove shortened lists below
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
 two_component_dirs = two_component_dirs[:4]
 print("two_component_dirs:", two_component_dirs)
@@ -116,10 +116,6 @@ experiments_flat_prior_P0 = args.experiments_flat_prior_P0.split()
 experiments_flat_prior_Ls = args.experiments_flat_prior_Ls.split()
 print("experiments_flat_prior_P0:", experiments_flat_prior_P0)
 print("experiments_flat_prior_Ls:", experiments_flat_prior_Ls)
-
-dP0 = args.dP0
-dLs = args.dLs
-concentration_range_factor = args.concentration_range_factor
 
 models = ["2cbm", "rmbm", "embm"]
 list_data_dirs = [two_component_dirs, racemic_mixture_dirs, enantiomer_dirs]
@@ -155,35 +151,23 @@ for exper in experiments:
 
         for data_dir in data_dirs:
             traces_file = os.path.join(data_dir, exper, args.traces_file)
-            loglhs_file = os.path.join(data_dir, exper, args.extracted_loglhs_file)
             exper_info_file = os.path.join(data_dir, exper, args.exper_info_file)
             print("")
             print("traces_file:", traces_file)
-            print("loglhs_file:", loglhs_file)
             print("exper_info_file", exper_info_file)
 
             traces = pickle.load(open(traces_file))
-            log_llhs = pd.read_csv(loglhs_file)["log_lhs"].values
+            log_llhs = extract_loglhs_from_traces_manual(traces, model, exper_info_file, heat_file)
             n_params = len(traces.keys())
 
             aic_s.append(aic(log_llhs, n_params))
             bic_s.append(bic(log_llhs, n_samples, n_params))
 
-            d1 = dic_1(traces, log_llhs,
-                       model, exper_info_file, heat_file,
-                       dcell=dP0, dsyringe=dLs,
-                       uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                       concentration_range_factor=concentration_range_factor,
-                       auto_transform=False)
+            d1 = dic_1(traces, log_llhs, model, exper_info_file, heat_file)
 
             dic_1_s.append(d1)
 
-            d2 = dic_2(traces, log_llhs,
-                       model, exper_info_file, heat_file,
-                       dcell=dP0, dsyringe=dLs,
-                       uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                       concentration_range_factor=concentration_range_factor,
-                       auto_transform=False)
+            d2 = dic_2(traces, log_llhs, model, exper_info_file, heat_file)
             dic_2_s.append(d2)
 
         info_criteria.append({"exper": exper, "model": model,
