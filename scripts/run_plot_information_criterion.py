@@ -16,7 +16,7 @@ from _data_io import load_heat_micro_cal
 from _pymc3_models import extract_loglhs_from_traces_pymc3
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--heat_data_dir", type=str, default="04.heat_in_origin_format")
+parser.add_argument("--heat_data_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format")
 parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
 
 parser.add_argument("--traces_file", type=str, default="traces.pickle")
