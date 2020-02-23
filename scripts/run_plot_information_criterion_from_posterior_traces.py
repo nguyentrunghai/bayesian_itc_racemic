@@ -33,11 +33,6 @@ parser.add_argument("--experiments", type=str,
 parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
 parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
-parser.add_argument("--dP0", type=float, default=0.1)      # cell concentration relative uncertainty
-parser.add_argument("--dLs", type=float, default=0.1)      # syringe concentration relative uncertainty
-
-parser.add_argument("--concentration_range_factor", type=float, default=10.)
-
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
@@ -84,12 +79,7 @@ def dic_1(traces, log_llhs, model_name, exper_info_file, heat_file):
     return 2 * log_llh_bayes - 2 * np.mean(log_llhs)
 
 
-def dic_2(traces, log_llhs,
-          model_name, exper_info_file, heat_file,
-          dcell=0.1, dsyringe=0.1,
-          uniform_P0=False, uniform_Ls=False,
-          concentration_range_factor=10.,
-          auto_transform=False):
+def dic_2(traces, log_llhs, model_name, exper_info_file, heat_file):
     """
     dic_2 = -2 \ln p(y|\hat{\theta}_{Bayes}) + 4 \var \ln p(y|\theta)
     where \hat{\theta}_{Bayes} is mean of the posterior
@@ -99,20 +89,10 @@ def dic_2(traces, log_llhs,
     :param model_name: str, in ["2cbm", "rmbm", "embm"]
     :param exper_info_file: str
     :param heat_file: str
-    :param dcell: float in (0, 1)
-    :param dsyringe: float in (0, 1)
-    :param uniform_P0: bool
-    :param uniform_Ls: bool
-    :param concentration_range_factor: float
-    :param auto_transform: bool
     :return: llhs, 1d array
     """
     posterior_mean = {var_name: [np.mean(var_trace)] for var_name, var_trace in traces.items()}
-    _, log_llh_bayes = extract_loglhs_from_traces_pymc3(posterior_mean, model_name, exper_info_file, heat_file,
-                                                        dcell=dcell, dsyringe=dsyringe,
-                                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                        concentration_range_factor=concentration_range_factor,
-                                                        auto_transform=auto_transform)
+    log_llh_bayes = extract_loglhs_from_traces_manual(posterior_mean, model_name, exper_info_file, heat_file)
     log_llh_bayes = log_llh_bayes[0]
     return -2 * log_llh_bayes + 4 * np.var(log_llhs)
 
