@@ -134,12 +134,15 @@ def dic_2(traces, log_llhs,
 
 
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
+two_component_dirs = two_component_dirs[:4]
 print("two_component_dirs:", two_component_dirs)
 
 racemic_mixture_dirs = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*"))
+racemic_mixture_dirs = racemic_mixture_dirs[:4]
 print("racemic_mixture_dir:", racemic_mixture_dirs)
 
 enantiomer_dirs = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*"))
+enantiomer_dirs = enantiomer_dirs[:4]
 print("enantiomer_dir:", enantiomer_dirs)
 
 experiments = args.experiments.split()
@@ -219,3 +222,5 @@ for exper in experiments:
                               "bci": np.mean(bic_s), "bic_err": np.std(bic_s),
                               "dic_1": np.mean(dic_1_s), "dic_1_err": np.std(dic_1_s),
                               "dic_2": np.mean(dic_2_s), "dic_2_err": np.std(dic_2_s)})
+
+info_criteria = pd.DataFrame(info_criteria)
