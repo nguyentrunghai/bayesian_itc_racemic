@@ -162,6 +162,7 @@ list_data_dirs = [two_component_dirs, racemic_mixture_dirs, enantiomer_dirs]
 
 info_criteria = []
 for exper in experiments:
+    print("")
     print(exper)
 
     heat_file = os.path.join(args.heat_data_dir, exper + ".DAT")
@@ -180,6 +181,9 @@ for exper in experiments:
         uniform_Ls = False
 
     for model, data_dirs in zip(models, list_data_dirs):
+        print("")
+        print("model", model)
+        print("list_data_dirs", list_data_dirs)
         aic_s = []
         bic_s = []
         dic_1_s = []
@@ -189,6 +193,7 @@ for exper in experiments:
             traces_file = os.path.join(data_dir, exper, args.traces_file)
             loglhs_file = os.path.join(data_dir, exper, args.extracted_loglhs_file)
             exper_info_file = os.path.join(data_dir, exper, args.exper_info_file)
+            print("")
             print("traces_file:", traces_file)
             print("loglhs_file:", loglhs_file)
             print("exper_info_file", exper_info_file)
