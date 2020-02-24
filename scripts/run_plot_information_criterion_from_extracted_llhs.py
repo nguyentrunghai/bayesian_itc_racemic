@@ -74,8 +74,10 @@ def dic_1(traces, log_llhs,
           concentration_range_factor=10.,
           auto_transform=False):
     """
-    dic_1 = 2 \ln p(y|\hat{\theta}_{Bayes}) - 2 \frac{1}{S} \sum_{s=1}^S \ln p(y|\theta^s)
-    where \hat{\theta}_{Bayes} is mean of the posterior
+    D(\theta) = -2 \ln p(y|\theta)
+    dic = \overline{D(\theta)} + \overline{D(\theta)} - D(\overline{\theta})
+    \overline{D(\theta)} is averge over the poterior
+    \overline{\theta} is mean of the posterior
 
     :param traces: dict, variable_name -> 1d array
     :param log_llhs: array-like of float, log likelihood values
@@ -88,7 +90,7 @@ def dic_1(traces, log_llhs,
     :param uniform_Ls: bool
     :param concentration_range_factor: float
     :param auto_transform: bool
-    :return: llhs, 1d array
+    :return: deviance information criterion
     """
     devian = -2 * log_llhs
     devian_mean = np.mean(devian)
@@ -103,39 +105,21 @@ def dic_1(traces, log_llhs,
     return 2 * devian_mean + 2 * log_llh_bayes
 
 
-def dic_2(traces, log_llhs,
-          model_name, exper_info_file, heat_file,
-          dcell=0.1, dsyringe=0.1,
-          uniform_P0=False, uniform_Ls=False,
-          concentration_range_factor=10.,
-          auto_transform=False):
+def dic_2(log_llhs):
     """
-    dic_2 = -2 \ln p(y|\hat{\theta}_{Bayes}) + 4 \var \ln p(y|\theta)
-    where \hat{\theta}_{Bayes} is mean of the posterior
+    D(\theta) = -2 \ln p(y|\theta)
+    dic = \overline{D(\theta)} + frac{1}{2} \var(D(\theta))
+    \overline{D(\theta)} is averge over the poterior
+    \var(D(\theta)) is variance over the poterior
 
-    :param traces: dict, variable_name -> 1d array
     :param log_llhs: array-like of float, log likelihood values
-    :param model_name: str, in ["2cbm", "rmbm", "embm"]
-    :param exper_info_file: str
-    :param heat_file: str
-    :param dcell: float in (0, 1)
-    :param dsyringe: float in (0, 1)
-    :param uniform_P0: bool
-    :param uniform_Ls: bool
-    :param concentration_range_factor: float
-    :param auto_transform: bool
-    :return: llhs, 1d array
+    :return: deviance infomation criterion
     """
-    posterior_mean = {var_name: [np.mean(var_trace)] for var_name, var_trace in traces.items()}
-    _, log_llh_bayes = extract_loglhs_from_traces_pymc3(posterior_mean, model_name, exper_info_file, heat_file,
-                                                        dcell=dcell, dsyringe=dsyringe,
-                                                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                        concentration_range_factor=concentration_range_factor,
-                                                        auto_transform=auto_transform)
-    log_llh_bayes = log_llh_bayes[0]
-    return -2 * log_llh_bayes + 4 * np.var(log_llhs)
+    devian = -2 * log_llhs
+    devian_mean = np.mean(devian)
+    return devian_mean + 0.5 * np.var(log_llhs)
 
-#TODO: remove shorten lists below
+#TODO: remove shortened lists below
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
 two_component_dirs = two_component_dirs[:4]
 print("two_component_dirs:", two_component_dirs)
