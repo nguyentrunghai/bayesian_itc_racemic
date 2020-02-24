@@ -162,7 +162,7 @@ for exper in experiments:
             b = bic(log_llhs, n_samples, n_params)
 
             d1 = dic_1(traces, log_llhs, model, exper_info_file, heat_file)
-            d2 = dic_2(traces, log_llhs, model, exper_info_file, heat_file)
+            d2 = dic_2(log_llhs)
 
             info_criteria.append({"exper": exper, "model": model, "repeat": repeat,
                                   "aic": a, "bic": b, "dic_1": d1, "dic_2": d2})
