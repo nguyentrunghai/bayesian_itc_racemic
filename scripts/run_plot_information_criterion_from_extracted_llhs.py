@@ -195,16 +195,10 @@ for exper in experiments:
                        concentration_range_factor=concentration_range_factor,
                        auto_transform=False)
 
-            d2 = dic_2(traces, log_llhs,
-                       model, exper_info_file, heat_file,
-                       dcell=dP0, dsyringe=dLs,
-                       uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                       concentration_range_factor=concentration_range_factor,
-                       auto_transform=False)
+            d2 = dic_2(log_llhs)
 
             info_criteria.append({"exper": exper, "model": model, "repeat": repeat,
                                   "aic": a, "bic": b, "dic_1": d1, "dic_2": d2})
 
 info_criteria = pd.DataFrame(info_criteria)
-
 info_criteria.csv("info_criteria_extr_llhs.csv")
