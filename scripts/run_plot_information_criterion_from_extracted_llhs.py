@@ -187,12 +187,8 @@ for exper in experiments:
         print("")
         print("model", model)
         print("list_data_dirs", list_data_dirs)
-        aic_s = []
-        bic_s = []
-        dic_1_s = []
-        dic_2_s = []
 
-        for data_dir in data_dirs:
+        for repeat, data_dir in enumerate(data_dirs):
             traces_file = os.path.join(data_dir, exper, args.traces_file)
             loglhs_file = os.path.join(data_dir, exper, args.extracted_loglhs_file)
             exper_info_file = os.path.join(data_dir, exper, args.exper_info_file)
@@ -205,8 +201,8 @@ for exper in experiments:
             log_llhs = pd.read_csv(loglhs_file)["log_lhs"].values
             n_params = len(traces.keys())
 
-            aic_s.append(aic(log_llhs, n_params))
-            bic_s.append(bic(log_llhs, n_samples, n_params))
+            a = aic(log_llhs, n_params)
+            b = bic(log_llhs, n_samples, n_params)
 
             d1 = dic_1(traces, log_llhs,
                        model, exper_info_file, heat_file,
@@ -215,20 +211,16 @@ for exper in experiments:
                        concentration_range_factor=concentration_range_factor,
                        auto_transform=False)
 
-            dic_1_s.append(d1)
-
             d2 = dic_2(traces, log_llhs,
                        model, exper_info_file, heat_file,
                        dcell=dP0, dsyringe=dLs,
                        uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                        concentration_range_factor=concentration_range_factor,
                        auto_transform=False)
-            dic_2_s.append(d2)
 
-        info_criteria.append({"exper": exper, "model": model,
-                              "aic": np.mean(aic_s), "aic_err": np.std(aic_s),
-                              "bic": np.mean(bic_s), "bic_err": np.std(bic_s),
-                              "dic_1": np.mean(dic_1_s), "dic_1_err": np.std(dic_1_s),
-                              "dic_2": np.mean(dic_2_s), "dic_2_err": np.std(dic_2_s)})
+            info_criteria.append({"exper": exper, "model": model, "repeat": repeat,
+                                  "aic": a, "bic": b, "dic_1": d1, "dic_2": d2})
 
 info_criteria = pd.DataFrame(info_criteria)
+
+info_criteria.csv("info_criteria_extr_llhs.csv")
