@@ -9,6 +9,10 @@ import glob
 import os
 import pickle
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
 import numpy as np
 import pandas as pd
 
@@ -169,4 +173,28 @@ for exper in experiments:
 
 info_criteria = pd.DataFrame(info_criteria)
 info_criteria.to_csv("info_criteria_post_traces.csv")
+
+# plot
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+sns.barplot(data=info_criteria, x="aic", y="exper", hue="model", ax=ax)
+ax.set_xlabel("AIC")
+ax.set_ylabel("Experiment")
+fig.tight_layout()
+fig.savefig("aic.pdf", dpi=300)
+
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+sns.barplot(data=info_criteria, x="bic", y="exper", hue="model", ax=ax)
+ax.set_xlabel("BIC")
+ax.set_ylabel("Experiment")
+fig.tight_layout()
+fig.savefig("bic.pdf", dpi=300)
+
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+sns.barplot(data=info_criteria, x="dic_2", y="exper", hue="model", ax=ax)
+ax.set_xlabel("DIC")
+ax.set_ylabel("Experiment")
+fig.tight_layout()
+fig.savefig("dic_2.pdf", dpi=300)
 
