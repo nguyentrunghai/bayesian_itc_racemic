@@ -94,10 +94,9 @@ def dic_2(traces, log_llhs, model_name, exper_info_file, heat_file):
     :param heat_file: str
     :return: llhs, 1d array
     """
-    posterior_mean = {var_name: [np.mean(var_trace)] for var_name, var_trace in traces.items()}
-    log_llh_bayes = extract_loglhs_from_traces_manual(posterior_mean, model_name, exper_info_file, heat_file)
-    log_llh_bayes = log_llh_bayes[0]
-    return -2 * log_llh_bayes + 4 * np.var(log_llhs)
+    devian = -2 * log_llhs
+    devian_mean = np.mean(devian)
+    return devian_mean + 0.5 * np.var(log_llhs)
 
 # TODO remove shortened lists below
 two_component_dirs = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*"))
