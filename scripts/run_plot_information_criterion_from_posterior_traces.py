@@ -63,15 +63,17 @@ def bic(log_llhs, n, k):
 
 def dic_1(traces, log_llhs, model_name, exper_info_file, heat_file):
     """
-    dic_1 = 2 \ln p(y|\hat{\theta}_{Bayes}) - 2 \frac{1}{S} \sum_{s=1}^S \ln p(y|\theta^s)
-    where \hat{\theta}_{Bayes} is mean of the posterior
+    D(\theta) = -2 \ln p(y|\theta)
+    dic = \overline{D(\theta)} + \overline{D(\theta)} - D(\overline{\theta})
+    \overline{D(\theta)} is averge over the poterior
+    \overline{\theta} is mean of the posterior
 
     :param traces: dict, variable_name -> 1d array
     :param log_llhs: array-like of float, log likelihood values
     :param model_name: str, in ["2cbm", "rmbm", "embm"]
     :param exper_info_file: str
     :param heat_file: str
-    :return: llhs, 1d array
+    :return: devian infomation criterion
     """
     devian = -2 * log_llhs
     devian_mean = np.mean(devian)
@@ -82,17 +84,15 @@ def dic_1(traces, log_llhs, model_name, exper_info_file, heat_file):
     return 2 * devian_mean + 2 * log_llh_bayes
 
 
-def dic_2(traces, log_llhs, model_name, exper_info_file, heat_file):
+def dic_2(log_llhs):
     """
-    dic_2 = -2 \ln p(y|\hat{\theta}_{Bayes}) + 4 \var \ln p(y|\theta)
-    where \hat{\theta}_{Bayes} is mean of the posterior
+    D(\theta) = -2 \ln p(y|\theta)
+    dic = \overline{D(\theta)} + frac{1}{2} \var(D(\theta))
+    \overline{D(\theta)} is averge over the poterior
+    \var(D(\theta)) is variance over the poterior
 
-    :param traces: dict, variable_name -> 1d array
     :param log_llhs: array-like of float, log likelihood values
-    :param model_name: str, in ["2cbm", "rmbm", "embm"]
-    :param exper_info_file: str
-    :param heat_file: str
-    :return: llhs, 1d array
+    :return: deviance infomation criterion
     """
     devian = -2 * log_llhs
     devian_mean = np.mean(devian)
