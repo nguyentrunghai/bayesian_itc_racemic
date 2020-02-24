@@ -90,6 +90,9 @@ def dic_1(traces, log_llhs,
     :param auto_transform: bool
     :return: llhs, 1d array
     """
+    devian = -2 * log_llhs
+    devian_mean = np.mean(devian)
+
     posterior_mean = {var_name: [np.mean(var_trace)] for var_name, var_trace in traces.items()}
     _, log_llh_bayes = extract_loglhs_from_traces_pymc3(posterior_mean, model_name, exper_info_file, heat_file,
                                                         dcell=dcell, dsyringe=dsyringe,
@@ -97,7 +100,7 @@ def dic_1(traces, log_llhs,
                                                         concentration_range_factor=concentration_range_factor,
                                                         auto_transform=auto_transform)
     log_llh_bayes = log_llh_bayes[0]
-    return 2 * log_llh_bayes - 2 * np.mean(log_llhs)
+    return 2 * devian_mean + 2 * log_llh_bayes
 
 
 def dic_2(traces, log_llhs,
