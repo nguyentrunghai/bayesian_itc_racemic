@@ -37,7 +37,7 @@ parser.add_argument("--experiments", type=str,
 parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
 parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
-parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--font_scale", type=float, default=0.5)
 
 args = parser.parse_args()
 
@@ -175,6 +175,8 @@ info_criteria = pd.DataFrame(info_criteria)
 info_criteria.to_csv("info_criteria_post_traces.csv")
 
 # plot
+sns.set(font_scale=args.font_scale)
+
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 sns.barplot(data=info_criteria, x="aic", y="exper", hue="model", ax=ax)
 ax.set_xlabel("AIC")
