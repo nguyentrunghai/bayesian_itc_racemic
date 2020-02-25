@@ -43,7 +43,7 @@ parser.add_argument("--dLs", type=float, default=0.1)      # syringe concentrati
 
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
-parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--font_scale", type=float, default=0.5)
 
 args = parser.parse_args()
 
@@ -208,6 +208,8 @@ info_criteria = pd.DataFrame(info_criteria)
 info_criteria.to_csv("info_criteria_extr_llhs.csv")
 
 # plot
+sns.set(font_scale=args.font_scale)
+
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
 sns.barplot(data=info_criteria, x="aic", y="exper", hue="model", ax=ax)
 ax.set_xlabel("AIC")
