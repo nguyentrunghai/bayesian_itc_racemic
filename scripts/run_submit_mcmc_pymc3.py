@@ -195,21 +195,24 @@ else:
         pm_model = make_TwoComponentBindingModel(q_actual_cal, exper_info,
                                                  dcell=dcell, dsyringe=dsyringe,
                                                  uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
-                                                 concentration_range_factor=concentration_range_factor)
+                                                 concentration_range_factor=concentration_range_factor,
+                                                 auto_transform=False)
 
     elif model_name == "rmbm":
         pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                                    dcell=dcell, dsyringe=dsyringe,
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                    concentration_range_factor=concentration_range_factor,
-                                                   is_rho_free_param=False)
+                                                   is_rho_free_param=False,
+                                                   auto_transform=False)
 
     elif model_name == "embm":
         pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                                    dcell=dcell, dsyringe=dsyringe,
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                    concentration_range_factor=concentration_range_factor,
-                                                   is_rho_free_param=True)
+                                                   is_rho_free_param=True,
+                                                   auto_transform=False)
     else:
         raise ValueError("Unknown model: " + model_name)
 
