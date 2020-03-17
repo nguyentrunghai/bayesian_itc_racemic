@@ -224,6 +224,9 @@ else:
 
         trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, chains=chains, progressbar=False)
 
+    out_model = os.path.join(out_dir, "pm_model.pickle")
+    pickle.dump(pm_model, open(out_model, "w"))
+    
     out_trace_obj = os.path.join(out_dir, "trace_obj.pickle")
     pickle.dump(trace, open(out_trace_obj, "w"))
 
