@@ -214,6 +214,9 @@ else:
         raise ValueError("Unknown model: " + model_name)
 
     with pm_model:
+        print("Finding MAP")
+        start = pymc3.find_MAP()
+
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
             step = pymc3.Metropolis()
@@ -230,8 +233,11 @@ else:
         else:
             raise ValueError("Unknown step method", step_method)
 
+        print("Running sampling")
         trace = pymc3.sample(draws=draws, init=init, tune=tune,
-                             step=step, cores=cores, chains=chains, progressbar=False)
+                             step=step, cores=cores, chains=chains,
+                             start=start,
+                             progressbar=False)
 
     out_model = os.path.join(out_dir, "pm_model.pickle")
     pickle.dump(pm_model, open(out_model, "w"))
