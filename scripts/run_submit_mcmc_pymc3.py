@@ -36,8 +36,11 @@ parser.add_argument("--uniform_Ls", action="store_true", default=False)
 parser.add_argument("--concentration_range_factor", type=float, default=10.)
 
 # Metropolis, HamiltonianMC, NUTS, SMC
-parser.add_argument("--step_method", type=str, default="SMC")
+parser.add_argument("--step_method", type=str, default="NUTS")
 parser.add_argument("--draws", type=int, default=10000)
+# Initialization method to use for auto-assigned NUTS samplers.
+# "auto", "adapt_diag", "jitter+adapt_diag", "advi+adapt_diag", "advi+adapt_diag_grad", "advi", "advi_map", "map", "nuts"
+parser.add_argument("--init", type=str, default="auto")
 parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=1)
 parser.add_argument("--chains", type=int, default=2)
@@ -74,6 +77,7 @@ if args.write_qsub_script:
 
     step_method = args.step_method
     draws = args.draws
+    init = args.init
     tune = args.tune
     cores = args.cores
     chains = args.chains
@@ -120,6 +124,7 @@ python ''' + this_script + \
         ''' --concentration_range_factor %0.5f''' % concentration_range_factor + \
         ''' --step_method ''' + step_method + \
         ''' --draws %d''' % draws + \
+        ''' --init ''' + init + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
         ''' --chains %d''' % chains + \
@@ -163,6 +168,9 @@ else:
 
     draws = args.draws
     print("draws", draws)
+
+    init = args.init
+    print("init", init)
 
     tune = args.tune
     print("tune", tune)
@@ -222,11 +230,12 @@ else:
         else:
             raise ValueError("Unknown step method", step_method)
 
-        trace = pymc3.sample(draws=draws, tune=tune, step=step, cores=cores, chains=chains, progressbar=False)
+        trace = pymc3.sample(draws=draws, init=init, tune=tune,
+                             step=step, cores=cores, chains=chains, progressbar=False)
 
     out_model = os.path.join(out_dir, "pm_model.pickle")
     pickle.dump(pm_model, open(out_model, "w"))
-    
+
     out_trace_obj = os.path.join(out_dir, "trace_obj.pickle")
     pickle.dump(trace, open(out_trace_obj, "w"))
 
