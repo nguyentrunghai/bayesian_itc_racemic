@@ -38,18 +38,18 @@ parser.add_argument("--concentration_range_factor", type=float, default=10.)
 # Metropolis, HamiltonianMC, NUTS, SMC
 parser.add_argument("--step_method", type=str, default="NUTS")
 parser.add_argument("--draws", type=int, default=10000)
+parser.add_argument("--chains", type=int, default=4)
+parser.add_argument("--thin", type=int, default=1)
 # Initialization method to use for auto-assigned NUTS samplers.
 # "auto", "adapt_diag", "jitter+adapt_diag", "advi+adapt_diag", "advi+adapt_diag_grad", "advi", "advi_map", "map", "nuts"
 parser.add_argument("--init", type=str, default="auto")
 parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=1)
-parser.add_argument("--chains", type=int, default=4)
 
 parser.add_argument("--experiments", type=str, default=" ")
 parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
 parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
-parser.add_argument("--downsampling_freq", type=int, default=1)
 parser.add_argument("--out_dir", type=str, default="out")
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
@@ -102,7 +102,7 @@ if args.write_qsub_script:
         else:
             uniform_Ls = " "
 
-        downsampling_freq = args.downsampling_freq
+        thin = args.thin
 
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
@@ -128,7 +128,7 @@ python ''' + this_script + \
         ''' --tune %d''' % tune + \
         ''' --cores %d''' % cores + \
         ''' --chains %d''' % chains + \
-        ''' --downsampling_freq %d''' % downsampling_freq + \
+        ''' --thin %d''' % thin + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -181,8 +181,8 @@ else:
     chains = args.chains
     print("chains", chains)
 
-    downsampling_freq = args.downsampling_freq
-    print("downsampling_freq", downsampling_freq)
+    thin = args.thin
+    print("thin", thin)
 
     out_dir = args.out_dir
     print("out_dir", out_dir)
@@ -242,6 +242,7 @@ else:
                              start=start,
                              progressbar=False)
 
+    trace = trace[::thin]
     out_model = os.path.join(out_dir, "pm_model.pickle")
     pickle.dump(pm_model, open(out_model, "w"))
 
@@ -250,7 +251,6 @@ else:
 
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     trace_vars = {name: trace.get_values(name) for name in free_vars}
-    trace_vars = down_sampling_trace(trace_vars, stride=args.downsampling_freq)
     out_trace = os.path.join(out_dir, "traces.pickle")
     pickle.dump(trace_vars, open(out_trace, "w"))
 
