@@ -43,7 +43,7 @@ parser.add_argument("--draws", type=int, default=10000)
 parser.add_argument("--init", type=str, default="auto")
 parser.add_argument("--tune", type=int, default=2000)
 parser.add_argument("--cores", type=int, default=1)
-parser.add_argument("--chains", type=int, default=2)
+parser.add_argument("--chains", type=int, default=4)
 
 parser.add_argument("--experiments", type=str, default=" ")
 parser.add_argument("--experiments_flat_prior_P0", type=str, default="")
@@ -222,7 +222,7 @@ else:
 
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
-            step = pymc3.Metropolis()
+            step = pymc3.Metropolis(scaling=start)
 
         elif step_method == "HamiltonianMC":
             step = pymc3.HamiltonianMC()
