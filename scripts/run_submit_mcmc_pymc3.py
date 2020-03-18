@@ -222,7 +222,7 @@ else:
 
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
-            step = pymc3.Metropolis(scaling=start)
+            step = pymc3.Metropolis()
 
         elif step_method == "HamiltonianMC":
             step = pymc3.HamiltonianMC()
