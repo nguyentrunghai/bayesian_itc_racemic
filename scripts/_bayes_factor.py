@@ -5,6 +5,8 @@ define function to calculate bayes factor
 from __future__ import print_function
 
 import numpy as np
+from scipy.stats import norm
+from scipy.stats import iqr
 
 from _models import log_marginal_likelihood
 
@@ -29,4 +31,16 @@ def log_marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_rep
     bootstrap_samples = np.array(bootstrap_samples)
 
     return all_sample_estimate, bootstrap_samples
+
+
+def std_from_iqr(data):
+    return iqr(data) / 1.35
+
+
+def fit_normal(x, sigma_robust=False):
+    mu, sigma = norm.fit(x)
+    if sigma_robust:
+        sigma = std_from_iqr(x)
+    return mu, sigma
+
 
