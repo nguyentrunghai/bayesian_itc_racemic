@@ -54,7 +54,23 @@ def fit_normal_trace(trace_values, sigma_robust=False):
     return res
 
 
+def log_normal_pdf(mu, sigma, y):
+    """
+    :param mu: float
+    :param sigma: float
+    :param y: float
+    :return: float
+    """
+    sigma2 = sigma * sigma
+    res = - 0.5 * np.log(2 * np.pi * sigma2) - (0.5 / sigma2) * (y - mu) ** 2
+    return res
+
+
 def dict_to_list(dict_of_list):
+    """
+    :param dict_of_list: dict: varname --> ndarray
+    :return: list of dic: [ {varname: float, ...}, ...  ]
+    """
     keys = dict_of_list.keys()
     key0 = keys[0]
     for key in keys[1:]:
