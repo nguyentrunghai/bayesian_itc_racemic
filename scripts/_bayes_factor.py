@@ -45,6 +45,15 @@ def fit_normal(x, sigma_robust=False):
     return res
 
 
+def fit_normal_trace(trace_values, sigma_robust=False):
+    """
+    :param trace_values: dict: varname --> ndarray
+    :return: dict: varname --> dict: {mu, sigma} -> {float, float}
+    """
+    res = {varname: fit_normal(trace_values[varname], sigma_robust=sigma_robust) for varname in trace_values}
+    return res
+
+
 def dict_to_list(dict_of_list):
     keys = dict_of_list.keys()
     key0 = keys[0]
