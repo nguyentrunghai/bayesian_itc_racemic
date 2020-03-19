@@ -48,7 +48,7 @@ def dict_to_list(dict_of_list):
     keys = dict_of_list.keys()
     key0 = keys[0]
     for key in keys[1:]:
-        assert len(key0) == len(key), key0 + " and " + key + " do not have same len."
+        assert len(dict_of_list[key0]) == len(dict_of_list[key]), key0 + " and " + key + " do not have same len."
 
     n = len(dict_of_list[key0])
     ls_of_dic = []
