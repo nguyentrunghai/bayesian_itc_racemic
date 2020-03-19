@@ -56,3 +56,12 @@ def dict_to_list(dict_of_list):
         dic = {key: dict_of_list[key][i] for key in keys}
         ls_of_dic.append(dic)
     return ls_of_dic
+
+
+def get_values_from_trace(model, trace):
+    vars = model.vars
+    trace_values = {var: trace.get_values(var) for var in vars}
+    return trace_values
+
+def log_posterior(model, trace):
+    list_traces = dict_to_list(traces)
