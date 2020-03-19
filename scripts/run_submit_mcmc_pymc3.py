@@ -219,6 +219,7 @@ else:
     with pm_model:
         print("Finding MAP")
         start = pymc3.find_MAP()
+        print("MAP:\n", start)
 
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
