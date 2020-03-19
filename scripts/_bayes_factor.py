@@ -11,6 +11,10 @@ from scipy.stats import iqr
 from _models import log_marginal_likelihood
 
 
+NAME_MATCH = [("DeltaH", "DeltaH1"), ("DeltaH2", "DeltaH2"), ("DeltaG", "DeltaG1"),
+              ("DeltaDeltaG", "DeltaDeltaG"), ("P0", "P0"), ("Ls", "Ls"), ]
+
+
 def log_marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_repeats=1):
     """
     :param extracted_loglhs: 1d array
@@ -91,6 +95,12 @@ def get_values_from_trace(model, trace):
 
 
 def log_posterior(model, trace_values):
+    model_vars = set([var.name for var in model.vars])
+    trace_vars = trace_values.keys()
+    print("model_vars:", model_vars)
+    print("trace_vars:", trace_vars)
+    assert model_vars == trace_vars, "model_vars and trace_vars are not the same set"
+
     trace_values = dict_to_list(trace_values)
     get_logp = np.vectorize(model.logp)
     logp = get_logp(trace_values)
