@@ -41,7 +41,8 @@ def fit_normal(x, sigma_robust=False):
     mu, sigma = norm.fit(x)
     if sigma_robust:
         sigma = std_from_iqr(x)
-    return mu, sigma
+    res = {"mu": mu, "sigma": sigma}
+    return res
 
 
 def dict_to_list(dict_of_list):
