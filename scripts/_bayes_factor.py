@@ -64,10 +64,8 @@ def get_values_from_trace(model, trace):
     return trace_values
 
 
-def log_posterior(model, trace):
-    trace_values = get_values_from_trace(model, trace)
+def log_posterior(model, trace_values):
     trace_values = dict_to_list(trace_values)
-
     get_logp = np.vectorize(model.logp)
     logp = get_logp(trace_values)
     return logp
