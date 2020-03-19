@@ -59,7 +59,7 @@ def dict_to_list(dict_of_list):
 
 
 def get_values_from_trace(model, trace):
-    vars = model.vars
+    vars = [var.name for var in model.vars]
     trace_values = {var: trace.get_values(var) for var in vars}
     return trace_values
 
