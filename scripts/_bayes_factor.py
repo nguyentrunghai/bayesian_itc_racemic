@@ -44,3 +44,15 @@ def fit_normal(x, sigma_robust=False):
     return mu, sigma
 
 
+def dict_to_list(dict_of_list):
+    keys = dict_of_list.keys()
+    key0 = keys[0]
+    for key in keys[1:]:
+        assert len(key0) == len(key), key0 + " and " + key + " do not have same len."
+
+    n = len(dict_of_list[key0])
+    ls_of_dic = []
+    for i in range(n):
+        dic = {key: dict_of_list[key][i] for key in keys}
+        ls_of_dic.append(dic)
+    return ls_of_dic
