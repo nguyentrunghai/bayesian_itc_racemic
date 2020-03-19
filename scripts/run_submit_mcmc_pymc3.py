@@ -15,7 +15,6 @@ import seaborn as sns
 sns.set()
 
 from _data_io import ITCExperiment, load_heat_micro_cal
-from _data_io import down_sampling_trace
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
 parser = argparse.ArgumentParser()
