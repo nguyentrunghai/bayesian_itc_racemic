@@ -118,7 +118,7 @@ def get_values_from_trace(model, trace):
 
 def log_posterior_trace(model, trace_values):
     model_vars = set([var.name for var in model.vars])
-    trace_vars = trace_values.keys()
+    trace_vars = set(trace_values.keys())
     print("model_vars:", model_vars)
     print("trace_vars:", trace_vars)
     assert model_vars == trace_vars, "model_vars and trace_vars are not the same set"
