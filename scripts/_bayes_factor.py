@@ -8,6 +8,8 @@ import numpy as np
 from scipy.stats import norm
 from scipy.stats import iqr
 
+import pymbar
+
 from _models import log_marginal_likelihood
 
 
@@ -232,12 +234,15 @@ def augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=None
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
                          trace_rmbm, trace_2cbm,
-                         sigma_robust=False):
+                         sigma_robust=False,
+                         random_state=None):
     """
     :param model_rmbm: pymc3 model
     :param model_2cbm: pymc3 model
     :param trace_rmbm: pymc3 trace object
     :param trace_2cbm: pymc3 trace object
+    :param sigma_robust: bool
+    :param random_state: int
     :return: float
     """
     tr_val_rmbm = get_values_from_trace(model_rmbm, trace_rmbm)
@@ -246,4 +251,14 @@ def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
     mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
 
     u_rm_rm = u_rmbm_rmbm(tr_val_rmbm, model_rmbm)
-    u_rm_2c = u_rmbm_2cbm(tr_val_rmbm, model_2cbm, sigma_robust=sigma_robust)
+    u_rm_2c = u_rmbm_2cbm(tr_val_rmbm, model_2cbm, mu_sigma_rmbm)
+
+    tr_2cbm_4_rmbm, aug_tr_2cbm = augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=random_state)
+    u_2c_2c = u_2cbm_2cbm(tr_val_2cbm, aug_tr_2cbm, model_2cbm, mu_sigma_rmbm)
+    u_2c_rm = u_2cbm_rmbm(tr_2cbm_4_rmbm, aug_tr_2cbm, model_rmbm)
+
+    w_F = u_rm_2c - u_rm_rm
+    w_R = u_2c_rm - u_2c_2c
+
+    delta_f = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
+    return delta_f
