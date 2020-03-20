@@ -70,6 +70,28 @@ def log_normal_pdf(mu, sigma, y):
     return res
 
 
+def log_normal_trace(trace_val, mu_sigma_dict):
+    """
+    :param trace_val: dict: varname --> ndarray
+    :param mu_sigma_dict: dict: varname --> dict: {"mu", "sigma"} -> {float, float}
+    :return: ndarray
+    """
+    keys = trace_val.keys()
+    k0 = keys[0]
+    for k in keys[1:]:
+        assert len(trace_val[k0]) == len(trace_val[k]), k0 + " and " + k + " do not have same len."
+
+    nsamples = len(trace_val[k0])
+    logp = np.zeros(nsamples, dtype=float)
+    for k in keys:
+        mu = mu_sigma_dict[k]["mu"]
+        sigma = mu_sigma_dict[k]["sigma"]
+        y = trace_val[y]
+        logp += log_normal_pdf(mu, sigma, y)
+
+    return logp
+
+
 def dict_to_list(dict_of_list):
     """
     :param dict_of_list: dict: varname --> ndarray
@@ -130,6 +152,10 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     # tr_val sampled at rmbm, used to estimate logp with model 2cbm
     tr_val_rmbm_4_2cbm = {k1: tr_val_rmbm[k2] for k1, k2 in pair_2cbm_rmbm}
     logp_rmbm_2cbm = log_posterior(model_2cbm, tr_val_rmbm_4_2cbm)
+
+    # tr_val sampled at rmbm, but redundant for 2cbm
+    tr_val_rmbm_redun = {k: tr_val_rmbm[k] for k in redundant_var_rmbm}
+    logp_norm =
 
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
