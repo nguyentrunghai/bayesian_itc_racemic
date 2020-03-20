@@ -262,3 +262,29 @@ def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
 
     delta_f = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
     return delta_f
+
+
+#-----------------------
+
+
+def pot_ener(sample, model):
+    """
+    :param sample: dict: varname --> ndarray
+    :param model: pymc3 model
+    :return: ndarray
+    """
+    u = -log_posterior_trace(model, sample)
+    return u
+
+
+def pot_ener_normal_aug(sample, model, sample_aug, mu_sigma):
+    """
+    use model to calculate potential energy for sample
+    use normal distribution to calculate potential energy for sample_aug
+    :param sample: dict: varname --> ndarray
+    :param model: pymc3 model
+    :param sample_aug: dict: varname --> ndarray
+    :param mu_sigma: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
+    :return: ndarray
+    """
+    u1 = -log_posterior_trace(model, sample)
