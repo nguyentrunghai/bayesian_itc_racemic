@@ -147,16 +147,14 @@ def u_rmbm_rmbm(tr_val_rmbm, model_rmbm):
     return - log_posterior_trace(model_rmbm, tr_val_rmbm)
 
 
-def u_rmbm_2cbm(tr_val_rmbm, model_2cbm, sigma_robust=False):
+def u_rmbm_2cbm(tr_val_rmbm, model_2cbm, mu_sigma_rmbm):
     """
     calculate potential energy for samples drawn from rmbm using model 2cbm
     :param tr_val_rmbm: dict: varname --> ndarray
     :param model_2cbm: pymc3 model
-    :param sigma_robust: bool
+    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
     :return: ndarray
     """
-    mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
-
     # the first element is key for the model, the second is key of trace
     pair_2cbm_rmbm = [("P0_interval__", "P0_interval__"),
                       ("Ls_interval__", "Ls_interval__"),
@@ -246,22 +244,6 @@ def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
     tr_val_2cbm = get_values_from_trace(model_2cbm, trace_2cbm)
 
     mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
-    mu_sigma_2cbm = fit_normal_trace(tr_val_2cbm, sigma_robust=sigma_robust)
 
-    # u_sample_model
-    print("Calculating u_rmbm_rmbm: drawn at rmbm, estimated at rmbm")
-    u_rmbm_rmbm = - log_posterior(model_rmbm, tr_val_rmbm)
-
-    print("Calculating u_rmbm_2cbm: drawn at rmbm, estimated at 2cbm")
-    pair_2cbm_rmbm = [("P0_interval__", "P0_interval__"),
-                      ("Ls_interval__", "Ls_interval__"),
-                      ("DeltaG_interval__", "DeltaG1_interval__"),
-                      ("DeltaH_interval__", "DeltaH1_interval__"),
-                      ("DeltaH_0_interval__", "DeltaH_0_interval__"),
-                      ("log_sigma_interval__"), "log_sigma_interval__"]
-    print("pair_2cbm_rmbm", pair_2cbm_rmbm)
-    redundant_var_rmbm = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
-    print("redundant_var_rmbm", redundant_var_rmbm)
-    # tr_val sampled at rmbm, used to estimate logp with model 2cbm
-    tr_val_rmbm_4_2cbm = {k1: tr_val_rmbm[k2] for k1, k2 in pair_2cbm_rmbm}
-    logp_rmbm_2cbm = log_posterior(model_2cbm, tr_val_rmbm_4_2cbm)
+    u_rm_rm = u_rmbm_rmbm(tr_val_rmbm, model_rmbm)
+    u_rm_2c = u_rmbm_2cbm(tr_val_rmbm, model_2cbm, sigma_robust=sigma_robust)
