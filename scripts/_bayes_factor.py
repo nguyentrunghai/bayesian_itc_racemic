@@ -86,7 +86,7 @@ def log_normal_trace(trace_val, mu_sigma_dict):
     for k in keys:
         mu = mu_sigma_dict[k]["mu"]
         sigma = mu_sigma_dict[k]["sigma"]
-        y = trace_val[y]
+        y = trace_val[k]
         logp += log_normal_pdf(mu, sigma, y)
 
     return logp
