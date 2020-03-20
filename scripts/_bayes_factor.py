@@ -116,7 +116,7 @@ def get_values_from_trace(model, trace):
     return trace_values
 
 
-def log_posterior(model, trace_values):
+def log_posterior_trace(model, trace_values):
     model_vars = set([var.name for var in model.vars])
     trace_vars = trace_values.keys()
     print("model_vars:", model_vars)
