@@ -92,6 +92,14 @@ def log_normal_trace(trace_val, mu_sigma_dict):
     return logp
 
 
+def draw_normal_samples(mu_sigma_dict, nsamples, random_state=None):
+    rand = np.random.RandomState(random_state)
+    keys = mu_sigma_dict.keys()
+    samples = {k: rand.normal(loc=mu_sigma_dict[k]["mu"], scale=mu_sigma_dict[k]["sigma"], size=nsamples)
+               for k in keys}
+    return samples
+
+
 def dict_to_list(dict_of_list):
     """
     :param dict_of_list: dict: varname --> ndarray
@@ -149,6 +157,7 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     """
     mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
 
+    # the first element is key for the model, the second is key of trace
     pair_2cbm_rmbm = [("P0_interval__", "P0_interval__"),
                       ("Ls_interval__", "Ls_interval__"),
                       ("DeltaG_interval__", "DeltaG1_interval__"),
@@ -160,7 +169,7 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     print("redundant_var_rmbm", redundant_var_rmbm)
 
     # tr_val sampled at rmbm, used to estimate logp with model 2cbm
-    tr_val_rmbm_4_2cbm = {k1: tr_val_rmbm[k2] for k1, k2 in pair_2cbm_rmbm}
+    tr_val_rmbm_4_2cbm = {k0: tr_val_rmbm[k1] for k0, k1 in pair_2cbm_rmbm}
     log_post = log_posterior_trace(model_2cbm, tr_val_rmbm_4_2cbm)
 
     # tr_val sampled at rmbm, but redundant for 2cbm
@@ -169,6 +178,29 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     u = -log_post - logp_norm
     return u
 
+
+def augment_2cbm_tr_for_rmbm_model(model_rmbm, tr_val_rmbm, tr_val_2cbm, sigma_robust=False):
+    """
+    trace drawn from model 2cbm has less vars than required by model rmbm.
+    So we need to augment by sampling from normal distribution in order to be able to estimate with rmbm.
+    :param model_rmbm: pymc3 model
+    :param tr_val_rmbm: dict: varname --> ndarray
+    :param tr_val_2cbm: dict: varname --> ndarray
+    :param sigma_robust: bool
+    :return: (tr_val_4_rmbm, aug_tr_val), (dict, dict)
+    """
+    mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
+
+    pair_rmbm_2cbm = [("P0_interval__", "P0_interval__"),
+                      ("Ls_interval__", "Ls_interval__"),
+                      ("DeltaG1_interval__", "DeltaG_interval__"),
+                      ("DeltaH1_interval__", "DeltaH_interval__"),
+                      ("DeltaH_0_interval__", "DeltaH_0_interval__"),
+                      ("log_sigma_interval__", "log_sigma_interval__")]
+    aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
+
+    # trace sampled from 2cbm used for rmbm model
+    tr_val_4_rmbm = {k0: tr_val_2cbm[k1] for k0, k1 in pair_rmbm_2cbm}
 
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
