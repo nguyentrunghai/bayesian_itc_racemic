@@ -288,3 +288,39 @@ def pot_ener_normal_aug(sample, model, sample_aug, mu_sigma):
     :return: ndarray
     """
     u1 = -log_posterior_trace(model, sample)
+    u2 = -log_normal_trace(sample_aug, mu_sigma)
+    u = u1 + u2
+    return u
+
+
+def split_complex_vars(sample_complex, split_type):
+    """
+    split more complex set of vars to be used for simpler model
+    :param sample_complex: dict: varname --> ndarray
+    :param split_type: str, either "rm_for_2c" or "em_for_2c" or "em_for_rm"
+    :return: (sample_main, sample_aug)
+    """
+    assert split_type in ["rm_for_2c", "em_for_2c", "em_for_rm"], "Unknown split_type:" + split_type
+
+    if split_type in ["rm_for_2c", "em_for_2c"]:
+        common_vars = ["P0_interval__", "Ls_interval__", "DeltaH_0_interval__", "log_sigma_interval__"]
+        sample_main = {var: sample_complex[var] for var in common_vars}
+        sample_main["DeltaG_interval__"] = sample_complex["DeltaG1_interval__"]
+        sample_main["DeltaH_interval__"] = sample_complex["DeltaH1_interval__"]
+
+        if split_type == "rm_for_2c":
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
+        else:
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho"]
+        sample_aug = {var: sample_complex[var] for var in aug_vars}
+
+        return sample_main, sample_aug
+
+    if split_type == "em_for_rm":
+        common_vars = [var for var in sample_complex.keys() if var != "rho"]
+        sample_main = {var: sample_complex[var] for var in common_vars}
+
+        agu_vars = ["rho"]
+        sample_aug = {var: sample_complex[var] for var in agu_vars}
+
+        return sample_main, sample_aug
