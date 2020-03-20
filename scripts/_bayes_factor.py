@@ -76,6 +76,7 @@ def log_normal_trace(trace_val, mu_sigma_dict):
     :param mu_sigma_dict: dict: varname --> dict: {"mu", "sigma"} -> {float, float}
     :return: ndarray
     """
+    assert set(trace_val.keys()) == set(mu_sigma_dict.keys()), "must have the same keys"
     keys = trace_val.keys()
     k0 = keys[0]
     for k in keys[1:]:
@@ -151,7 +152,7 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
 
     # tr_val sampled at rmbm, used to estimate logp with model 2cbm
     tr_val_rmbm_4_2cbm = {k1: tr_val_rmbm[k2] for k1, k2 in pair_2cbm_rmbm}
-    logp_rmbm_2cbm = log_posterior(model_2cbm, tr_val_rmbm_4_2cbm)
+    logp_rmbm_2cbm = log_posterior_trace(model_2cbm, tr_val_rmbm_4_2cbm)
 
     # tr_val sampled at rmbm, but redundant for 2cbm
     tr_val_rmbm_redun = {k: tr_val_rmbm[k] for k in redundant_var_rmbm}
