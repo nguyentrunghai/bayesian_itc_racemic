@@ -105,3 +105,63 @@ def log_posterior(model, trace_values):
     get_logp = np.vectorize(model.logp)
     logp = get_logp(trace_values)
     return logp
+
+
+def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
+    """
+    calculate potential energy for samples drawn from rmbm using model 2cbm
+    :param model_2cbm: pymc3 model
+    :param tr_val_rmbm: dict: varname --> ndarray
+    :param sigma_robust: bool
+    :return: ndarray
+    """
+    mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
+
+    pair_2cbm_rmbm = [("P0_interval__", "P0_interval__"),
+                      ("Ls_interval__", "Ls_interval__"),
+                      ("DeltaG_interval__", "DeltaG1_interval__"),
+                      ("DeltaH_interval__", "DeltaH1_interval__"),
+                      ("DeltaH_0_interval__", "DeltaH_0_interval__"),
+                      ("log_sigma_interval__"), "log_sigma_interval__"]
+    print("pair_2cbm_rmbm", pair_2cbm_rmbm)
+    redundant_var_rmbm = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
+    print("redundant_var_rmbm", redundant_var_rmbm)
+
+    # tr_val sampled at rmbm, used to estimate logp with model 2cbm
+    tr_val_rmbm_4_2cbm = {k1: tr_val_rmbm[k2] for k1, k2 in pair_2cbm_rmbm}
+    logp_rmbm_2cbm = log_posterior(model_2cbm, tr_val_rmbm_4_2cbm)
+
+
+def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
+                         trace_rmbm, trace_2cbm,
+                         sigma_robust=False):
+    """
+    :param model_rmbm: pymc3 model
+    :param model_2cbm: pymc3 model
+    :param trace_rmbm: pymc3 trace object
+    :param trace_2cbm: pymc3 trace object
+    :return: float
+    """
+    tr_val_rmbm = get_values_from_trace(model_rmbm, trace_rmbm)
+    tr_val_2cbm = get_values_from_trace(model_2cbm, trace_2cbm)
+
+    mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
+    mu_sigma_2cbm = fit_normal_trace(tr_val_2cbm, sigma_robust=sigma_robust)
+
+    # u_sample_model
+    print("Calculating u_rmbm_rmbm: drawn at rmbm, estimated at rmbm")
+    u_rmbm_rmbm = - log_posterior(model_rmbm, tr_val_rmbm)
+
+    print("Calculating u_rmbm_2cbm: drawn at rmbm, estimated at 2cbm")
+    pair_2cbm_rmbm = [("P0_interval__", "P0_interval__"),
+                      ("Ls_interval__", "Ls_interval__"),
+                      ("DeltaG_interval__", "DeltaG1_interval__"),
+                      ("DeltaH_interval__", "DeltaH1_interval__"),
+                      ("DeltaH_0_interval__", "DeltaH_0_interval__"),
+                      ("log_sigma_interval__"), "log_sigma_interval__"]
+    print("pair_2cbm_rmbm", pair_2cbm_rmbm)
+    redundant_var_rmbm = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
+    print("redundant_var_rmbm", redundant_var_rmbm)
+    # tr_val sampled at rmbm, used to estimate logp with model 2cbm
+    tr_val_rmbm_4_2cbm = {k1: tr_val_rmbm[k2] for k1, k2 in pair_2cbm_rmbm}
+    logp_rmbm_2cbm = log_posterior(model_2cbm, tr_val_rmbm_4_2cbm)
