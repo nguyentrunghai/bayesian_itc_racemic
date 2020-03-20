@@ -179,6 +179,32 @@ def u_rmbm_2cbm(tr_val_rmbm, model_2cbm, sigma_robust=False):
     return u
 
 
+def u_2cbm_2cbm(tr_val_2cbm, aug_tr_2cbm, model_2cbm, mu_sigma_rmbm):
+    """
+    calculate potential energy for samples drawn from 2cbm using model 2cbm
+    :param tr_val_2cbm: dict: varname --> ndarray
+    :param aug_tr_2cbm: dict: varname --> ndarray
+    :param model_2cbm: pymc3 model
+    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
+    :return: ndarray
+    """
+    u = - log_posterior_trace(model_2cbm, tr_val_2cbm) - log_normal_trace(aug_tr_2cbm, mu_sigma_rmbm)
+    return u
+
+
+def u_2cbm_rmbm(tr_2cbm_4_rmbm, aug_tr_2cbm, model_rmbm):
+    """
+    calculate potential energy for samples drawn from 2cbm using model rmbm
+    :param tr_2cbm_4_rmbm: dict: varname --> ndarray
+    :param aug_tr_2cbm: dict: varname --> ndarray
+    :param model_rmbm: pymc3 model
+    :return: ndarray
+    """
+    tr_2cbm_4_rmbm.update(aug_tr_2cbm)
+    u = - log_posterior_trace(model_rmbm, tr_2cbm_4_rmbm)
+    return u
+
+
 def augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=None):
     """
     trace drawn from model 2cbm has less vars than required by model rmbm.
@@ -204,32 +230,6 @@ def augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=None
     aug_tr_2cbm = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
 
     return tr_2cbm_4_rmbm, aug_tr_2cbm
-
-
-def u_2cbm_2cbm(tr_val_2cbm, aug_tr_2cbm, model_2cbm, mu_sigma_rmbm):
-    """
-    calculate potential energy for samples drawn from 2cbm using model 2cbm
-    :param tr_val_2cbm: dict: varname --> ndarray
-    :param aug_tr_2cbm: dict: varname --> ndarray
-    :param model_2cbm: pymc3 model
-    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
-    :return: ndarray
-    """
-    u = - log_posterior_trace(model_2cbm, tr_val_2cbm) - log_normal_trace(aug_tr_2cbm, mu_sigma_rmbm)
-    return u
-
-
-def u_2cbm_rmbm(tr_2cbm_4_rmbm, aug_tr_2cbm, model_rmbm):
-    """
-    calculate potential energy for samples drawn from 2cbm using model rmbm
-    :param tr_2cbm_4_rmbm: dict: varname --> ndarray
-    :param aug_tr_2cbm: dict: varname --> ndarray
-    :param model_rmbm: pymc3 model
-    :return: ndarray
-    """
-    tr_2cbm_4_rmbm.update(aug_tr_2cbm)
-    u = - log_posterior_trace(model_rmbm, tr_2cbm_4_rmbm)
-    return u
 
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
