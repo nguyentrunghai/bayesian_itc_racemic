@@ -129,6 +129,16 @@ def log_posterior_trace(model, trace_values):
     return logp
 
 
+def u_rmbm_rmbm(model_rmbm, tr_val_rmbm):
+    """
+    calculate potential energy for samples drawn from rmbm using model rmbm
+    :param model_rmbm: pymc3 model
+    :param tr_val_rmbm: dict: varname --> ndarray
+    :return: ndarray
+    """
+    return - log_posterior_trace(model_rmbm, tr_val_rmbm)
+
+
 def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     """
     calculate potential energy for samples drawn from rmbm using model 2cbm
@@ -158,6 +168,7 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     logp_norm = log_normal_trace(tr_val_rmbm_redun, mu_sigma_rmbm)
     u = -log_post - logp_norm
     return u
+
 
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
