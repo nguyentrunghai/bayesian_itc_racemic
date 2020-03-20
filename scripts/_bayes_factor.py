@@ -137,21 +137,21 @@ def log_posterior_trace(model, trace_values):
     return logp
 
 
-def u_rmbm_rmbm(model_rmbm, tr_val_rmbm):
+def u_rmbm_rmbm(tr_val_rmbm, model_rmbm):
     """
     calculate potential energy for samples drawn from rmbm using model rmbm
-    :param model_rmbm: pymc3 model
     :param tr_val_rmbm: dict: varname --> ndarray
+    :param model_rmbm: pymc3 model
     :return: ndarray
     """
     return - log_posterior_trace(model_rmbm, tr_val_rmbm)
 
 
-def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
+def u_rmbm_2cbm(tr_val_rmbm, model_2cbm, sigma_robust=False):
     """
     calculate potential energy for samples drawn from rmbm using model 2cbm
-    :param model_2cbm: pymc3 model
     :param tr_val_rmbm: dict: varname --> ndarray
+    :param model_2cbm: pymc3 model
     :param sigma_robust: bool
     :return: ndarray
     """
@@ -179,12 +179,12 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     return u
 
 
-def augment_2cbm_tr_for_rmbm_model(mu_sigma_rmbm, tr_val_2cbm, random_state=None):
+def augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=None):
     """
     trace drawn from model 2cbm has less vars than required by model rmbm.
     So we need to augment by sampling from normal distribution in order to be able to estimate with rmbm.
-    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
     :param tr_val_2cbm: dict: varname --> ndarray
+    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
     :param random_state: int
     :return: (tr_2cbm_4_rmbm, aug_tr_val), (dict, dict)
     """
@@ -204,6 +204,17 @@ def augment_2cbm_tr_for_rmbm_model(mu_sigma_rmbm, tr_val_2cbm, random_state=None
     aug_tr_2cbm = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
 
     return tr_2cbm_4_rmbm, aug_tr_2cbm
+
+
+def u_2cbm_2cbm(tr_val_2cbm, model_2cbm, aug_tr_2cbm, mu_sigma_rmbm):
+    """
+    calculate potential energy for samples drawn from 2cbm using model 2cbm
+    :param tr_val_2cbm: dict: varname --> ndarray
+    :param model_2cbm: pymc3 model
+    :return: ndarray
+    """
+    u = - log_posterior_trace(model_2cbm, tr_val_2cbm) - log_normal_trace(aug_tr_2cbm, mu_sigma_rmbm)
+    return u
 
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
