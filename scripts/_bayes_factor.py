@@ -179,18 +179,15 @@ def u_rmbm_2cbm(model_2cbm, tr_val_rmbm, sigma_robust=False):
     return u
 
 
-def augment_2cbm_tr_for_rmbm_model(model_rmbm, tr_val_rmbm, tr_val_2cbm, sigma_robust=False):
+def augment_2cbm_tr_for_rmbm_model(mu_sigma_rmbm, tr_val_2cbm, random_state=None):
     """
     trace drawn from model 2cbm has less vars than required by model rmbm.
     So we need to augment by sampling from normal distribution in order to be able to estimate with rmbm.
-    :param model_rmbm: pymc3 model
-    :param tr_val_rmbm: dict: varname --> ndarray
+    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
     :param tr_val_2cbm: dict: varname --> ndarray
-    :param sigma_robust: bool
-    :return: (tr_val_4_rmbm, aug_tr_val), (dict, dict)
+    :param random_state: int
+    :return: (tr_2cbm_4_rmbm, aug_tr_val), (dict, dict)
     """
-    mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
-
     pair_rmbm_2cbm = [("P0_interval__", "P0_interval__"),
                       ("Ls_interval__", "Ls_interval__"),
                       ("DeltaG1_interval__", "DeltaG_interval__"),
@@ -200,7 +197,13 @@ def augment_2cbm_tr_for_rmbm_model(model_rmbm, tr_val_rmbm, tr_val_2cbm, sigma_r
     aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
 
     # trace sampled from 2cbm used for rmbm model
-    tr_val_4_rmbm = {k0: tr_val_2cbm[k1] for k0, k1 in pair_rmbm_2cbm}
+    tr_2cbm_4_rmbm = {k0: tr_val_2cbm[k1] for k0, k1 in pair_rmbm_2cbm}
+
+    mu_sigma_aug = {k: mu_sigma_rmbm[k] for k in aug_vars}
+    nsamples = len(tr_2cbm_4_rmbm["P0_interval__"])
+    aug_tr_2cbm = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
+
+    return tr_2cbm_4_rmbm, aug_tr_2cbm
 
 
 def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
