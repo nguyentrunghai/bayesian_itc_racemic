@@ -8,6 +8,8 @@ import argparse
 import os
 import pickle
 
+import pandas as pd
+
 from _bayes_factor import get_values_from_trace
 from _bayes_factor import bayes_factor
 
@@ -32,12 +34,13 @@ parser.add_argument("--sigma_robust", action="store_true", default=False)
 parser.add_argument("--random_state", type=int, default=None)
 parser.add_argument("--bootstrap", type=int, default=None)
 
+parser.add_argument("--csv_out", type=str, default="bayes_factors.csv")
 args = parser.parse_args()
 
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
-bf_list = []
+bf_df = []
 for exper in experiments:
     print("Calculating for " + exper)
     # load data for 2cbm
@@ -66,4 +69,25 @@ for exper in experiments:
                                      sigma_robust=args.sigma_robust,
                                      random_state=args.random_state,
                                      bootstrap=args.bootstrap)
-    
+
+    if args.bootstrap is not None:
+        bf_rm_over_2c, err_rm_over_2c = result_rm_over_2c
+        bf_em_over_2c, err_em_over_2c = result_em_over_2c
+    else:
+        bf_rm_over_2c = result_rm_over_2c
+        err_rm_over_2c = None
+
+        bf_em_over_2c = result_em_over_2c
+        err_em_over_2c = None
+
+    res_dic = {"Experiment": exper,
+               "bf_rm_over_2c": bf_rm_over_2c, "err_rm_over_2c": err_rm_over_2c,
+               "bf_em_over_2c": bf_em_over_2c, "err_em_over_2c": err_em_over_2c}
+    bf_df.append(res_dic)
+
+bf_df = pd.DataFrame(bf_df)
+cols = ["Experiment", "bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c"]
+bf_df = bf_df[cols]
+bf_df.to_csv(args.csv_out, index=False)
+
+print("Done")
