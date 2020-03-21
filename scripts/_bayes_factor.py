@@ -357,7 +357,9 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
             aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
         else:
             aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho_interval__"]
-        sample_aug = draw_normal_samples(mu_sigma_complex, nsamples, random_state=random_state)
+
+        mu_sigma_aug = {k: mu_sigma_complex[k] for k in aug_vars}
+        sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
 
         return sample_main, sample_aug
 
@@ -365,8 +367,8 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
         common_vars = [var for var in sample_simpler.keys() if var != "rho_interval__"]
         sample_main = {var: sample_simpler[var] for var in common_vars}
 
-        agu_vars = ["rho_interval__"]
-        sample_aug = draw_normal_samples(mu_sigma_complex, nsamples, random_state=random_state)
+        aug_vars = ["rho_interval__"]
+        mu_sigma_aug = {k: mu_sigma_complex[k] for k in aug_vars}
+        sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
 
         return sample_main, sample_aug
-    
