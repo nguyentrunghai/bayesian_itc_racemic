@@ -129,142 +129,15 @@ def get_values_from_trace(model, trace, burn=0):
 def log_posterior_trace(model, trace_values):
     model_vars = set([var.name for var in model.vars])
     trace_vars = set(trace_values.keys())
-    print("model_vars:", model_vars)
-    print("trace_vars:", trace_vars)
-    assert model_vars == trace_vars, "model_vars and trace_vars are not the same set"
+    if model_vars != trace_vars:
+        print("model_vars:", model_vars)
+        print("trace_vars:", trace_vars)
+        raise ValueError("model_vars and trace_vars are not the same set")
 
     trace_values = dict_to_list(trace_values)
     get_logp = np.vectorize(model.logp)
     logp = get_logp(trace_values)
     return logp
-
-
-def u_rmbm_rmbm(tr_val_rmbm, model_rmbm):
-    """
-    calculate potential energy for samples drawn from rmbm using model rmbm
-    :param tr_val_rmbm: dict: varname --> ndarray
-    :param model_rmbm: pymc3 model
-    :return: ndarray
-    """
-    return - log_posterior_trace(model_rmbm, tr_val_rmbm)
-
-
-def u_rmbm_2cbm(tr_val_rmbm, model_2cbm, mu_sigma_rmbm):
-    """
-    calculate potential energy for samples drawn from rmbm using model 2cbm
-    :param tr_val_rmbm: dict: varname --> ndarray
-    :param model_2cbm: pymc3 model
-    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
-    :return: ndarray
-    """
-    # the first element is key for the model, the second is key of trace
-    pair_2cbm_rmbm = [("P0_interval__", "P0_interval__"),
-                      ("Ls_interval__", "Ls_interval__"),
-                      ("DeltaG_interval__", "DeltaG1_interval__"),
-                      ("DeltaH_interval__", "DeltaH1_interval__"),
-                      ("DeltaH_0_interval__", "DeltaH_0_interval__"),
-                      ("log_sigma_interval__", "log_sigma_interval__")]
-    print("pair_2cbm_rmbm", pair_2cbm_rmbm)
-    redundant_var_rmbm = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
-    print("redundant_var_rmbm", redundant_var_rmbm)
-
-    # tr_val sampled at rmbm, used to estimate logp with model 2cbm
-    tr_val_rmbm_4_2cbm = {k0: tr_val_rmbm[k1] for k0, k1 in pair_2cbm_rmbm}
-    log_post = log_posterior_trace(model_2cbm, tr_val_rmbm_4_2cbm)
-
-    # tr_val sampled at rmbm, but redundant for 2cbm
-    tr_val_rmbm_redun = {k: tr_val_rmbm[k] for k in redundant_var_rmbm}
-    logp_norm = log_normal_trace(tr_val_rmbm_redun, mu_sigma_rmbm)
-    u = -log_post - logp_norm
-    return u
-
-
-def u_2cbm_2cbm(tr_val_2cbm, aug_tr_2cbm, model_2cbm, mu_sigma_rmbm):
-    """
-    calculate potential energy for samples drawn from 2cbm using model 2cbm
-    :param tr_val_2cbm: dict: varname --> ndarray
-    :param aug_tr_2cbm: dict: varname --> ndarray
-    :param model_2cbm: pymc3 model
-    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
-    :return: ndarray
-    """
-    u = - log_posterior_trace(model_2cbm, tr_val_2cbm) - log_normal_trace(aug_tr_2cbm, mu_sigma_rmbm)
-    return u
-
-
-def u_2cbm_rmbm(tr_2cbm_4_rmbm, aug_tr_2cbm, model_rmbm):
-    """
-    calculate potential energy for samples drawn from 2cbm using model rmbm
-    :param tr_2cbm_4_rmbm: dict: varname --> ndarray
-    :param aug_tr_2cbm: dict: varname --> ndarray
-    :param model_rmbm: pymc3 model
-    :return: ndarray
-    """
-    tr_2cbm_4_rmbm.update(aug_tr_2cbm)
-    u = - log_posterior_trace(model_rmbm, tr_2cbm_4_rmbm)
-    return u
-
-
-def augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=None):
-    """
-    trace drawn from model 2cbm has less vars than required by model rmbm.
-    So we need to augment by sampling from normal distribution in order to be able to estimate with rmbm.
-    :param tr_val_2cbm: dict: varname --> ndarray
-    :param mu_sigma_rmbm: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
-    :param random_state: int
-    :return: (tr_2cbm_4_rmbm, aug_tr_val), (dict, dict)
-    """
-    pair_rmbm_2cbm = [("P0_interval__", "P0_interval__"),
-                      ("Ls_interval__", "Ls_interval__"),
-                      ("DeltaG1_interval__", "DeltaG_interval__"),
-                      ("DeltaH1_interval__", "DeltaH_interval__"),
-                      ("DeltaH_0_interval__", "DeltaH_0_interval__"),
-                      ("log_sigma_interval__", "log_sigma_interval__")]
-    aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
-
-    # trace sampled from 2cbm used for rmbm model
-    tr_2cbm_4_rmbm = {k0: tr_val_2cbm[k1] for k0, k1 in pair_rmbm_2cbm}
-
-    mu_sigma_aug = {k: mu_sigma_rmbm[k] for k in aug_vars}
-    nsamples = len(tr_2cbm_4_rmbm["P0_interval__"])
-    aug_tr_2cbm = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
-
-    return tr_2cbm_4_rmbm, aug_tr_2cbm
-
-
-def bfact_rmbm_over_2cbm(model_rmbm, model_2cbm,
-                         trace_rmbm, trace_2cbm,
-                         sigma_robust=False,
-                         random_state=None):
-    """
-    :param model_rmbm: pymc3 model
-    :param model_2cbm: pymc3 model
-    :param trace_rmbm: pymc3 trace object
-    :param trace_2cbm: pymc3 trace object
-    :param sigma_robust: bool
-    :param random_state: int
-    :return: float
-    """
-    tr_val_rmbm = get_values_from_trace(model_rmbm, trace_rmbm)
-    tr_val_2cbm = get_values_from_trace(model_2cbm, trace_2cbm)
-
-    mu_sigma_rmbm = fit_normal_trace(tr_val_rmbm, sigma_robust=sigma_robust)
-
-    u_rm_rm = u_rmbm_rmbm(tr_val_rmbm, model_rmbm)
-    u_rm_2c = u_rmbm_2cbm(tr_val_rmbm, model_2cbm, mu_sigma_rmbm)
-
-    tr_2cbm_4_rmbm, aug_tr_2cbm = augment_2cbm_tr_for_rmbm_model(tr_val_2cbm, mu_sigma_rmbm, random_state=random_state)
-    u_2c_2c = u_2cbm_2cbm(tr_val_2cbm, aug_tr_2cbm, model_2cbm, mu_sigma_rmbm)
-    u_2c_rm = u_2cbm_rmbm(tr_2cbm_4_rmbm, aug_tr_2cbm, model_rmbm)
-
-    w_F = u_rm_2c - u_rm_rm
-    w_R = u_2c_rm - u_2c_2c
-
-    delta_f = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
-    return delta_f
-
-
-#-----------------------
 
 
 def pot_ener(sample, model):
