@@ -297,7 +297,7 @@ def split_complex_vars(sample_complex, split_type):
     """
     split more complex set of vars to be used for simpler model
     :param sample_complex: dict: varname --> ndarray
-    :param split_type: str, either "rm_for_2c" or "em_for_2c" or "em_for_rm"
+    :param split_type: str, either or "em_for_2c" or "em_for_rm"
     :return: (sample_main, sample_aug)
     """
     assert split_type in ["rm_for_2c", "em_for_2c", "em_for_rm"], "Unknown split_type:" + split_type
@@ -311,16 +311,16 @@ def split_complex_vars(sample_complex, split_type):
         if split_type == "rm_for_2c":
             aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
         else:
-            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho"]
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho_interval__"]
         sample_aug = {var: sample_complex[var] for var in aug_vars}
 
         return sample_main, sample_aug
 
     if split_type == "em_for_rm":
-        common_vars = [var for var in sample_complex.keys() if var != "rho"]
+        common_vars = [var for var in sample_complex.keys() if var != "rho_interval__"]
         sample_main = {var: sample_complex[var] for var in common_vars}
 
-        agu_vars = ["rho"]
+        agu_vars = ["rho_interval__"]
         sample_aug = {var: sample_complex[var] for var in agu_vars}
 
         return sample_main, sample_aug
