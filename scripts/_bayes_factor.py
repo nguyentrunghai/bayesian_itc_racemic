@@ -420,27 +420,25 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     aug_type = model_ini_name + "_for_" + model_fin_name
 
     # augment initial sample
-    sample_ini_main, sample_ini_aug = augment_simpler_vars(sample_ini, mu_sigma_fin, aug_type,
+    sample_i_for_f, sample_ini_aug = augment_simpler_vars(sample_ini, mu_sigma_fin, aug_type,
                                                            random_state=random_state)
     # split final sample
-    sample_fin_main, sample_fin_aug = split_complex_vars(sample_fin, split_type)
+    sample_f_for_i, sample_fin_aug = split_complex_vars(sample_fin, split_type)
 
     # potential for sample drawn from i estimated at state i
-    u_i_i = pot_ener_normal_aug(sample_ini_main, model_ini, sample_ini_aug, mu_sigma_fin)
+    u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_ini_aug, mu_sigma_fin)
 
     # potential for sample drawn from i estimated at state f
-    sample_ini_comb = sample_ini_main.copy()
+    sample_ini_comb = sample_i_for_f.copy()
     sample_ini_comb.update(sample_ini_aug)
     u_i_f = pot_ener(sample_ini_comb, model_fin)
 
     #
     # potential for sample drawn from f estimated at state f
-    sample_fin_comb = sample_fin_main.copy()
-    sample_fin_comb.update(sample_fin_aug)
-    u_f_f = pot_ener(sample_fin_comb, model_fin)
+    u_f_f = pot_ener(sample_fin, model_fin)
 
     # potential for sample drawn from f estimated at state i
-    u_f_i = pot_ener_normal_aug(sample_fin_main, model_ini, sample_fin_aug, mu_sigma_fin)
+    u_f_i = pot_ener_normal_aug(sample_f_for_i, model_ini, sample_fin_aug, mu_sigma_fin)
 
     w_F = u_i_f - u_i_i
     w_R = u_f_i - u_f_f
