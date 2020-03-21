@@ -251,7 +251,7 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
             var_s = element_starts_with(var_prefix, vars_simple)
             var_c = element_starts_with(var_prefix, vars_complex)
             sample_main[var_c] = sample_simpler[var_s]
-            
+
         sample_main["DeltaG1_interval__"] = sample_simpler["DeltaG_interval__"]
         sample_main["DeltaH1_interval__"] = sample_simpler["DeltaH_interval__"]
 
