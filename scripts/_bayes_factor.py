@@ -166,6 +166,20 @@ def pot_ener_normal_aug(sample, model, sample_aug, mu_sigma):
     return u
 
 
+def element_starts_with(start_str, list_of_strs):
+    """
+    :param start_str: str
+    :param list_of_strs: list
+    :return: str
+    """
+    found = [s for s in list_of_strs if s.startswith(start_str)]
+    if len(found) == 0:
+        raise ValueError("Found none")
+    if len(found) > 1:
+        raise ValueError("Found many: " + ", ".join(found))
+    return found[0]
+
+
 def split_complex_vars(sample_complex, split_type):
     """
     split more complex set of vars to be used for simpler model
