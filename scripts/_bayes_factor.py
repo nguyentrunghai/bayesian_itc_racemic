@@ -374,6 +374,30 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
         return sample_main, sample_aug
 
 
+def bootstrap_BAR(w_F, w_R, repeats):
+    """
+    :param w_F: ndarray
+    :param w_R: ndarray
+    :param repeats: int
+    :return: std, float
+    """
+    n_F = len(w_F)
+    n_R = len(w_R)
+    delta_Fs = []
+    for _ in range(repeats):
+        w_F_rand = np.random.choice(w_F, size=n_F, replace=True)
+        w_R_rand = np.random.choice(w_R, size=n_R, replace=True)
+
+        df = pymbar.BAR(w_F_rand, w_R_rand, compute_uncertainty=False, relative_tolerance=1e-12, verbose=False)
+        delta_Fs.append(df)
+
+    delta_Fs = np.asarray(delta_Fs)
+    delta_Fs = delta_Fs[~np.isnan(delta_Fs)]
+    delta_Fs = delta_Fs[~np.isinf(delta_Fs)]
+    
+    return delta_Fs.std()
+
+
 def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
                  model_ini_name, model_fin_name,
                  sigma_robust=False, random_state=None):
