@@ -180,18 +180,26 @@ def element_starts_with(start_str, list_of_strs):
     return found[0]
 
 
-def split_complex_vars(sample_complex, split_type):
+def split_complex_vars(sample_complex, vars_simple, split_type):
     """
-    split more complex set of vars to be used for simpler model
+    split set of more complex vars to be used for simpler model
     :param sample_complex: dict: varname --> ndarray, samples drawn from more complex model
+    :param vars_simple: list of str, names of vars in simple model
     :param split_type: str, either or "em_for_2c" or "em_for_rm"
     :return: (sample_main, sample_aug), (dict: varname --> ndarray, dict: varname --> ndarray)
     """
     assert split_type in ["rm_for_2c", "em_for_2c", "em_for_rm"], "Unknown split_type:" + split_type
 
+    vars_complex = sample_complex.keys()
+
     if split_type in ["rm_for_2c", "em_for_2c"]:
-        common_vars = ["P0_interval__", "Ls_interval__", "DeltaH_0_interval__", "log_sigma_interval__"]
-        sample_main = {var: sample_complex[var] for var in common_vars}
+        common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
+        sample_main = {}
+        for var_prefix in common_var_prefixes:
+            var_s = element_starts_with(var_prefix, vars_simple)
+            var_c = element_starts_with(var_prefix, vars_complex)
+            sample_main[var_s] = sample_complex[var_c]
+
         sample_main["DeltaG_interval__"] = sample_complex["DeltaG1_interval__"]
         sample_main["DeltaH_interval__"] = sample_complex["DeltaH1_interval__"]
 
@@ -308,9 +316,9 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
 
     # augment initial sample
     sample_i_for_f, sample_ini_aug = augment_simpler_vars(sample_ini, mu_sigma_fin, aug_type,
-                                                           random_state=random_state)
+                                                          random_state=random_state)
     # split final sample
-    sample_f_for_i, sample_fin_aug = split_complex_vars(sample_fin, split_type)
+    sample_f_for_i, sample_fin_aug = split_complex_vars(sample_fin, sample_ini.keys(), split_type)
 
     # potential for sample drawn from i estimated at state i
     print("Calculate u_i_i: drawn from i, estimated at i")
