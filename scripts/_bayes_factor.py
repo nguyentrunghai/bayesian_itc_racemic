@@ -120,9 +120,9 @@ def dict_to_list(dict_of_list):
     return ls_of_dic
 
 
-def get_values_from_trace(model, trace):
+def get_values_from_trace(model, trace, burn=0):
     varnames = [var.name for var in model.vars]
-    trace_values = {var: trace.get_values(var) for var in varnames}
+    trace_values = {var: trace.get_values(var, burn=burn) for var in varnames}
     return trace_values
 
 
@@ -447,7 +447,7 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
 
     delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
     bf = -delta_F
-    
+
     if bootstrap is None:
         return bf
     else:
