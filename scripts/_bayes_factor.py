@@ -299,18 +299,22 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     sample_f_for_i, sample_fin_aug = split_complex_vars(sample_fin, split_type)
 
     # potential for sample drawn from i estimated at state i
+    print("Calculate u_i_i: drawn from i, estimated at i")
     u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_ini_aug, mu_sigma_fin)
 
     # potential for sample drawn from i estimated at state f
     sample_ini_comb = sample_i_for_f.copy()
     sample_ini_comb.update(sample_ini_aug)
+    print("Calculate u_i_f: drawn from i, estimated at f")
     u_i_f = pot_ener(sample_ini_comb, model_fin)
 
     #
     # potential for sample drawn from f estimated at state f
+    print("Calculate u_f_f: drawn from f, estimated at f")
     u_f_f = pot_ener(sample_fin, model_fin)
 
     # potential for sample drawn from f estimated at state i
+    print("Calculate u_f_i: drawn from f, estimated at i")
     u_f_i = pot_ener_normal_aug(sample_f_for_i, model_ini, sample_fin_aug, mu_sigma_fin)
 
     w_F = u_i_f - u_i_i
@@ -320,8 +324,10 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     bf = -delta_F
 
     if bootstrap is None:
+        print("ln(bf) = %0.5f" % bf)
         return bf
     else:
         bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
+        print("ln(bf) = %0.5f +/- %0.5f" % (bf, bf_err))
         return bf, bf_err
 
