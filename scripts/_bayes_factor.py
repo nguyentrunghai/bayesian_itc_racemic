@@ -327,6 +327,7 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
         print("ln(bf) = %0.5f" % bf)
         return bf
     else:
+        print("Running %d bootstraps to estimate error." % bootstrap)
         bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
         print("ln(bf) = %0.5f +/- %0.5f" % (bf, bf_err))
         return bf, bf_err
