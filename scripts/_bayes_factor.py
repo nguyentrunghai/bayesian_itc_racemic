@@ -394,13 +394,14 @@ def bootstrap_BAR(w_F, w_R, repeats):
     delta_Fs = np.asarray(delta_Fs)
     delta_Fs = delta_Fs[~np.isnan(delta_Fs)]
     delta_Fs = delta_Fs[~np.isinf(delta_Fs)]
-    
+
     return delta_Fs.std()
 
 
 def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
                  model_ini_name, model_fin_name,
-                 sigma_robust=False, random_state=None):
+                 sigma_robust=False, random_state=None,
+                 bootstrap=None):
     """
     :param model_ini: pymc3 model
     :param sample_ini: dict: varname --> ndarray, samples drawn from initial (simpler) state
@@ -409,7 +410,8 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     :param model_ini_name: str
     :param model_fin_name: str
     :param sigma_robust: bool
-    :param random_state: ini
+    :param random_state: int
+    :param bootstrap: int
     :return: float
     """
     mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
@@ -445,4 +447,10 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
 
     delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
     bf = -delta_F
-    return bf
+    
+    if bootstrap is None:
+        return bf
+    else:
+        bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
+        return bf, bf_err
+
