@@ -9,6 +9,7 @@ import os
 import pickle
 
 from _bayes_factor import get_values_from_trace
+from _bayes_factor import bayes_factor
 
 parser = argparse.ArgumentParser()
 
@@ -26,6 +27,10 @@ parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
 parser.add_argument("--burns", type=int, default=0)
+
+parser.add_argument("--sigma_robust", action="store_true", default=False)
+parser.add_argument("--random_state", type=int, default=None)
+parser.add_argument("--bootstrap", type=int, default=None)
 
 args = parser.parse_args()
 
@@ -50,4 +55,15 @@ for exper in experiments:
     trace_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.trace_pickle)))
     sample_em = get_values_from_trace(model_em, trace_em, burn=args.burns)
 
+    result_rm_over_2c = bayes_factor(model_2c, sample_2c, model_rm, sample_rm,
+                                     model_ini_name="2c", model_fin_name="rm",
+                                     sigma_robust=args.sigma_robust,
+                                     random_state=args.random_state,
+                                     bootstrap=args.bootstrap)
+
+    result_em_over_2c = bayes_factor(model_2c, sample_2c, model_em, sample_em,
+                                     model_ini_name="2c", model_fin_name="em",
+                                     sigma_robust=args.sigma_robust,
+                                     random_state=args.random_state,
+                                     bootstrap=args.bootstrap)
     
