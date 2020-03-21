@@ -42,7 +42,7 @@ print("experiments:", experiments)
 
 bf_df = []
 for exper in experiments:
-    print("Calculating for " + exper)
+    print("Calculating Bayes Factors for " + exper)
     # load data for 2cbm
     model_2c = pickle.load(open(os.path.join(args.two_component_mcmc_dir, exper, args.model_pickle)))
     trace_2c = pickle.load(open(os.path.join(args.two_component_mcmc_dir, exper, args.trace_pickle)))
@@ -58,12 +58,14 @@ for exper in experiments:
     trace_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.trace_pickle)))
     sample_em = get_values_from_trace(model_em, trace_em, burn=args.burns)
 
+    print("RM over 2C")
     result_rm_over_2c = bayes_factor(model_2c, sample_2c, model_rm, sample_rm,
                                      model_ini_name="2c", model_fin_name="rm",
                                      sigma_robust=args.sigma_robust,
                                      random_state=args.random_state,
                                      bootstrap=args.bootstrap)
 
+    print("EM over 2C")
     result_em_over_2c = bayes_factor(model_2c, sample_2c, model_em, sample_em,
                                      model_ini_name="2c", model_fin_name="em",
                                      sigma_robust=args.sigma_robust,
