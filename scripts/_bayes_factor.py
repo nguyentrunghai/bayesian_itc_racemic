@@ -241,10 +241,17 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
         assert "rho_interval__" in mu_sigma_complex, "rho_interval__ not in mu_sigma_complex"
 
     nsamples = len(sample_simpler["P0_interval__"])
+    vars_simple = sample_simpler.keys()
+    vars_complex = mu_sigma_complex.keys()
 
     if aug_type in ["2c_for_rm", "2c_for_em"]:
-        common_vars = ["P0_interval__", "Ls_interval__", "DeltaH_0_interval__", "log_sigma_interval__"]
-        sample_main = {var: sample_simpler[var] for var in common_vars}
+        common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
+        sample_main = {}
+        for var_prefix in common_var_prefixes:
+            var_s = element_starts_with(var_prefix, vars_simple)
+            var_c = element_starts_with(var_prefix, vars_complex)
+            sample_main[var_c] = sample_simpler[var_s]
+            
         sample_main["DeltaG1_interval__"] = sample_simpler["DeltaG_interval__"]
         sample_main["DeltaH1_interval__"] = sample_simpler["DeltaH_interval__"]
 
