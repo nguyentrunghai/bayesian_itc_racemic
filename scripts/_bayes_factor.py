@@ -261,7 +261,7 @@ def bootstrap_BAR(w_F, w_R, repeats):
         w_F_rand = np.random.choice(w_F, size=n_F, replace=True)
         w_R_rand = np.random.choice(w_R, size=n_R, replace=True)
 
-        df = pymbar.BAR(w_F_rand, w_R_rand, compute_uncertainty=False, relative_tolerance=1e-12, verbose=False)
+        df = pymbar.BAR(w_F_rand, w_R_rand, compute_uncertainty=False, relative_tolerance=1e-6, verbose=False)
         delta_Fs.append(df)
 
     delta_Fs = np.asarray(delta_Fs)
