@@ -29,6 +29,12 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str,
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 
+parser.add_argument("--exper_info_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/05.exper_info")
+parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
+
+parser.add_argument("--heat_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/04.heat_in_origin_format")
+
+
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
@@ -66,4 +72,36 @@ for exper in experiments:
     map_em = find_MAP(model_em)
     print("map_em", map_em)
 
-    
+    exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
+    actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
+
+    # heat calculation using map parameters
+    q_2c_cal = heats_TwoComponentBindingModel(exper_info.get_cell_volume_liter(),
+                                              exper_info.get_injection_volumes_liter(),
+                                              map_2c["P0"], map_2c["Ls"], map_2c["DeltaG"], map_2c["DeltaH"],
+                                              map_2c["DeltaH_0"],
+                                              beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                              N=exper_info.get_number_injections())
+    q_2c_micro_cal = q_2c_cal * 10 ** 6
+
+    q_rm_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                exper_info.get_injection_volumes_liter(),
+                                                map_rm["P0"], map_rm["Ls"], 0.5,
+                                                map_rm["DeltaH1"], map_rm["DeltaH2"], map_rm["DeltaH_0"],
+                                                map_rm["DeltaG1"], map_rm["DeltaDeltaG"],
+                                                beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                N=exper_info.get_number_injections())
+    q_rm_micro_cal = q_rm_cal * 10 ** 6
+
+    q_em_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                exper_info.get_injection_volumes_liter(),
+                                                map_em["P0"], map_em["Ls"], map_em["rho"],
+                                                map_em["DeltaH1"], map_em["DeltaH2"], map_em["DeltaH_0"],
+                                                map_em["DeltaG1"], map_em["DeltaDeltaG"],
+                                                beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                N=exper_info.get_number_injections())
+    q_em_micro_cal = q_em_cal * 10 ** 6
+
+    assert len(actual_q_micro_cal) == len(q_2c_micro_cal) == len(q_rm_micro_cal) == len(
+        q_em_micro_cal), "heats do not have the same len"
+    n_inj = len(actual_q_micro_cal)
