@@ -317,6 +317,7 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     :return: float
     """
     mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
+    print("mu_sigma_fin:", mu_sigma_fin)
 
     split_type = model_fin_name + "_for_" + model_ini_name
     aug_type = model_ini_name + "_for_" + model_fin_name
