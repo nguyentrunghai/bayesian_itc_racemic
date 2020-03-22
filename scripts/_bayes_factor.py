@@ -240,9 +240,9 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
     if aug_type in ["2c_for_em", "rm_for_em"]:
         assert "rho_interval__" in mu_sigma_complex, "rho_interval__ not in mu_sigma_complex"
 
-    nsamples = len(sample_simpler["P0_interval__"])
     vars_simple = sample_simpler.keys()
     vars_complex = mu_sigma_complex.keys()
+    nsamples = len(sample_simpler[vars_simple[0]])
 
     if aug_type in ["2c_for_rm", "2c_for_em"]:
         common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
