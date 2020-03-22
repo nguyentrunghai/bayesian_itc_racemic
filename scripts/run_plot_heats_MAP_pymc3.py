@@ -28,6 +28,7 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str,
                     default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2/repeat_0")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
+parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 
 parser.add_argument("--exper_info_dir", type=str, default="/home/tnguye46/bayesian_itc_racemic/05.exper_info")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
@@ -37,6 +38,9 @@ parser.add_argument("--heat_dir", type=str, default="/home/tnguye46/bayesian_itc
 
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
+
+# "optimization" or "mcmc_sampling"
+parser.add_argument("--how_to_find_MAP", type=str, default="optimization")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
 parser.add_argument("--xlabel", type=str, default="# injections")
@@ -59,6 +63,7 @@ def find_MAP_trace(model, trace):
     map_val = {name: trace.get_values(name)[idx_max] for name in free_vars}
     return map_val
 
+assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_to_find_MAP"
 
 sns.set(font_scale=args.font_scale)
 
@@ -73,17 +78,35 @@ for exper in experiments:
     model_rm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, exper, args.model_pickle)))
     model_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.model_pickle)))
 
-    print("Calculating MAP_2C")
-    map_2c = find_MAP_maximize(model_2c)
-    print("map_2c", map_2c)
+    if args.how_to_find_MAP == "optimization":
+        print("Optimizing MAP_2C")
+        map_2c = find_MAP_maximize(model_2c)
+        print("map_2c", map_2c)
 
-    print("Calculating MAP_RM")
-    map_rm = find_MAP_maximize(model_rm)
-    print("map_rm", map_rm)
+        print("Optimizing MAP_RM")
+        map_rm = find_MAP_maximize(model_rm)
+        print("map_rm", map_rm)
 
-    print("Calculating MAP_EM")
-    map_em = find_MAP_maximize(model_em)
-    print("map_em", map_em)
+        print("Optimizing MAP_EM")
+        map_em = find_MAP_maximize(model_em)
+        print("map_em", map_em)
+
+    else:
+        trace_2c = pickle.load(open(os.path.join(args.two_component_mcmc_dir, exper, args.trace_pickle)))
+        trace_rm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, exper, args.trace_pickle)))
+        trace_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.trace_pickle)))
+
+        print("Searching for MAP_2C in mcmc trace")
+        map_2c = find_MAP_trace(model_2c, trace_2c)
+        print("map_2c", map_2c)
+
+        print("Searching for MAP_RM in mcmc trace")
+        map_rm = find_MAP_trace(model_rm, trace_rm)
+        print("map_rm", map_rm)
+
+        print("Searching for MAP_EM in mcmc trace")
+        map_em = find_MAP_trace(model_em, trace_em)
+        print("map_em", map_em)
 
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
