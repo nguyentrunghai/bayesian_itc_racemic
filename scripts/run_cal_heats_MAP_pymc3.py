@@ -105,3 +105,18 @@ for exper in experiments:
     assert len(actual_q_micro_cal) == len(q_2c_micro_cal) == len(q_rm_micro_cal) == len(
         q_em_micro_cal), "heats do not have the same len"
     n_inj = len(actual_q_micro_cal)
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+    ax.scatter(range(1, n_inj + 1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
+    ax.plot(range(1, n_inj + 1), q_2c_micro_cal, c="r", linestyle="-", label="2cbm")
+    ax.plot(range(1, n_inj + 1), q_rm_micro_cal, c="b", linestyle="-", label="rmbm")
+    ax.plot(range(1, n_inj + 1), q_em_micro_cal, c="g", linestyle="-", label="embm")
+
+    ax.set_xlabel(args.xlabel)
+    ax.set_ylabel(args.ylabel)
+    ax.legend(loc="lower right")
+
+    fig.tight_layout()
+    fig.savefig(exper + ".pdf", dpi=300)
+
+print("DONE")
