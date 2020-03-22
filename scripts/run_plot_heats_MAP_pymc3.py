@@ -8,11 +8,13 @@ import argparse
 import os
 import pickle
 
+import numpy as np
 import pymc3
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from _bayes_factor import get_values_from_trace, log_posterior_trace
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
 
@@ -42,8 +44,21 @@ parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
 
-def find_MAP(model, method="L-BFGS-B"):
+
+def find_MAP_maximize(model, method="L-BFGS-B"):
     return pymc3.find_MAP(model=model, method=method)
+
+
+def find_MAP_trace(model, trace):
+    tr_val = get_values_from_trace(model, trace)
+    logp = log_posterior_trace(model, tr_val)
+
+    idx_max = np.argmax(logp)
+
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    map_val = {name: trace.get_values(name)[idx_max] for name in free_vars}
+    return map_val
+
 
 sns.set(font_scale=args.font_scale)
 
@@ -59,15 +74,15 @@ for exper in experiments:
     model_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.model_pickle)))
 
     print("Calculating MAP_2C")
-    map_2c = find_MAP(model_2c)
+    map_2c = find_MAP_maximize(model_2c)
     print("map_2c", map_2c)
 
     print("Calculating MAP_RM")
-    map_rm = find_MAP(model_rm)
+    map_rm = find_MAP_maximize(model_rm)
     print("map_rm", map_rm)
 
     print("Calculating MAP_EM")
-    map_em = find_MAP(model_em)
+    map_em = find_MAP_maximize(model_em)
     print("map_em", map_em)
 
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
