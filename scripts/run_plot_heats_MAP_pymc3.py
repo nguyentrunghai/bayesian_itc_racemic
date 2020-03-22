@@ -8,8 +8,6 @@ import argparse
 import os
 import pickle
 
-import numpy as np
-import pandas as pd
 import pymc3
 
 import matplotlib.pyplot as plt
