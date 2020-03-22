@@ -109,7 +109,7 @@ if args.write_qsub_script:
 #PBS -S /bin/bash
 #PBS -o %s ''' % log_file + '''
 #PBS -j oe
-#PBS -l nodes=1:ppn=1,mem=4096mb,walltime=300:00:00
+#PBS -l nodes=1:ppn=1,mem=2048mb,walltime=300:00:00
 
 source /home/tnguye46/opt/module/anaconda2019.10.sh
 date
