@@ -354,11 +354,11 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     bf = -delta_F
 
     if bootstrap is None:
-        print("ln(bf) = %0.5f" % bf)
+        print("log10(bf) = %0.5f" % (bf *np.log10(np.e)) )
         return bf
     else:
         print("Running %d bootstraps to estimate error." % bootstrap)
         bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
-        print("ln(bf) = %0.5f +/- %0.5f" % (bf, bf_err))
+        print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
         return bf, bf_err
 
