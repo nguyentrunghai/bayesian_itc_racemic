@@ -39,6 +39,37 @@ def log_marginal_lhs_bootstrap(extracted_loglhs, sample_size=None, bootstrap_rep
     return all_sample_estimate, bootstrap_samples
 
 
+def dict_to_list(dict_of_list):
+    """
+    :param dict_of_list: dict: varname --> ndarray
+    :return: list of dic: [ {varname: float, ...}, ...  ]
+    """
+    keys = list(dict_of_list.keys())
+    key0 = keys[0]
+    for key in keys[1:]:
+        assert len(dict_of_list[key0]) == len(dict_of_list[key]), key0 + " and " + key + " do not have same len."
+
+    n = len(dict_of_list[key0])
+    ls_of_dic = []
+    for i in range(n):
+        dic = {key: dict_of_list[key][i] for key in keys}
+        ls_of_dic.append(dic)
+    return ls_of_dic
+
+
+def get_values_from_trace(model, trace, thin=1, burn=0):
+    """
+    :param model: pymc3 model
+    :param trace: pymc3 trace object
+    :param thin: int
+    :param burn: int, number of steps to exclude
+    :return: dict: varname --> ndarray
+    """
+    varnames = [var.name for var in model.vars]
+    trace_values = {var: trace.get_values(var, thin=thin, burn=burn) for var in varnames}
+    return trace_values
+
+
 def std_from_iqr(data):
     return iqr(data) / 1.35
 
@@ -52,33 +83,29 @@ def fit_normal(x, sigma_robust=False):
 
 
 def fit_normal_trace(trace_values, sigma_robust=False):
-    """
-    :param trace_values: dict: varname --> ndarray
-    :return: dict: varname --> dict: {mu, sigma} -> {float, float}
-    """
     res = {varname: fit_normal(trace_values[varname], sigma_robust=sigma_robust) for varname in trace_values}
     return res
 
 
+def draw_normal_samples(mu_sigma_dict, nsamples, random_state=None):
+    rand = np.random.RandomState(random_state)
+    keys = mu_sigma_dict.keys()
+    samples = {k: rand.normal(loc=mu_sigma_dict[k]["mu"], scale=mu_sigma_dict[k]["sigma"], size=nsamples)
+               for k in keys}
+    return samples
+
+
 def log_normal_pdf(mu, sigma, y):
-    """
-    :param mu: float
-    :param sigma: float
-    :param y: float
-    :return: float
-    """
     sigma2 = sigma * sigma
     res = - 0.5 * np.log(2 * np.pi * sigma2) - (0.5 / sigma2) * (y - mu) ** 2
     return res
 
 
 def log_normal_trace(trace_val, mu_sigma_dict):
-    """
-    :param trace_val: dict: varname --> ndarray
-    :param mu_sigma_dict: dict: varname --> dict: {"mu", "sigma"} -> {float, float}
-    :return: ndarray
-    """
-    keys = trace_val.keys()
+    keys = list(trace_val.keys())
+    if len(keys) == 0:
+        return 0.
+
     k0 = keys[0]
     for k in keys[1:]:
         assert len(trace_val[k0]) == len(trace_val[k]), k0 + " and " + k + " do not have same len."
@@ -94,36 +121,50 @@ def log_normal_trace(trace_val, mu_sigma_dict):
     return logp
 
 
-def draw_normal_samples(mu_sigma_dict, nsamples, random_state=None):
+def fit_uniform(x, d=1e-20):
+    lower = x.min() - d
+    upper = x.max() + d
+    res = {"lower": lower, "upper": upper}
+    return res
+
+
+def fit_uniform_trace(trace_values):
+    res = {varname: fit_uniform(trace_values[varname]) for varname in trace_values}
+    return res
+
+
+def draw_uniform_samples(lower_upper_dict, nsamples, random_state=None):
     rand = np.random.RandomState(random_state)
-    keys = mu_sigma_dict.keys()
-    samples = {k: rand.normal(loc=mu_sigma_dict[k]["mu"], scale=mu_sigma_dict[k]["sigma"], size=nsamples)
+    keys = lower_upper_dict.keys()
+    samples = {k: rand.uniform(low=lower_upper_dict[k]["lower"],
+                               high=lower_upper_dict[k]["upper"],
+                               size=nsamples)
                for k in keys}
     return samples
 
 
-def dict_to_list(dict_of_list):
-    """
-    :param dict_of_list: dict: varname --> ndarray
-    :return: list of dic: [ {varname: float, ...}, ...  ]
-    """
-    keys = dict_of_list.keys()
-    key0 = keys[0]
-    for key in keys[1:]:
-        assert len(dict_of_list[key0]) == len(dict_of_list[key]), key0 + " and " + key + " do not have same len."
-
-    n = len(dict_of_list[key0])
-    ls_of_dic = []
-    for i in range(n):
-        dic = {key: dict_of_list[key][i] for key in keys}
-        ls_of_dic.append(dic)
-    return ls_of_dic
+def log_uniform_pdf(lower, upper, y):
+    logp = np.zeros_like(y)
+    logp[:] = -np.inf
+    logp[(y >= lower) & (y <= upper)] = np.log(1. / (upper - lower))
+    return logp
 
 
-def get_values_from_trace(model, trace, burn=0):
-    varnames = [var.name for var in model.vars]
-    trace_values = {var: trace.get_values(var, burn=burn) for var in varnames}
-    return trace_values
+def log_uniform_trace(trace_val, lower_upper_dict):
+    keys = list(trace_val.keys())
+    k0 = keys[0]
+    for k in keys[1:]:
+        assert len(trace_val[k0]) == len(trace_val[k]), k0 + " and " + k + " do not have same len."
+
+    nsamples = len(trace_val[k0])
+    logp = np.zeros(nsamples, dtype=float)
+    for k in keys:
+        lower = lower_upper_dict[k]["lower"]
+        upper = lower_upper_dict[k]["upper"]
+        y = trace_val[k]
+        logp += log_uniform_pdf(lower, upper, y)
+
+    return logp
 
 
 def log_posterior_trace(model, trace_values):
@@ -141,139 +182,22 @@ def log_posterior_trace(model, trace_values):
 
 
 def pot_ener(sample, model):
-    """
-    :param sample: dict: varname --> ndarray
-    :param model: pymc3 model
-    :return: ndarray
-    """
     u = -log_posterior_trace(model, sample)
     return u
 
 
 def pot_ener_normal_aug(sample, model, sample_aug, mu_sigma):
-    """
-    use model to calculate potential energy for sample
-    use normal distribution to calculate potential energy for sample_aug
-    :param sample: dict: varname --> ndarray
-    :param model: pymc3 model
-    :param sample_aug: dict: varname --> ndarray
-    :param mu_sigma: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
-    :return: ndarray
-    """
     u1 = -log_posterior_trace(model, sample)
     u2 = -log_normal_trace(sample_aug, mu_sigma)
     u = u1 + u2
     return u
 
 
-def element_starts_with(start_str, list_of_strs):
-    """
-    :param start_str: str
-    :param list_of_strs: list
-    :return: str
-    """
-    found = [s for s in list_of_strs if s.startswith(start_str)]
-    if len(found) == 0:
-        raise ValueError("Found none")
-    if len(found) > 1:
-        raise ValueError("Found many: " + ", ".join(found))
-    return found[0]
-
-
-def split_complex_vars(sample_complex, vars_simple, split_type):
-    """
-    split set of more complex vars to be used for simpler model
-    :param sample_complex: dict: varname --> ndarray, samples drawn from more complex model
-    :param vars_simple: list of str, names of vars in simple model
-    :param split_type: str, either or "em_for_2c" or "em_for_rm"
-    :return: (sample_main, sample_aug), (dict: varname --> ndarray, dict: varname --> ndarray)
-    """
-    assert split_type in ["rm_for_2c", "em_for_2c", "em_for_rm"], "Unknown split_type:" + split_type
-
-    vars_complex = sample_complex.keys()
-
-    if split_type in ["rm_for_2c", "em_for_2c"]:
-        common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
-        sample_main = {}
-        for var_prefix in common_var_prefixes:
-            var_s = element_starts_with(var_prefix, vars_simple)
-            var_c = element_starts_with(var_prefix, vars_complex)
-            sample_main[var_s] = sample_complex[var_c]
-
-        sample_main["DeltaG_interval__"] = sample_complex["DeltaG1_interval__"]
-        sample_main["DeltaH_interval__"] = sample_complex["DeltaH1_interval__"]
-
-        if split_type == "rm_for_2c":
-            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
-        else:
-            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho_interval__"]
-        sample_aug = {var: sample_complex[var] for var in aug_vars}
-
-        return sample_main, sample_aug
-
-    if split_type == "em_for_rm":
-        common_vars = [var for var in sample_complex.keys() if var != "rho_interval__"]
-        sample_main = {var: sample_complex[var] for var in common_vars}
-
-        agu_vars = ["rho_interval__"]
-        sample_aug = {var: sample_complex[var] for var in agu_vars}
-
-        return sample_main, sample_aug
-
-
-def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_state=None):
-    """
-    :param sample_simpler: dict: varname --> ndarray, samples drawn from simpler model
-    :param mu_sigma_complex: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
-                                  mu and sigma estimated from samples drawn from more complex model
-    :param aug_type: str, either "2c_for_rm", "2c_for_em", or "rm_for_em"
-    :param random_state: int
-    :return: (sample_main, sample_aug), (dict: varname --> ndarray, dict: varname --> ndarray)
-    """
-    assert aug_type in ["2c_for_rm", "2c_for_em", "rm_for_em"], "Unknown aug_type:" + aug_type
-
-    # make sure we get correct mu_sigma_complex
-    if aug_type == "2c_for_rm":
-        assert "DeltaDeltaG_interval__" in mu_sigma_complex, "DeltaDeltaG_interval__ not in mu_sigma_complex"
-        assert "rho_interval__" not in mu_sigma_complex, "rho_interval__ in mu_sigma_complex"
-
-    if aug_type in ["2c_for_em", "rm_for_em"]:
-        assert "rho_interval__" in mu_sigma_complex, "rho_interval__ not in mu_sigma_complex"
-
-    vars_simple = sample_simpler.keys()
-    vars_complex = mu_sigma_complex.keys()
-    nsamples = len(sample_simpler[vars_simple[0]])
-
-    if aug_type in ["2c_for_rm", "2c_for_em"]:
-        common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
-        sample_main = {}
-        for var_prefix in common_var_prefixes:
-            var_s = element_starts_with(var_prefix, vars_simple)
-            var_c = element_starts_with(var_prefix, vars_complex)
-            sample_main[var_c] = sample_simpler[var_s]
-
-        sample_main["DeltaG1_interval__"] = sample_simpler["DeltaG_interval__"]
-        sample_main["DeltaH1_interval__"] = sample_simpler["DeltaH_interval__"]
-
-        if aug_type == "2c_for_rm":
-            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
-        else:
-            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho_interval__"]
-
-        mu_sigma_aug = {k: mu_sigma_complex[k] for k in aug_vars}
-        sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
-
-        return sample_main, sample_aug
-
-    if aug_type == "rm_for_em":
-        common_vars = [var for var in sample_simpler.keys() if var != "rho_interval__"]
-        sample_main = {var: sample_simpler[var] for var in common_vars}
-
-        aug_vars = ["rho_interval__"]
-        mu_sigma_aug = {k: mu_sigma_complex[k] for k in aug_vars}
-        sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
-
-        return sample_main, sample_aug
+def pot_ener_uniform_aug(sample, model, sample_aug, lower_upper):
+    u1 = -log_posterior_trace(model, sample)
+    u2 = -log_uniform_trace(sample_aug, lower_upper)
+    u = u1 + u2
+    return u
 
 
 def bootstrap_BAR(w_F, w_R, repeats):
@@ -298,67 +222,4 @@ def bootstrap_BAR(w_F, w_R, repeats):
     delta_Fs = delta_Fs[~np.isinf(delta_Fs)]
 
     return delta_Fs.std()
-
-
-def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
-                 model_ini_name, model_fin_name,
-                 sigma_robust=False, random_state=None,
-                 bootstrap=None):
-    """
-    :param model_ini: pymc3 model
-    :param sample_ini: dict: varname --> ndarray, samples drawn from initial (simpler) state
-    :param model_fin: pymc3 model
-    :param sample_fin: dict: varname --> ndarray, samples drawn from final (more complex) state
-    :param model_ini_name: str
-    :param model_fin_name: str
-    :param sigma_robust: bool
-    :param random_state: int
-    :param bootstrap: int
-    :return: float
-    """
-    mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
-    print("mu_sigma_fin:", mu_sigma_fin)
-
-    split_type = model_fin_name + "_for_" + model_ini_name
-    aug_type = model_ini_name + "_for_" + model_fin_name
-
-    # augment initial sample
-    sample_i_for_f, sample_ini_aug = augment_simpler_vars(sample_ini, mu_sigma_fin, aug_type,
-                                                          random_state=random_state)
-    # split final sample
-    sample_f_for_i, sample_fin_aug = split_complex_vars(sample_fin, sample_ini.keys(), split_type)
-
-    # potential for sample drawn from i estimated at state i
-    print("Calculate u_i_i: drawn from i, estimated at i")
-    u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_ini_aug, mu_sigma_fin)
-
-    # potential for sample drawn from i estimated at state f
-    sample_ini_comb = sample_i_for_f.copy()
-    sample_ini_comb.update(sample_ini_aug)
-    print("Calculate u_i_f: drawn from i, estimated at f")
-    u_i_f = pot_ener(sample_ini_comb, model_fin)
-
-    #
-    # potential for sample drawn from f estimated at state f
-    print("Calculate u_f_f: drawn from f, estimated at f")
-    u_f_f = pot_ener(sample_fin, model_fin)
-
-    # potential for sample drawn from f estimated at state i
-    print("Calculate u_f_i: drawn from f, estimated at i")
-    u_f_i = pot_ener_normal_aug(sample_f_for_i, model_ini, sample_fin_aug, mu_sigma_fin)
-
-    w_F = u_i_f - u_i_i
-    w_R = u_f_i - u_f_f
-
-    delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
-    bf = -delta_F
-
-    if bootstrap is None:
-        print("log10(bf) = %0.5f" % (bf *np.log10(np.e)) )
-        return bf
-    else:
-        print("Running %d bootstraps to estimate error." % bootstrap)
-        bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
-        print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
-        return bf, bf_err
 
