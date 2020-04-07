@@ -111,9 +111,9 @@ for exper in experiments:
         print("map_em", map_em)
 
     else:
-        trace_2c = pickle.load(open(os.path.join(args.two_component_mcmc_dir, exper, args.trace_pickle)))
-        trace_rm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, exper, args.trace_pickle)))
-        trace_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.trace_pickle)))
+        traces_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
+        traces_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
+        traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
 
         print("Searching for MAP_2C in mcmc trace")
         map_2c = find_MAP_trace(model_2c, trace_2c)
