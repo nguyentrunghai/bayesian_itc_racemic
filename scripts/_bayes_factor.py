@@ -121,7 +121,7 @@ def log_normal_trace(trace_val, mu_sigma_dict):
     return logp
 
 
-def fit_uniform(x, d=1e-20):
+def fit_uniform(x, d=1e-100):
     lower = x.min() - d
     upper = x.max() + d
     res = {"lower": lower, "upper": upper}
@@ -332,3 +332,81 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
         sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
 
         return sample_main, sample_aug
+
+
+def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
+                  aug_with="Normal", sigma_robust=False, bootstrap=None):
+    lower_upper_fin = fit_uniform_trace(sample_fin)
+    mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
+
+    vars_ini = sample_ini.keys()
+    print("vars_in_2c:", vars_ini)
+    vars_fin = sample_fin.keys()
+    print("vars_in_rm:", vars_fin)
+
+    vars_redundant = ["DeltaDeltaG", "DeltaH2"]
+    vars_redundant = [element_starts_with(var, vars_fin) for var in vars_redundant]
+    print("vars_redundant:", vars_redundant)
+
+    ini_final_var_match = [("DeltaG", "DeltaG1"), ("DeltaH", "DeltaH1"),
+                           ("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
+
+    lower_upper_fin = {var: lower_upper_fin[var] for var in vars_redundant}
+    mu_sigma_fin = {var: mu_sigma_fin[var] for var in vars_redundant}
+
+    # potential for sample drawn from i estimated at state i
+    nsamples_ini = len(sample_ini[vars_ini[0]])
+    if aug_with == "Normal":
+        sample_aug_ini = draw_uniform_samples(lower_upper_fin, nsamples_ini)
+        u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_aug_ini, mu_sigma_fin)
+
+    elif aug_with == "Uniform":
+        sample_aug_ini = draw_normal_samples(mu_sigma_fin, nsamples_ini)
+        u_i_i = pot_ener_uniform_aug(sample_ini, model_ini, sample_aug_ini, lower_upper_fin)
+
+    else:
+        raise ValueError("Unknown aug_with:" + aug_with)
+
+    # potential for sample drawn from i estimated at state f
+    sample_ini_comb = {}
+    for ki, kf in ini_final_var_match:
+        var_ini = element_starts_with(ki, vars_ini)
+        var_fin = element_starts_with(kf, vars_fin)
+        sample_ini_comb[var_fin] = sample_ini[var_ini]
+    sample_ini_comb.update(sample_aug_ini)
+    u_i_f = pot_ener(sample_ini_comb, model_fin)
+
+    # potential for sample drawn from f estimated at state f
+    u_f_f = pot_ener(sample_fin, model_fin)
+
+    # potential for sample drawn from f estimated at state i
+    sample_fin_split = {}
+    for ki, kf in ini_final_var_match:
+        var_ini = element_starts_with(ki, vars_ini)
+        var_fin = element_starts_with(kf, vars_fin)
+        sample_fin_split[var_ini] = sample_fin[var_fin]
+
+    sample_aug_fin = {var: sample_fin[var] for var in vars_redundant}
+    if aug_with == "Normal":
+        u_f_i = pot_ener_normal_aug(sample_fin_split, model_ini, sample_aug_fin, mu_sigma_fin)
+
+    elif aug_with == "Uniform":
+        u_f_i = pot_ener_uniform_aug(sample_fin_split, model_ini, sample_aug_fin, lower_upper_fin)
+
+    else:
+        raise ValueError("Unknown aug_with:" + aug_with)
+
+    w_F = u_i_f - u_i_i
+    w_R = u_f_i - u_f_f
+
+    delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
+    bf = -delta_F
+
+    if bootstrap is None:
+        print("log10(bf) = %0.5f" % (bf * np.log10(np.e)))
+        return bf
+    else:
+        print("Running %d bootstraps to estimate error." % bootstrap)
+        bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
+        print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
+        return bf, bf_err
