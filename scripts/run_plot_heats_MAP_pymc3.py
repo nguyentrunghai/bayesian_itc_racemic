@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import glob
 import pickle
 
 import numpy as np
@@ -21,11 +22,13 @@ from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingM
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--two_component_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_met_2/repeat_0")
+                    default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_met_2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_met_2/repeat_0")
+                    default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_met_2")
 parser.add_argument("--enantiomer_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2/repeat_0")
+                    default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
+
+parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
@@ -83,9 +86,16 @@ experiments = args.experiments.split()
 for exper in experiments:
     print("\n\n", exper)
 
-    model_2c = pickle.load(open(os.path.join(args.two_component_mcmc_dir, exper, args.model_pickle)))
-    model_rm = pickle.load(open(os.path.join(args.racemic_mixture_mcmc_dir, exper, args.model_pickle)))
-    model_em = pickle.load(open(os.path.join(args.enantiomer_mcmc_dir, exper, args.model_pickle)))
+    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, exper, args.repeat_prefix + "*"))
+    print("dirs_2c:", dirs_2c)
+    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, exper, args.repeat_prefix + "*"))
+    print("dirs_rm:", dirs_rm)
+    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, exper, args.repeat_prefix + "*"))
+    print("dirs_em:", dirs_em)
+
+    model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
+    model_rm = pickle.load(open(os.path.join(dirs_rm[0], args.model_pickle)))
+    model_em = pickle.load(open(os.path.join(dirs_em[0], args.model_pickle)))
 
     if args.how_to_find_MAP == "optimization":
         print("Optimizing MAP_2C")
