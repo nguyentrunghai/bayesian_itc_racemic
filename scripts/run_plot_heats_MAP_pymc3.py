@@ -116,15 +116,15 @@ for exper in experiments:
         traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
 
         print("Searching for MAP_2C in mcmc trace")
-        map_2c = find_MAP_trace(model_2c, trace_2c)
+        map_2c = find_MAP_traces(model_2c, traces_2c)
         print("map_2c", map_2c)
 
         print("Searching for MAP_RM in mcmc trace")
-        map_rm = find_MAP_trace(model_rm, trace_rm)
+        map_rm = find_MAP_traces(model_rm, traces_rm)
         print("map_rm", map_rm)
 
         print("Searching for MAP_EM in mcmc trace")
-        map_em = find_MAP_trace(model_em, trace_em)
+        map_em = find_MAP_traces(model_em, traces_em)
         print("map_em", map_em)
 
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
