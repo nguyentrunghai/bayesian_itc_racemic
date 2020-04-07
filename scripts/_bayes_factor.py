@@ -70,6 +70,15 @@ def get_values_from_trace(model, trace, thin=1, burn=0):
     return trace_values
 
 
+def get_values_from_traces(model, traces, thin=1, burn=0):
+    trace_value_list = [get_values_from_trace(model, trace, thin=thin, burn=burn) for trace in traces]
+    keys = trace_value_list[0].keys()
+    trace_values = {}
+    for key in keys:
+        trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
+    return trace_values
+
+
 def std_from_iqr(data):
     return iqr(data) / 1.35
 
