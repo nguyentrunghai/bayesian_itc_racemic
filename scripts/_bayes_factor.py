@@ -335,7 +335,23 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
 
 
 def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
-                  aug_with="Normal", sigma_robust=False, bootstrap=None):
+                 model_ini_name="2c", model_fin_name="rm",
+                 aug_with="Normal", sigma_robust=False, bootstrap=None):
+    """
+    :param model_ini:
+    :param sample_ini:
+    :param model_fin:
+    :param sample_fin:
+    :param model_ini_name:
+    :param model_fin_name:
+    :param aug_with:
+    :param sigma_robust:
+    :param bootstrap:
+    :return:
+    """
+    ini_fin_name = model_ini_name + "_" + model_fin_name
+    assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
+
     lower_upper_fin = fit_uniform_trace(sample_fin)
     mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
 
@@ -344,12 +360,28 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     vars_fin = sample_fin.keys()
     print("vars_in_rm:", vars_fin)
 
-    vars_redundant = ["DeltaDeltaG", "DeltaH2"]
+    if ini_fin_name == "2c_rm":
+        vars_redundant = ["DeltaDeltaG", "DeltaH2"]
+    elif ini_fin_name == "2c_em":
+        vars_redundant = ["DeltaDeltaG", "DeltaH2", "rho"]
+    elif ini_fin_name == "rm_em":
+        vars_redundant = ["rho"]
+    else:
+        raise ValueError("Unknown ini_fin_name: " + ini_fin_name)
+
     vars_redundant = [element_starts_with(var, vars_fin) for var in vars_redundant]
     print("vars_redundant:", vars_redundant)
 
-    ini_final_var_match = [("DeltaG", "DeltaG1"), ("DeltaH", "DeltaH1"),
-                           ("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
+    var_match_common = [("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
+    if ini_fin_name in ["2c_rm", "2c_em"]:
+        ini_final_var_match = [("DeltaG", "DeltaG1"), ("DeltaH", "DeltaH1")] + var_match_common
+
+    elif ini_fin_name == "rm_em":
+        ini_final_var_match = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
+                               ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")] + var_match_common
+    else:
+        raise ValueError("Unknown ini_fin_name: " + ini_fin_name)
+    print("ini_final_var_match:", ini_final_var_match)
 
     lower_upper_fin = {var: lower_upper_fin[var] for var in vars_redundant}
     mu_sigma_fin = {var: mu_sigma_fin[var] for var in vars_redundant}
