@@ -64,6 +64,14 @@ def find_MAP_trace(model, trace):
     map_val = {name: trace.get_values(name)[idx_max] for name in free_vars}
     return map_val, map_logp
 
+
+def find_MAP_traces(model, traces):
+    map_results = [find_MAP_trace(model, trace) for trace in traces]
+    map_results.sort(key=lambda i: i[1])
+    map_val = map_results[-1][0]
+    return map_val
+
+
 assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_to_find_MAP"
 
 sns.set(font_scale=args.font_scale)
