@@ -58,10 +58,11 @@ def find_MAP_trace(model, trace):
     logp = log_posterior_trace(model, tr_val)
 
     idx_max = np.argmax(logp)
+    map_logp = logp[idx_max]
 
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     map_val = {name: trace.get_values(name)[idx_max] for name in free_vars}
-    return map_val
+    return map_val, map_logp
 
 assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_to_find_MAP"
 
