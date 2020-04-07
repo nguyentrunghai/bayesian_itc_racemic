@@ -59,17 +59,17 @@ for exper in experiments:
     # load data for 2cbm
     model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
     trace_list_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
-    sample_2c = get_values_from_traces(model_2c, trace_list_2c, thin=args.thin, burn=args.burns)
+    sample_2c = get_values_from_traces(model_2c, trace_list_2c, thin=args.thin, burn=args.burn)
 
     # load data for rmbm
     model_rm = pickle.load(open(os.path.join(dirs_rm[0], args.model_pickle)))
     trace_list_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
-    sample_rm = get_values_from_traces(model_rm, trace_list_rm, thin=args.thin, burn=args.burns)
+    sample_rm = get_values_from_traces(model_rm, trace_list_rm, thin=args.thin, burn=args.burn)
 
     # load data for embm
     model_em = pickle.load(open(os.path.join(dirs_em[0], args.model_pickle)))
     trace_list_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
-    sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burns)
+    sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burn)
 
     print("RM over 2C")
     result_rm_over_2c = bayes_factor(model_2c, sample_2c, model_rm, sample_rm,
