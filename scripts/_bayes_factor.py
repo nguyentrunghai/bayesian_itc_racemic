@@ -223,3 +223,112 @@ def bootstrap_BAR(w_F, w_R, repeats):
 
     return delta_Fs.std()
 
+
+def element_starts_with(start_str, list_of_strs):
+    """
+    :param start_str: str
+    :param list_of_strs: list
+    :return: str
+    """
+    found = [s for s in list_of_strs if s.startswith(start_str)]
+    if len(found) == 0:
+        raise ValueError("Found none")
+    if len(found) > 1:
+        raise ValueError("Found many: " + ", ".join(found))
+    return found[0]
+
+
+def split_complex_vars(sample_complex, vars_simple, split_type):
+    """
+    split set of more complex vars to be used for simpler model
+    :param sample_complex: dict: varname --> ndarray, samples drawn from more complex model
+    :param vars_simple: list of str, names of vars in simple model
+    :param split_type: str, either or "em_for_2c" or "em_for_rm"
+    :return: (sample_main, sample_aug), (dict: varname --> ndarray, dict: varname --> ndarray)
+    """
+    assert split_type in ["rm_for_2c", "em_for_2c", "em_for_rm"], "Unknown split_type:" + split_type
+
+    vars_complex = sample_complex.keys()
+
+    if split_type in ["rm_for_2c", "em_for_2c"]:
+        common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
+        sample_main = {}
+        for var_prefix in common_var_prefixes:
+            var_s = element_starts_with(var_prefix, vars_simple)
+            var_c = element_starts_with(var_prefix, vars_complex)
+            sample_main[var_s] = sample_complex[var_c]
+
+        sample_main["DeltaG_interval__"] = sample_complex["DeltaG1_interval__"]
+        sample_main["DeltaH_interval__"] = sample_complex["DeltaH1_interval__"]
+
+        if split_type == "rm_for_2c":
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
+        else:
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho_interval__"]
+        sample_aug = {var: sample_complex[var] for var in aug_vars}
+
+        return sample_main, sample_aug
+
+    if split_type == "em_for_rm":
+        common_vars = [var for var in sample_complex.keys() if var != "rho_interval__"]
+        sample_main = {var: sample_complex[var] for var in common_vars}
+
+        agu_vars = ["rho_interval__"]
+        sample_aug = {var: sample_complex[var] for var in agu_vars}
+
+        return sample_main, sample_aug
+
+
+def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_state=None):
+    """
+    :param sample_simpler: dict: varname --> ndarray, samples drawn from simpler model
+    :param mu_sigma_complex: dict: varname --> dict: {"mu", "sigma"} --> {float, float}
+                                  mu and sigma estimated from samples drawn from more complex model
+    :param aug_type: str, either "2c_for_rm", "2c_for_em", or "rm_for_em"
+    :param random_state: int
+    :return: (sample_main, sample_aug), (dict: varname --> ndarray, dict: varname --> ndarray)
+    """
+    assert aug_type in ["2c_for_rm", "2c_for_em", "rm_for_em"], "Unknown aug_type:" + aug_type
+
+    # make sure we get correct mu_sigma_complex
+    if aug_type == "2c_for_rm":
+        assert "DeltaDeltaG_interval__" in mu_sigma_complex, "DeltaDeltaG_interval__ not in mu_sigma_complex"
+        assert "rho_interval__" not in mu_sigma_complex, "rho_interval__ in mu_sigma_complex"
+
+    if aug_type in ["2c_for_em", "rm_for_em"]:
+        assert "rho_interval__" in mu_sigma_complex, "rho_interval__ not in mu_sigma_complex"
+
+    vars_simple = sample_simpler.keys()
+    vars_complex = mu_sigma_complex.keys()
+    nsamples = len(sample_simpler[vars_simple[0]])
+
+    if aug_type in ["2c_for_rm", "2c_for_em"]:
+        common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
+        sample_main = {}
+        for var_prefix in common_var_prefixes:
+            var_s = element_starts_with(var_prefix, vars_simple)
+            var_c = element_starts_with(var_prefix, vars_complex)
+            sample_main[var_c] = sample_simpler[var_s]
+
+        sample_main["DeltaG1_interval__"] = sample_simpler["DeltaG_interval__"]
+        sample_main["DeltaH1_interval__"] = sample_simpler["DeltaH_interval__"]
+
+        if aug_type == "2c_for_rm":
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__"]
+        else:
+            aug_vars = ["DeltaDeltaG_interval__", "DeltaH2_interval__", "rho_interval__"]
+
+        mu_sigma_aug = {k: mu_sigma_complex[k] for k in aug_vars}
+        sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
+
+        return sample_main, sample_aug
+
+    if aug_type == "rm_for_em":
+        common_vars = [var for var in sample_simpler.keys() if var != "rho_interval__"]
+        sample_main = {var: sample_simpler[var] for var in common_vars}
+
+        aug_vars = ["rho_interval__"]
+        mu_sigma_aug = {k: mu_sigma_complex[k] for k in aug_vars}
+        sample_aug = draw_normal_samples(mu_sigma_aug, nsamples, random_state=random_state)
+
+        return sample_main, sample_aug
