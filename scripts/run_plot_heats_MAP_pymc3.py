@@ -86,11 +86,11 @@ experiments = args.experiments.split()
 for exper in experiments:
     print("\n\n", exper)
 
-    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, exper, args.repeat_prefix + "*"))
+    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper))
     print("dirs_2c:", dirs_2c)
-    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, exper, args.repeat_prefix + "*"))
+    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper))
     print("dirs_rm:", dirs_rm)
-    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, exper, args.repeat_prefix + "*"))
+    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper))
     print("dirs_em:", dirs_em)
 
     model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
