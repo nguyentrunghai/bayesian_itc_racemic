@@ -9,6 +9,7 @@ import os
 import glob
 import pickle
 
+import numpy as np
 import pandas as pd
 
 from _bayes_factor import get_values_from_trace, get_values_from_traces
@@ -33,6 +34,8 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 
 parser.add_argument("--aug_with", type=str, default="Normal")
 
+parser.add_argument("--aug_sample_enlarge", type=int, default=1)
+
 parser.add_argument("--burn", type=int, default=0)
 parser.add_argument("--thin", type=int, default=1)
 
@@ -45,9 +48,17 @@ args = parser.parse_args()
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
+
+def enlarge_sample(sample, enlarge=1):
+    sample_new = sample.copy()
+    for k in sample_new.keys():
+        sample_new[k] = np.repeat(sample_new[k], enlarge)
+    return sample_new
+
+
 bf_df = []
 for exper in experiments:
-    print("Calculating Bayes Factors for " + exper)
+    print("\n\nCalculating Bayes Factors for " + exper)
 
     dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper))
     print("dirs_2c:", dirs_2c)
@@ -71,21 +82,21 @@ for exper in experiments:
     trace_list_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
     sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burn)
 
-    print("RM over 2C")
+    print("\nRM over 2C")
     result_rm_over_2c = bayes_factor(model_2c, sample_2c, model_rm, sample_rm,
                                      model_ini_name="2c", model_fin_name="rm",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      bootstrap=args.bootstrap)
 
-    print("EM over 2C")
+    print("\nEM over 2C")
     result_em_over_2c = bayes_factor(model_2c, sample_2c, model_em, sample_em,
                                      model_ini_name="2c", model_fin_name="em",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      bootstrap=args.bootstrap)
 
-    print("EM over RM")
+    print("\nEM over RM")
     result_em_over_rm = bayes_factor(model_rm, sample_rm, model_em, sample_em,
                                      model_ini_name="rm", model_fin_name="em",
                                      aug_with=args.aug_with,
@@ -111,6 +122,8 @@ for exper in experiments:
                "bf_em_over_2c": bf_em_over_2c, "err_em_over_2c": err_em_over_2c,
                "bf_em_over_rm": bf_em_over_rm, "err_em_over_rm": err_em_over_rm}
     bf_df.append(res_dic)
+
+    print("------------------------------")
 
 bf_df = pd.DataFrame(bf_df)
 cols = ["Experiment", "bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c",
