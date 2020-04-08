@@ -155,7 +155,7 @@ def draw_uniform_samples(lower_upper_dict, nsamples, random_state=None):
 def log_uniform_pdf(lower, upper, y):
     logp = np.zeros_like(y)
     logp[:] = -np.inf
-    logp[(y >= lower) & (y <= upper)] = np.log(1. / (upper - lower))
+    logp[(y > lower) & (y < upper)] = - np.log(upper - lower)
     return logp
 
 
