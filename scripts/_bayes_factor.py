@@ -375,9 +375,9 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
 
     vars_ini = sample_ini.keys()
-    print("vars_in_2c:", vars_ini)
+    print("vars_ini:", vars_ini)
     vars_fin = sample_fin.keys()
-    print("vars_in_rm:", vars_fin)
+    print("vars_fin:", vars_fin)
 
     if ini_fin_name == "2c_rm":
         vars_redundant = ["DeltaDeltaG", "DeltaH2"]
@@ -408,11 +408,11 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     # potential for sample drawn from i estimated at state i
     nsamples_ini = len(sample_ini[vars_ini[0]])
     if aug_with == "Normal":
-        sample_aug_ini = draw_uniform_samples(lower_upper_fin, nsamples_ini)
+        sample_aug_ini = draw_normal_samples(mu_sigma_fin, nsamples_ini)
         u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_aug_ini, mu_sigma_fin)
 
     elif aug_with == "Uniform":
-        sample_aug_ini = draw_normal_samples(mu_sigma_fin, nsamples_ini)
+        sample_aug_ini = draw_uniform_samples(lower_upper_fin, nsamples_ini)
         u_i_i = pot_ener_uniform_aug(sample_ini, model_ini, sample_aug_ini, lower_upper_fin)
 
     else:
