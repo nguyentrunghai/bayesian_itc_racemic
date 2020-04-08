@@ -273,8 +273,8 @@ def split_complex_vars(sample_complex, vars_simple, split_type):
         common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
         sample_main = {}
         for var_prefix in common_var_prefixes:
-            var_s = element_starts_with(var_prefix, vars_simple)
-            var_c = element_starts_with(var_prefix, vars_complex)
+            var_s = var_starts_with(var_prefix, vars_simple)
+            var_c = var_starts_with(var_prefix, vars_complex)
             sample_main[var_s] = sample_complex[var_c]
 
         sample_main["DeltaG_interval__"] = sample_complex["DeltaG1_interval__"]
@@ -325,8 +325,8 @@ def augment_simpler_vars(sample_simpler, mu_sigma_complex, aug_type, random_stat
         common_var_prefixes = ["P0", "Ls", "DeltaH_0", "log_sigma"]
         sample_main = {}
         for var_prefix in common_var_prefixes:
-            var_s = element_starts_with(var_prefix, vars_simple)
-            var_c = element_starts_with(var_prefix, vars_complex)
+            var_s = var_starts_with(var_prefix, vars_simple)
+            var_c = var_starts_with(var_prefix, vars_complex)
             sample_main[var_c] = sample_simpler[var_s]
 
         sample_main["DeltaG1_interval__"] = sample_simpler["DeltaG_interval__"]
@@ -388,7 +388,7 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     else:
         raise ValueError("Unknown ini_fin_name: " + ini_fin_name)
 
-    vars_redundant = [element_starts_with(var, vars_fin) for var in vars_redundant]
+    vars_redundant = [var_starts_with(var, vars_fin) for var in vars_redundant]
     print("vars_redundant:", vars_redundant)
 
     var_match_common = [("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
@@ -421,8 +421,8 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     # potential for sample drawn from i estimated at state f
     sample_ini_comb = {}
     for ki, kf in ini_final_var_match:
-        var_ini = element_starts_with(ki, vars_ini)
-        var_fin = element_starts_with(kf, vars_fin)
+        var_ini = var_starts_with(ki, vars_ini)
+        var_fin = var_starts_with(kf, vars_fin)
         sample_ini_comb[var_fin] = sample_ini[var_ini]
     sample_ini_comb.update(sample_aug_ini)
     u_i_f = pot_ener(sample_ini_comb, model_fin)
@@ -433,8 +433,8 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     # potential for sample drawn from f estimated at state i
     sample_fin_split = {}
     for ki, kf in ini_final_var_match:
-        var_ini = element_starts_with(ki, vars_ini)
-        var_fin = element_starts_with(kf, vars_fin)
+        var_ini = var_starts_with(ki, vars_ini)
+        var_fin = var_starts_with(kf, vars_fin)
         sample_fin_split[var_ini] = sample_fin[var_fin]
 
     sample_aug_fin = {var: sample_fin[var] for var in vars_redundant}
