@@ -83,21 +83,24 @@ for exper in experiments:
     sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burn)
 
     print("\nRM over 2C")
-    result_rm_over_2c = bayes_factor(model_2c, sample_2c, model_rm, sample_rm,
+    result_rm_over_2c = bayes_factor(model_2c, enlarge_sample(sample_2c, enlarge=args.aug_sample_enlarge),
+                                     model_rm, sample_rm,
                                      model_ini_name="2c", model_fin_name="rm",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      bootstrap=args.bootstrap)
 
     print("\nEM over 2C")
-    result_em_over_2c = bayes_factor(model_2c, sample_2c, model_em, sample_em,
+    result_em_over_2c = bayes_factor(model_2c, enlarge_sample(sample_2c, enlarge=args.aug_sample_enlarge),
+                                     model_em, sample_em,
                                      model_ini_name="2c", model_fin_name="em",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      bootstrap=args.bootstrap)
 
     print("\nEM over RM")
-    result_em_over_rm = bayes_factor(model_rm, sample_rm, model_em, sample_em,
+    result_em_over_rm = bayes_factor(model_rm, enlarge_sample(sample_rm, enlarge=args.aug_sample_enlarge),
+                                     model_em, sample_em,
                                      model_ini_name="rm", model_fin_name="em",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
