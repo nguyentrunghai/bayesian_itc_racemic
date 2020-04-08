@@ -233,13 +233,23 @@ def bootstrap_BAR(w_F, w_R, repeats):
     return delta_Fs.std()
 
 
-def element_starts_with(start_str, list_of_strs):
+def is_var_starts_with(probe_str, str_to_be_probed):
+    if str_to_be_probed.endswith("__"):
+        suffix = str_to_be_probed.split("__")[0].split("_")[-1]
+        suffix = "_" + suffix + "__"
+        base_var_name = str_to_be_probed.split(suffix)[0]
+        return probe_str == base_var_name
+    else:
+        return probe_str == str_to_be_probed
+
+
+def var_starts_with(start_str, list_of_strs):
     """
     :param start_str: str
     :param list_of_strs: list
     :return: str
     """
-    found = [s for s in list_of_strs if s.startswith(start_str)]
+    found = [s for s in list_of_strs if is_var_starts_with(start_str, s)]
     if len(found) == 0:
         raise ValueError("Found none")
     if len(found) > 1:
