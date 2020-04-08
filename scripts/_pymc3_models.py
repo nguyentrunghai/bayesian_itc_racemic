@@ -7,7 +7,7 @@ import numpy as np
 import pymc3
 import theano.tensor as tt
 
-from _data_io import ITCExperiment, load_heat_micro_cal
+from _data_io_py3 import ITCExperiment, load_heat_micro_cal
 from _models import logsigma_guesses, deltaH0_guesses
 from _models import KB
 
