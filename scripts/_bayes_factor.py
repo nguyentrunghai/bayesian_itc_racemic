@@ -405,8 +405,12 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     lower_upper_fin = {var: lower_upper_fin[var] for var in vars_redundant}
     mu_sigma_fin = {var: mu_sigma_fin[var] for var in vars_redundant}
 
-    # potential for sample drawn from i estimated at state i
     nsamples_ini = len(sample_ini[vars_ini[0]])
+    print("nsamples_ini = %d" % nsamples_ini)
+    nsamples_fin = len(sample_fin[vars_fin[0]])
+    print("nsamples_fin = %d" % nsamples_fin)
+
+    # potential for sample drawn from i estimated at state i
     if aug_with == "Normal":
         sample_aug_ini = draw_normal_samples(mu_sigma_fin, nsamples_ini)
         u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_aug_ini, mu_sigma_fin)
