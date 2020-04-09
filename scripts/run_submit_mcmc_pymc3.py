@@ -51,6 +51,8 @@ parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 
 parser.add_argument("--out_dir", type=str, default="out")
 
+parser.add_argument("--var_transform_off", action="store_true", default=False)
+
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
 args = parser.parse_args()
@@ -103,6 +105,11 @@ if args.write_qsub_script:
 
         thin = args.thin
 
+        if args.var_transform_off:
+            var_transform_off = " --var_transform_off "
+        else:
+            var_transform_off = " "
+
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
         qsub_script = '''#!/bin/bash
@@ -128,6 +135,7 @@ python ''' + this_script + \
         ''' --cores %d''' % cores + \
         ''' --chains %d''' % chains + \
         ''' --thin %d''' % thin + \
+        var_transform_off + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -183,6 +191,9 @@ else:
     thin = args.thin
     print("thin", thin)
 
+    var_transform = not args.var_transform_off
+    print("var_transform", var_transform)
+
     out_dir = args.out_dir
     print("out_dir", out_dir)
 
@@ -195,7 +206,7 @@ else:
                                                  dcell=dcell, dsyringe=dsyringe,
                                                  uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                  concentration_range_factor=concentration_range_factor,
-                                                 auto_transform=True)
+                                                 auto_transform=var_transform)
 
     elif model_name == "rmbm":
         pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
@@ -203,7 +214,7 @@ else:
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                    concentration_range_factor=concentration_range_factor,
                                                    is_rho_free_param=False,
-                                                   auto_transform=True)
+                                                   auto_transform=var_transform)
 
     elif model_name == "embm":
         pm_model = make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
@@ -211,7 +222,7 @@ else:
                                                    uniform_P0=uniform_P0, uniform_Ls=uniform_Ls,
                                                    concentration_range_factor=concentration_range_factor,
                                                    is_rho_free_param=True,
-                                                   auto_transform=True)
+                                                   auto_transform=var_transform)
     else:
         raise ValueError("Unknown model: " + model_name)
 
