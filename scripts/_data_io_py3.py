@@ -2,32 +2,33 @@
 import pickle
 import numpy as np
 
+
 class ITCExperiment:
     """ store experimental design parameter """
 
-    def __init__(self, experimental_info_pickle):
+    def __init__(self, exper_info_dict_pickle):
         """
         :param experimental_info_pickle: str, name of the pickle file
         """
-        self._exper_info = pickle.load(open(experimental_info_pickle, "rb"))
+        self._exper_info = pickle.load(open(exper_info_dict_pickle, "rb"))
 
     def get_target_temperature_kelvin(self):
-        return self._exper_info["target_temperature"].m
+        return self._exper_info["target_temperature_kelvin"]
 
     def get_number_injections(self):
-        return self._exper_info["number_of_injections"]
+        return self._exper_info["number_injections"]
 
     def get_cell_volume_liter(self):
-        return self._exper_info["cell_volume"].m_as("liter")
+        return self._exper_info["cell_volume_liter"]
 
     def get_injection_volumes_liter(self):
-        return [inj.volume.m_as("liter") for inj in self._exper_info["injections"]]
+        return self._exper_info["injection_volumes_liter"]
 
     def get_syringe_concentration_milli_molar(self):
-        return self._exper_info["syringe_concentration"]["ligand"].m
+        return self._exper_info["syringe_concentration_milli_molar"]
 
     def get_cell_concentration_milli_molar(self):
-        return self._exper_info["cell_concentration"]["macromolecule"].m
+        return self._exper_info["cell_concentration_milli_molar"]
 
 
 def load_heat_micro_cal(origin_heat_file):
