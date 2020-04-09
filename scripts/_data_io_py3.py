@@ -9,7 +9,7 @@ class ITCExperiment:
         """
         :param experimental_info_pickle: str, name of the pickle file
         """
-        self._exper_info = pickle.load(open(experimental_info_pickle))
+        self._exper_info = pickle.load(open(experimental_info_pickle, "rb"))
 
     def get_target_temperature_kelvin(self):
         return self._exper_info["target_temperature"].m
