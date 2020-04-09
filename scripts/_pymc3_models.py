@@ -8,7 +8,6 @@ import pymc3
 import theano.tensor as tt
 
 from _data_io_py3 import ITCExperiment, load_heat_micro_cal
-from _models import logsigma_guesses, deltaH0_guesses
 
 from _models import heats_TwoComponentBindingModel as heats_TwoComponentBindingModel_numpy
 from _models import heats_RacemicMixtureBindingModel as heats_RacemicMixtureBindingModel_numpy
@@ -27,6 +26,16 @@ def logsigma_guesses(q_n_cal):
     log_sigma_min = log_sigma_guess - 10
     log_sigma_max = log_sigma_guess + 5
     return log_sigma_min, log_sigma_max
+
+
+# copied from bayesian_itc/bitc/models
+def deltaH0_guesses(q_n_cal):
+    # Assume the last injection has the best guess for H0
+    #DeltaH_0_guess = q_n_cal[-1]
+    heat_interval = (q_n_cal.max() - q_n_cal.min())
+    DeltaH_0_min = q_n_cal.min() - heat_interval
+    DeltaH_0_max = q_n_cal.max() + heat_interval
+    return DeltaH_0_min, DeltaH_0_max
 
 
 def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
