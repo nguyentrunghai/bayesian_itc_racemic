@@ -2,6 +2,7 @@
 to convert pickle file from python 2 to python 3
 this script should be run with python 2
 """
+from __future__ import print_function
 
 import argparse
 import os
@@ -36,3 +37,25 @@ def _convert(exper_info_obj):
     exper_info_dict["cell_concentration_milli_molar"] = exper_info_obj.get_cell_concentration_milli_molar()
 
     return exper_info_dict
+
+
+experiments = args.experiments.split()
+print("experiments:", experiments)
+
+exper_info_dir = os.path.abspath(args.exper_info_dir)
+print("exper_info_dir:", exper_info_dir)
+
+for exper in experiments:
+    print("Processing " + exper)
+
+    inp_file = os.path.join(exper_info_dir, exper, args.inp)
+    out_file = os.path.join(exper_info_dir, exper, args.out)
+    if os.path.exists(out_file):
+        raise ValueError("File exists: " + out_file)
+
+    exper_info_obj = ITCExperiment(inp_file)
+    exper_info_dict = _convert(exper_info_obj)
+
+    pickle.dump(exper_info_dict, open(out_file, "wb"))
+
+print("DONE")
