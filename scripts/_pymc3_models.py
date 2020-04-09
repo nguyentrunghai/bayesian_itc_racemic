@@ -9,10 +9,24 @@ import theano.tensor as tt
 
 from _data_io_py3 import ITCExperiment, load_heat_micro_cal
 from _models import logsigma_guesses, deltaH0_guesses
-from _models import KB
 
 from _models import heats_TwoComponentBindingModel as heats_TwoComponentBindingModel_numpy
 from _models import heats_RacemicMixtureBindingModel as heats_RacemicMixtureBindingModel_numpy
+
+
+KB = 0.0019872041      # in kcal/mol/K
+
+
+# copied from bayesian_itc/bitc/models
+def logsigma_guesses(q_n_cal):
+    """
+    :param q_n_cal: heats in calorie
+    :return:
+    """
+    log_sigma_guess = np.log(q_n_cal[-4:].std())
+    log_sigma_min = log_sigma_guess - 10
+    log_sigma_max = log_sigma_guess + 5
+    return log_sigma_min, log_sigma_max
 
 
 def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, N):
