@@ -248,7 +248,8 @@ else:
         else:
             last_trace_file = os.path.join(last_trace_dir, "trace_obj.pickle")
             print("Starting from last trace:", last_trace_file)
-
+            start = pickle.load(open(last_trace_file)).point(-1)
+            print("Last config:\n", start)
 
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
