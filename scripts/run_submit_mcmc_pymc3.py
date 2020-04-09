@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--python_source_script", type=str, default="/home/tnguye46/opt/module/anaconda2019.10.sh")
 
 parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
-parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
+parser.add_argument("--exper_info_file", type=str, default="experimental_information_dict.pickle")
 
 # models "2cbm", "rmbm", "embm"
 parser.add_argument("--model", type=str, default="2cbm")
@@ -54,6 +54,7 @@ parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 parser.add_argument("--out_dir", type=str, default="out")
 
 parser.add_argument("--var_transform_off", action="store_true", default=False)
+parser.add_argument("--last_trace_dir", type=str, default=None)
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
@@ -112,6 +113,11 @@ if args.write_qsub_script:
         else:
             var_transform_off = " "
 
+        if args.last_trace_dir is None:
+            last_trace_dir = " "
+        else:
+            last_trace_dir = " --last_trace_dir " + os.path.join(args.last_trace_dir, experiment)
+
         python_source_script = args.python_source_script
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
@@ -122,7 +128,7 @@ if args.write_qsub_script:
 #PBS -l nodes=1:ppn=1,mem=2048mb,walltime=300:00:00 \n''' + \
         '''cd ''' + out_dir + '''\n''' + \
         '''source ''' + python_source_script + '''\n
-date
+date\n
 python ''' + this_script + \
         ''' --exper_info_file ''' + exper_info_file + \
         ''' --heat_file ''' + heat_file + \
@@ -138,7 +144,7 @@ python ''' + this_script + \
         ''' --cores %d''' % cores + \
         ''' --chains %d''' % chains + \
         ''' --thin %d''' % thin + \
-        var_transform_off + \
+        var_transform_off + last_trace_dir + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -197,6 +203,9 @@ else:
     var_transform = not args.var_transform_off
     print("var_transform", var_transform)
 
+    last_trace_dir = args.last_trace_dir
+    print("last_trace_dir:", last_trace_dir)
+
     out_dir = args.out_dir
     print("out_dir", out_dir)
 
@@ -230,9 +239,16 @@ else:
         raise ValueError("Unknown model: " + model_name)
 
     with pm_model:
-        print("Finding MAP")
-        start = pymc3.find_MAP()
-        print("MAP:\n", start)
+
+        if last_trace_dir is None:
+            print("Starting from MAP")
+            start = pymc3.find_MAP()
+            print("MAP:\n", start)
+
+        else:
+            last_trace_file = os.path.join(last_trace_dir, "trace_obj.pickle")
+            print("Starting from last trace:", last_trace_file)
+
 
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
