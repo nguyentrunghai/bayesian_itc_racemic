@@ -18,6 +18,8 @@ from _data_io_py3 import ITCExperiment, load_heat_micro_cal
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--python_source_script", type=str, default="/home/tnguye46/opt/module/anaconda2019.10.sh")
+
 parser.add_argument("--exper_info_dir", type=str, default="twocomponent_mcmc")
 parser.add_argument("--exper_info_file", type=str, default="experimental_information.pickle")
 
@@ -110,6 +112,7 @@ if args.write_qsub_script:
         else:
             var_transform_off = " "
 
+        python_source_script = args.python_source_script
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
         qsub_script = '''#!/bin/bash
@@ -118,7 +121,7 @@ if args.write_qsub_script:
 #PBS -j oe
 #PBS -l nodes=1:ppn=1,mem=2048mb,walltime=300:00:00 \n''' + \
         '''cd ''' + out_dir + '''\n''' + \
-        '''source /home/tnguye46/opt/module/anaconda2019.10.sh
+        '''source ''' + python_source_script + '''\n
 date
 python ''' + this_script + \
         ''' --exper_info_file ''' + exper_info_file + \
