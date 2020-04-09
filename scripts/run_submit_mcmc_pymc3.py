@@ -244,15 +244,15 @@ else:
 
     trace = trace[::thin]
     out_model = os.path.join(out_dir, "pm_model.pickle")
-    pickle.dump(pm_model, open(out_model, "w"))
+    pickle.dump(pm_model, open(out_model, "wb"))
 
     out_trace_obj = os.path.join(out_dir, "trace_obj.pickle")
-    pickle.dump(trace, open(out_trace_obj, "w"))
+    pickle.dump(trace, open(out_trace_obj, "wb"))
 
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     trace_vars = {name: trace.get_values(name) for name in free_vars}
     out_trace = os.path.join(out_dir, "traces.pickle")
-    pickle.dump(trace_vars, open(out_trace, "w"))
+    pickle.dump(trace_vars, open(out_trace, "wb"))
 
     if step_method == "SMC":
         marg_llh = pm_model.marginal_likelihood
