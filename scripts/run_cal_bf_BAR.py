@@ -12,7 +12,7 @@ import pickle
 import numpy as np
 import pandas as pd
 
-from _bayes_factor import get_values_from_trace, get_values_from_traces
+from _bayes_factor import get_values_from_traces
 from _bayes_factor import bayes_factor
 
 parser = argparse.ArgumentParser()
@@ -25,6 +25,7 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str,
                     default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
+parser.add_argument("--repeat_range", type=str, default="0 0")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
@@ -48,12 +49,32 @@ args = parser.parse_args()
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
+repeat_range = [int(s) for s in args.repeat_range.split()]
+assert len(repeat_range) == 2, "repeat_range must have two numbers."
+assert repeat_range[1] >= repeat_range[0], "the second number must be greater than or equal to the first."
+
 
 def enlarge_sample(sample, enlarge=1):
     sample_new = sample.copy()
     for k in sample_new.keys():
         sample_new[k] = np.repeat(sample_new[k], enlarge)
     return sample_new
+
+
+def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
+    pieces = path.split("/")
+    repeat_p = None
+    for p in pieces:
+        if repeat_prefix in p:
+            repeat_p = p
+
+    if repeat_p is None:
+        return False
+    num = int(repeat_p.split("_")[-1])
+    if (num >= repeat_range[0]) and num <= repeat_range[1]:
+        return True
+    else:
+        return False
 
 
 bf_df = []
