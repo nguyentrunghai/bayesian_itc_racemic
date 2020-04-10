@@ -125,7 +125,7 @@ if args.write_qsub_script:
 #PBS -S /bin/bash
 #PBS -o %s ''' % log_file + '''
 #PBS -j oe
-#PBS -l nodes=1:ppn=1,mem=2048mb,walltime=300:00:00 \n''' + \
+#PBS -l nodes=1:ppn=1,mem=4096mb,walltime=300:00:00 \n''' + \
         '''cd ''' + out_dir + '''\n''' + \
         '''source ''' + python_source_script + '''\n
 date\n
