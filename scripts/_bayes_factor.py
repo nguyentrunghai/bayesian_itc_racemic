@@ -132,23 +132,60 @@ def log_normal_trace(trace_val, mu_sigma_dict):
     return logp
 
 
-def fit_gaussian_mixture(x, n_components=2, covariance_type="spherical"):
-    gm = GaussianMixture(n_components=n_components, covariance_type=covariance_type)
-    gm.fit(x.reshape([-1, 1]))
-    return gm
+class GaussMix(object):
+    def __init__(self, n_components, covariance_type="diag"):
+        self._n_components = n_components
+        self._vars = []
+        self._gm = GaussianMixture(n_components=self._n_components, covariance_type=covariance_type)
 
+    def fit(self, sample_dict):
+        """
+        :param sample_dict: dict, var --> 1d array
+        """
+        self._vars = list(sample_dict.keys())
+        X_train = self._dict_to_array(sample_dict)
+        self._gm.fit(X_train)
+        return self
 
-def get_gm_fited_params(gm_model):
-    weights = gm_model.weights_
-    means = gm_model.means_
-    covariances = gm_model.covariances_
-    
-    n_components = len(weights)
-    results = []
-    for i in range(n_components):
-        params = {"weight": weights[i], "mean": means[i][0], "sigma": np.sqrt(covariances[i])}
-        results.append(params)
-    return results
+    def score_samples(self, sample_dict):
+        X = self._dict_to_array(sample_dict)
+        logp = self._gm.score_samples(X)
+        return logp
+
+    def sample(self, n_samples=1):
+        X = self._gm.sample(n_samples=n_samples)
+        X = X[0]
+        X_dict = {}
+        for i, v in enumerate(self._vars):
+            X_dict[v] = X[:, i]
+        return X_dict
+
+    def get_vars(self):
+        return self._vars
+
+    def get_model(self):
+        return self._gm
+
+    def get_gm_fited_params(self):
+        weights = self._gm.weights_
+        means = self._gm.means_
+        covariances = self._gm.covariances_
+
+        results = {}
+        for i, v in enumerate(self._vars):
+            results[v] = {}
+            results[v]["weights"] = weights
+            results[v]["means"] = [means[j][i] for j in range(self._n_components)]
+            results[v]["sigmas"] = [np.sqrt(covariances[j][i]) for j in range(self._n_components)]
+        return results
+
+    def get_n_components(self):
+        return self._n_components
+
+    def _dict_to_array(self, sample_dict):
+        X = [sample_dict[v] for v in self._vars]
+        X = np.stack(X, axis=1)
+        return X
 
 
 def fit_uniform(x, d=1e-100):
