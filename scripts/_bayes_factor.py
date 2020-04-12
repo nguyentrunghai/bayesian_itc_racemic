@@ -135,9 +135,15 @@ def log_normal_trace(trace_val, mu_sigma_dict):
 def fit_gaussian_mixture(x, n_components=2, covariance_type="spherical"):
     gm = GaussianMixture(n_components=n_components, covariance_type=covariance_type)
     gm.fit(x.reshape([-1, 1]))
-    weights = gm.weights_
-    means = gm.means_
-    covariances = gm.covariances_
+    return gm
+
+
+def get_gm_fited_params(gm_model):
+    weights = gm_model.weights_
+    means = gm_model.means_
+    covariances = gm_model.covariances_
+    
+    n_components = len(weights)
     results = []
     for i in range(n_components):
         params = {"weight": weights[i], "mean": means[i][0], "sigma": np.sqrt(covariances[i])}
