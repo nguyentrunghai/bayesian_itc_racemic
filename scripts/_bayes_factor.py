@@ -8,6 +8,8 @@ import numpy as np
 from scipy.stats import norm
 from scipy.stats import iqr
 
+from sklearn.mixture import GaussianMixture
+
 import pymbar
 
 from _models import log_marginal_likelihood
@@ -128,6 +130,19 @@ def log_normal_trace(trace_val, mu_sigma_dict):
         logp += log_normal_pdf(mu, sigma, y)
 
     return logp
+
+
+def fit_gaussian_mixture(x, n_components=2, covariance_type="spherical"):
+    gm = GaussianMixture(n_components=n_components, covariance_type=covariance_type)
+    gm.fit(x.reshape([-1, 1]))
+    weights = gm.weights_
+    means = gm.means_
+    covariances = gm.covariances_
+    results = []
+    for i in range(n_components):
+        params = {"weight": weights[i], "mean": means[i][0], "sigma": np.sqrt(covariances[i])}
+        results.append(params)
+    return results
 
 
 def fit_uniform(x, d=1e-100):
