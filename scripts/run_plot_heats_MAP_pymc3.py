@@ -29,6 +29,8 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str,
                     default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
+# inclusive
+parser.add_argument("--repeat_range", type=str, default="first last")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
@@ -51,6 +53,22 @@ parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
 
+
+def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
+    pieces = path.split("/")
+    repeat_p = None
+    for p in pieces:
+        if repeat_prefix in p:
+            repeat_p = p
+
+    if repeat_p is None:
+        return False
+    num = int(repeat_p.split("_")[-1])
+    if (num >= repeat_range[0]) and num <= repeat_range[1]:
+        return True
+    else:
+        return False
+    
 
 def find_MAP_maximize(model, method="L-BFGS-B"):
     return pymc3.find_MAP(model=model, method=method)
