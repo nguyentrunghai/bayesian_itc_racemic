@@ -34,7 +34,12 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-parser.add_argument("--aug_with", type=str, default="Normal")
+parser.add_argument("--aug_with", type=str, default="GaussMix")
+
+parser.add_argument("--n_components", type=int, default=1)
+# 'full', 'tied', 'diag', 'spherical'
+# read here for explanation: https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html
+parser.add_argument("--covariance_type", type=str, default="full")
 
 parser.add_argument("--aug_sample_enlarge", type=int, default=1)
 
@@ -115,6 +120,7 @@ for exper in experiments:
                                      model_ini_name="2c", model_fin_name="rm",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
+                                     n_components=args.n_components, covariance_type=args.covariance_type,
                                      bootstrap=args.bootstrap)
 
     print("\nEM over 2C")
@@ -123,6 +129,7 @@ for exper in experiments:
                                      model_ini_name="2c", model_fin_name="em",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
+                                     n_components=args.n_components, covariance_type=args.covariance_type,
                                      bootstrap=args.bootstrap)
 
     print("\nEM over RM")
@@ -131,6 +138,7 @@ for exper in experiments:
                                      model_ini_name="rm", model_fin_name="em",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
+                                     n_components=args.n_components, covariance_type=args.covariance_type,
                                      bootstrap=args.bootstrap)
 
     if args.bootstrap is not None:
