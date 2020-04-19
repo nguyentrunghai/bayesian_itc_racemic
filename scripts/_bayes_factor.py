@@ -179,7 +179,7 @@ def log_uniform_trace(trace_val, lower_upper_dict):
 
 
 class GaussMix(object):
-    def __init__(self, n_components, covariance_type="diag"):
+    def __init__(self, n_components, covariance_type="full"):
         """
         :param n_components: int
         :param covariance_type: str, one of 'full', 'tied', 'diag', 'spherical'
@@ -327,26 +327,41 @@ def var_starts_with(start_str, list_of_strs):
 
 def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
                  model_ini_name="2c", model_fin_name="rm",
-                 aug_with="Normal", sigma_robust=False, bootstrap=None):
+                 aug_with="Normal", sigma_robust=False,
+                 n_components=1, covariance_type="full",
+                 bootstrap=None):
     """
-    :param model_ini:
-    :param sample_ini:
-    :param model_fin:
-    :param sample_fin:
-    :param model_ini_name:
-    :param model_fin_name:
-    :param aug_with:
-    :param sigma_robust:
-    :param bootstrap:
-    :return:
+    :param model_ini: pymc3 model
+    :param sample_ini: dict: var_name -> ndarray
+    :param model_fin: pymc3 model
+    :param sample_fin: dict: var_name -> ndarray
+    :param model_ini_name: str
+    :param model_fin_name: str
+    :param aug_with: str
+    :param sigma_robust: bool, only used when aug_with="Normal"
+    :param n_components: int, only used when aug_with="GaussMix"
+    :param covariance_type: str, only used when aug_with="GaussMix"
+    :param bootstrap: int
+    :return: bf if bootstrap is None
+             (bf, err) if bootstrap is an int
     """
     assert aug_with in ["Normal", "Uniform", "GaussMix"], "Unknown aug_with: " + aug_with
+    print("aug_with:", aug_with)
 
     ini_fin_name = model_ini_name + "_" + model_fin_name
     assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
 
-    lower_upper_fin = fit_uniform_trace(sample_fin)
-    mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
+    if aug_with == "Normal":
+        mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
+
+    elif aug_with == "Uniform":
+        lower_upper_fin = fit_uniform_trace(sample_fin)
+
+    elif aug_with == "GaussMix":
+        gauss_mix = GaussMix(n_components=n_components, covariance_type=covariance_type)
+
+    else:
+        pass
 
     vars_ini = sample_ini.keys()
     print("vars_ini:", vars_ini)
@@ -376,8 +391,17 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
         raise ValueError("Unknown ini_fin_name: " + ini_fin_name)
     print("ini_final_var_match:", ini_final_var_match)
 
-    lower_upper_fin = {var: lower_upper_fin[var] for var in vars_redundant}
-    mu_sigma_fin = {var: mu_sigma_fin[var] for var in vars_redundant}
+    if aug_with == "Normal":
+        mu_sigma_fin = {var: mu_sigma_fin[var] for var in vars_redundant}
+
+    elif aug_with == "Uniform":
+        lower_upper_fin = {var: lower_upper_fin[var] for var in vars_redundant}
+
+    elif aug_with == "GaussMix":
+        sample_redun = {var: sample_fin[var] for var in vars_redundant}
+        gauss_mix.fit(sample_redun)
+    else:
+        pass
 
     nsamples_ini = len(sample_ini[vars_ini[0]])
     print("nsamples_ini = %d" % nsamples_ini)
@@ -393,8 +417,12 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
         sample_aug_ini = draw_uniform_samples(lower_upper_fin, nsamples_ini)
         u_i_i = pot_ener_uniform_aug(sample_ini, model_ini, sample_aug_ini, lower_upper_fin)
 
+    elif aug_with == "GaussMix":
+        sample_aug_ini = gauss_mix.sample(n_samples=nsamples_ini)
+        u_i_i = pot_ener_gauss_mix_aug(sample_ini, model_ini, sample_aug_ini, gauss_mix)
+
     else:
-        raise ValueError("Unknown aug_with:" + aug_with)
+        pass
 
     # potential for sample drawn from i estimated at state f
     sample_ini_comb = {}
@@ -415,15 +443,18 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
         var_fin = var_starts_with(kf, vars_fin)
         sample_fin_split[var_ini] = sample_fin[var_fin]
 
-    sample_aug_fin = {var: sample_fin[var] for var in vars_redundant}
+    sample_redun_fin = {var: sample_fin[var] for var in vars_redundant}
     if aug_with == "Normal":
-        u_f_i = pot_ener_normal_aug(sample_fin_split, model_ini, sample_aug_fin, mu_sigma_fin)
+        u_f_i = pot_ener_normal_aug(sample_fin_split, model_ini, sample_redun_fin, mu_sigma_fin)
 
     elif aug_with == "Uniform":
-        u_f_i = pot_ener_uniform_aug(sample_fin_split, model_ini, sample_aug_fin, lower_upper_fin)
+        u_f_i = pot_ener_uniform_aug(sample_fin_split, model_ini, sample_redun_fin, lower_upper_fin)
+
+    elif aug_with == "GaussMix":
+        u_f_i = pot_ener_gauss_mix_aug(sample_fin_split, model_ini, sample_redun_fin, gauss_mix)
 
     else:
-        raise ValueError("Unknown aug_with:" + aug_with)
+        pass
 
     w_F = u_i_f - u_i_i
     w_R = u_f_i - u_f_f
