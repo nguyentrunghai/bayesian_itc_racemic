@@ -325,7 +325,7 @@ def var_starts_with(start_str, list_of_strs):
     return found[0]
 
 
-def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
+def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
                  model_ini_name="2c", model_fin_name="rm",
                  aug_with="Normal", sigma_robust=False,
                  n_components=1, covariance_type="full",
@@ -551,6 +551,23 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
 
     print("Vars of sample_aug_ini:", list(sample_aug_ini.keys()))
 
+    ini_fin_var_match = [("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
+    ini_fin_var_match_extra = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
+                               ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")]
+
+    if ini_fin_name in ["2c_rm", "2c_em"]:
+        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
+        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
+        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
+        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
+
+        dg_var_i = var_starts_with("DeltaG", vars_ini)
+        dh_var_i = var_starts_with("DeltaH", vars_ini)
+
+        if ini_fin_name == "2c_em":
+            r_var_f = var_starts_with("rho", vars_fin)
+
+
     # potential for sample drawn from i estimated at state i
     if aug_with == "Normal":
         u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_aug_ini, mu_sigma_fin)
@@ -564,8 +581,6 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     else:
         pass
 
-    ini_fin_var_match = [("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
-
     # potential for sample drawn from i estimated at state f
     sample_tmp_ini = {}
     for ki, kf in ini_fin_var_match:
@@ -574,26 +589,15 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
         sample_tmp_ini[var_fin] = sample_ini[var_ini]
 
     if ini_fin_name in ["2c_rm", "2c_em"]:
-        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
-        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
-        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
-        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
-
-        dg_var_i = var_starts_with("DeltaG", vars_ini)
-        dh_var_i = var_starts_with("DeltaH", vars_ini)
-
         sample_tmp_ini[dg1_var_f] = sample_ini[dg_var_i] - 0.5 * sample_aug_ini["DeltaDeltaG"]
         sample_tmp_ini[ddg_var_f] = sample_aug_ini["DeltaDeltaG"]
         sample_tmp_ini[dh1_var_f] = sample_ini[dh_var_i] - 0.5 * sample_aug_ini["DeltaDeltaH"]
         sample_tmp_ini[dh2_var_f] = sample_ini[dh_var_i] + 0.5 * sample_aug_ini["DeltaDeltaH"]
 
         if ini_fin_name == "2c_em":
-            r_var_f = var_starts_with("rho", vars_fin)
             sample_tmp_ini[r_var_f] = sample_aug_ini["rho"]
 
     elif ini_fin_name == "rm_em":
-        ini_fin_var_match_extra = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
-                                   ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")]
 
         for ki, kf in ini_fin_var_match_extra:
             var_ini = var_starts_with(ki, vars_ini)
@@ -616,20 +620,10 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
         sample_tmp_fin[var_ini] = sample_fin[var_fin]
 
     if ini_fin_name in ["2c_rm", "2c_em"]:
-        dg_var_i = var_starts_with("DeltaG", vars_ini)
-        dh_var_i = var_starts_with("DeltaH", vars_ini)
-
-        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
-        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
-        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
-        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
-
         sample_tmp_fin[dg_var_i] = sample_fin[dg1_var_f] + sample_fin[ddg_var_f]
         sample_tmp_fin[dh_var_i] = 0.5 * (sample_fin[dh1_var_f] + sample_fin[dh2_var_f])
 
     elif ini_fin_name == "rm_em":
-        ini_fin_var_match_extra = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
-                                   ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")]
         for ki, kf in ini_fin_var_match_extra:
             var_ini = var_starts_with(ki, vars_ini)
             var_fin = var_starts_with(kf, vars_fin)
