@@ -218,12 +218,8 @@ class GaussMix(object):
         means = self._gm.means_
         covariances = self._gm.covariances_
 
-        results = {}
-        for i, v in enumerate(self._vars):
-            results[v] = {}
-            results[v]["weights"] = weights
-            results[v]["means"] = [means[j][i] for j in range(self._n_components)]
-            results[v]["sigmas"] = [np.sqrt(covariances[j][i]) for j in range(self._n_components)]
+        results = {"weights": weights, "means": means, "covariances": covariances}
+
         return results
 
     def get_n_components(self):
@@ -338,6 +334,8 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
     :param bootstrap:
     :return:
     """
+    assert aug_with in ["Normal", "Uniform", "GaussMix"], "Unknown aug_with: " + aug_with
+
     ini_fin_name = model_ini_name + "_" + model_fin_name
     assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
 
