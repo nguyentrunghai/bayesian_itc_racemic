@@ -358,6 +358,8 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
         lower_upper_fin = fit_uniform_trace(sample_fin)
 
     elif aug_with == "GaussMix":
+        print("n_components:", n_components)
+        print("covariance_type:", covariance_type)
         gauss_mix = GaussMix(n_components=n_components, covariance_type=covariance_type)
 
     else:
