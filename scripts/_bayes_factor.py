@@ -180,6 +180,12 @@ def log_uniform_trace(trace_val, lower_upper_dict):
 
 class GaussMix(object):
     def __init__(self, n_components, covariance_type="diag"):
+        """
+        :param n_components: int
+        :param covariance_type: str, one of 'full', 'tied', 'diag', 'spherical'
+        read here for explanation:
+        https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html
+        """
         self._n_components = n_components
         self._vars = []
         self._gm = GaussianMixture(n_components=self._n_components, covariance_type=covariance_type)
