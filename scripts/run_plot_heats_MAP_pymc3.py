@@ -53,6 +53,10 @@ parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
 
+repeat_range = [int(s) for s in args.repeat_range.split()]
+assert len(repeat_range) == 2, "repeat_range must have two numbers."
+assert repeat_range[1] >= repeat_range[0], "the second number must be greater than or equal to the first."
+
 
 def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
     pieces = path.split("/")
@@ -68,7 +72,7 @@ def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
         return True
     else:
         return False
-    
+
 
 def find_MAP_maximize(model, method="L-BFGS-B"):
     return pymc3.find_MAP(model=model, method=method)
@@ -105,10 +109,15 @@ for exper in experiments:
     print("\n\n", exper)
 
     dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper))
+    dirs_2c = [p for p in dirs_2c if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
     print("dirs_2c:", dirs_2c)
+
     dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper))
+    dirs_rm = [p for p in dirs_rm if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
     print("dirs_rm:", dirs_rm)
+
     dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper))
+    dirs_em = [p for p in dirs_em if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
     print("dirs_em:", dirs_em)
 
     model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
