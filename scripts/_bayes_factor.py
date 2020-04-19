@@ -472,3 +472,200 @@ def bayes_factor(model_ini, sample_ini, model_fin, sample_fin,
         bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
         print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
         return bf, bf_err
+
+
+def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
+                    model_ini_name="2c", model_fin_name="rm",
+                    aug_with="GaussMix", sigma_robust=False,
+                    n_components=1, covariance_type="full",
+                    bootstrap=None):
+    """
+    :param model_ini: pymc3 model
+    :param sample_ini: dict: var_name -> ndarray
+    :param model_fin: pymc3 model
+    :param sample_fin: dict: var_name -> ndarray
+    :param model_ini_name: str
+    :param model_fin_name: str
+    :param aug_with: str
+    :param sigma_robust: bool, only used when aug_with="Normal"
+    :param n_components: int, only used when aug_with="GaussMix"
+    :param covariance_type: str, only used when aug_with="GaussMix"
+    :param bootstrap: int
+    :return: bf if bootstrap is None
+             (bf, err) if bootstrap is an int
+    """
+    assert aug_with in ["Normal", "Uniform", "GaussMix"], "Unknown aug_with: " + aug_with
+    print("aug_with:", aug_with)
+
+    ini_fin_name = model_ini_name + "_" + model_fin_name
+    assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
+
+    vars_ini = sample_ini.keys()
+    print("vars_ini:", vars_ini)
+    nsamples_ini = len(sample_ini[vars_ini[0]])
+    print("nsamples_ini = %d" % nsamples_ini)
+
+    vars_fin = sample_fin.keys()
+    print("vars_fin:", vars_fin)
+    nsamples_fin = len(sample_fin[vars_fin[0]])
+    print("nsamples_fin = %d" % nsamples_fin)
+
+    # get redundant parameters from final state
+    sample_redun_fin = {}
+    if ini_fin_name in ["2c_rm", "2c_em"]:
+        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
+        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
+        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
+
+        sample_redun_fin["DeltaDeltaG"] = sample_fin[ddg_var_f]
+        sample_redun_fin["DeltaDeltaH"] = sample_fin[dh2_var_f] - sample_fin[dh1_var_f]
+
+        if ini_fin_name == "2c_em":
+            r_var_f = var_starts_with("rho", vars_fin)
+            sample_redun_fin["rho"] = sample_fin[r_var_f]
+
+    elif ini_fin_name == "rm_em":
+        r_var_f = var_starts_with("rho", vars_fin)
+        sample_redun_fin["rho"] = sample_fin[r_var_f]
+    else:
+        pass
+    print("Vars of sample_redun_fin:", list(sample_redun_fin.keys()))
+
+    # fit models to sample_redun_fin
+    if aug_with == "Normal":
+        mu_sigma_fin = fit_normal_trace(sample_redun_fin, sigma_robust=sigma_robust)
+        sample_aug_ini = draw_normal_samples(mu_sigma_fin, nsamples_ini)
+
+    elif aug_with == "Uniform":
+        lower_upper_fin = fit_uniform_trace(sample_redun_fin)
+        sample_aug_ini = draw_uniform_samples(lower_upper_fin, nsamples_ini)
+
+    elif aug_with == "GaussMix":
+        print("n_components:", n_components)
+        print("covariance_type:", covariance_type)
+        gauss_mix = GaussMix(n_components=n_components, covariance_type=covariance_type)
+        gauss_mix.fit(sample_redun_fin)
+        sample_aug_ini = gauss_mix.sample(n_samples=nsamples_ini)
+    else:
+        pass
+
+    print("Vars of sample_aug_ini:", list(sample_aug_ini.keys()))
+
+    # potential for sample drawn from i estimated at state i
+    if aug_with == "Normal":
+        u_i_i = pot_ener_normal_aug(sample_ini, model_ini, sample_aug_ini, mu_sigma_fin)
+
+    elif aug_with == "Uniform":
+        u_i_i = pot_ener_uniform_aug(sample_ini, model_ini, sample_aug_ini, lower_upper_fin)
+
+    elif aug_with == "GaussMix":
+        u_i_i = pot_ener_gauss_mix_aug(sample_ini, model_ini, sample_aug_ini, gauss_mix)
+
+    else:
+        pass
+
+    ini_fin_var_match = [("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
+
+    # potential for sample drawn from i estimated at state f
+    sample_tmp_ini = {}
+    for ki, kf in ini_fin_var_match:
+        var_ini = var_starts_with(ki, vars_ini)
+        var_fin = var_starts_with(kf, vars_fin)
+        sample_tmp_ini[var_fin] = sample_ini[var_ini]
+
+    if ini_fin_name in ["2c_rm", "2c_em"]:
+        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
+        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
+        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
+        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
+
+        dg_var_i = var_starts_with("DeltaG", vars_ini)
+        dh_var_i = var_starts_with("DeltaH", vars_ini)
+
+        sample_tmp_ini[dg1_var_f] = sample_ini[dg_var_i] - 0.5 * sample_aug_ini["DeltaDeltaG"]
+        sample_tmp_ini[ddg_var_f] = sample_aug_ini["DeltaDeltaG"]
+        sample_tmp_ini[dh1_var_f] = sample_ini[dh_var_i] - 0.5 * sample_aug_ini["DeltaDeltaH"]
+        sample_tmp_ini[dh2_var_f] = sample_ini[dh_var_i] + 0.5 * sample_aug_ini["DeltaDeltaH"]
+
+        if ini_fin_name == "2c_em":
+            r_var_f = var_starts_with("rho", vars_fin)
+            sample_tmp_ini[r_var_f] = sample_aug_ini["rho"]
+
+    elif ini_fin_name == "rm_em":
+        ini_fin_var_match_extra = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
+                                   ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")]
+
+        for ki, kf in ini_fin_var_match_extra:
+            var_ini = var_starts_with(ki, vars_ini)
+            var_fin = var_starts_with(kf, vars_fin)
+            sample_tmp_ini[var_fin] = sample_ini[var_ini]
+
+        r_var_f = var_starts_with("rho", vars_fin)
+        sample_tmp_ini[r_var_f] = sample_aug_ini["rho"]
+
+    else:
+        pass
+    u_i_f = pot_ener(sample_tmp_ini, model_fin)
+    del sample_tmp_ini
+
+    # potential for sample drawn from f estimated at state i
+    sample_tmp_fin = {}
+    for ki, kf in ini_fin_var_match:
+        var_ini = var_starts_with(ki, vars_ini)
+        var_fin = var_starts_with(kf, vars_fin)
+        sample_tmp_fin[var_ini] = sample_fin[var_fin]
+
+    if ini_fin_name in ["2c_rm", "2c_em"]:
+        dg_var_i = var_starts_with("DeltaG", vars_ini)
+        dh_var_i = var_starts_with("DeltaH", vars_ini)
+
+        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
+        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
+        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
+        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
+
+        sample_tmp_fin[dg_var_i] = sample_fin[dg1_var_f] + sample_fin[ddg_var_f]
+        sample_tmp_fin[dh_var_i] = 0.5 * (sample_fin[dh1_var_f] + sample_fin[dh2_var_f])
+
+    elif ini_fin_name == "rm_em":
+        ini_fin_var_match_extra = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
+                                   ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")]
+        for ki, kf in ini_fin_var_match_extra:
+            var_ini = var_starts_with(ki, vars_ini)
+            var_fin = var_starts_with(kf, vars_fin)
+            sample_tmp_fin[var_ini] = sample_fin[var_fin]
+
+    if aug_with == "Normal":
+        u_f_i = pot_ener_normal_aug(sample_tmp_fin, model_ini, sample_redun_fin, mu_sigma_fin)
+
+    elif aug_with == "Uniform":
+        u_f_i = pot_ener_uniform_aug(sample_tmp_fin, model_ini, sample_redun_fin, lower_upper_fin)
+
+    elif aug_with == "GaussMix":
+        u_f_i = pot_ener_gauss_mix_aug(sample_tmp_fin, model_ini, sample_redun_fin, gauss_mix)
+
+    else:
+        pass
+    del sample_tmp_fin
+
+    # potential for sample drawn from f estimated at state f
+    u_f_f = pot_ener(sample_fin, model_fin)
+
+    w_F = u_i_f - u_i_i
+    w_R = u_f_i - u_f_f
+
+    delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
+    bf = -delta_F
+
+    if bootstrap is None:
+        print("log10(bf) = %0.5f" % (bf * np.log10(np.e)))
+        return bf
+    else:
+        print("Running %d bootstraps to estimate error." % bootstrap)
+        bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
+        print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
+        return bf, bf_err
+
+
+
+
