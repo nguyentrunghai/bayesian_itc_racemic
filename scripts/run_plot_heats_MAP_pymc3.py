@@ -105,8 +105,12 @@ KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
 
+heat_data = {}
+map_params = {}
 for exper in experiments:
     print("\n\n", exper)
+    heat_data[exper] = {}
+    map_params[exper] = {}
 
     dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper))
     dirs_2c = [p for p in dirs_2c if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
@@ -154,6 +158,10 @@ for exper in experiments:
         map_em = find_MAP_traces(model_em, traces_em)
         print("map_em", map_em)
 
+    map_params[exper]["2c"] = map_2c
+    map_params[exper]["rm"] = map_rm
+    map_params[exper]["em"] = map_em
+
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
     actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
 
@@ -188,6 +196,11 @@ for exper in experiments:
         q_em_micro_cal), "heats do not have the same len"
     n_inj = len(actual_q_micro_cal)
 
+    heat_data[exper]["actual_q_micro_cal"] = actual_q_micro_cal
+    heat_data[exper]["q_2c_micro_cal"] = q_2c_micro_cal
+    heat_data[exper]["q_rm_micro_cal"] = q_rm_micro_cal
+    heat_data[exper]["q_em_micro_cal"] = q_em_micro_cal
+
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
     ax.scatter(range(1, n_inj + 1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
     ax.plot(range(1, n_inj + 1), q_2c_micro_cal, c="r", linestyle="-", label="2cbm")
@@ -200,5 +213,9 @@ for exper in experiments:
 
     fig.tight_layout()
     fig.savefig(exper + ".pdf", dpi=300)
+
+# pickle data
+pickle.dump(heat_data, open("heats.pickle", "wb"))
+pickle.dump(map_params, open("map_params.pickle", "wb"))
 
 print("DONE")
