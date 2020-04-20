@@ -24,6 +24,10 @@ parser.add_argument("--racemic_mixture_mcmc_dir", type=str,
 parser.add_argument("--enantiomer_mcmc_dir", type=str,
                     default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
 
+parser.add_argument("--two_component_model_dir", type=str, default=None)
+parser.add_argument("--racemic_mixture_model_dir", type=str, default=None)
+parser.add_argument("--enantiomer_model_dir", type=str, default=None)
+
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 # inclusive
 parser.add_argument("--repeat_range", type=str, default="first last")
@@ -110,19 +114,36 @@ for exper in experiments:
     print("dirs_em:", dirs_em)
 
     # load data for 2cbm
-    model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
+    if args.two_component_model_dir is None:
+        model_2c_file = os.path.join(dirs_2c[0], args.model_pickle)
+    else:
+        model_2c_file = os.path.join(args.two_component_model_dir, exper, args.model_pickle)
+    print("Loading model: " + model_2c_file)
+    model_2c = pickle.load(open(model_2c_file))
     trace_list_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
     sample_2c = get_values_from_traces(model_2c, trace_list_2c, thin=args.thin, burn=args.burn)
+    del trace_list_2c
 
     # load data for rmbm
-    model_rm = pickle.load(open(os.path.join(dirs_rm[0], args.model_pickle)))
+    if args.racemic_mixture_model_dir is None:
+        model_rm_file = os.path.join(dirs_rm[0], args.model_pickle)
+    else:
+        model_rm_file = os.path.join(args.racemic_mixture_model_dir, exper, args.model_pickle)
+    print("Loading model: " + model_rm_file)
+    model_rm = pickle.load(open(model_rm_file))
     trace_list_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
     sample_rm = get_values_from_traces(model_rm, trace_list_rm, thin=args.thin, burn=args.burn)
+    del trace_list_rm
 
     # load data for embm
-    model_em = pickle.load(open(os.path.join(dirs_em[0], args.model_pickle)))
+    if args.enantiomer_model_dir is None:
+        model_em_file = os.path.join(dirs_em[0], args.model_pickle)
+    else:
+        model_em_file = os.path.join(args.enantiomer_model_dir, exper, args.model_pickle)
+    model_em = pickle.load(open(model_em_file))
     trace_list_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
     sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burn)
+    del trace_list_em
 
     print("\nRM over 2C")
     result_rm_over_2c = bayes_factor(model_2c, enlarge_sample(sample_2c, enlarge=args.aug_sample_enlarge),
