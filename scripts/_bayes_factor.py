@@ -345,6 +345,7 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
     :return: bf if bootstrap is None
              (bf, err) if bootstrap is an int
     """
+    print("Use estimator version 1")
     assert aug_with in ["Normal", "Uniform", "GaussMix"], "Unknown aug_with: " + aug_with
     print("aug_with:", aug_with)
 
@@ -494,6 +495,8 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     :return: bf if bootstrap is None
              (bf, err) if bootstrap is an int
     """
+    print("Use estimator version 2")
+
     assert aug_with in ["Normal", "Uniform", "GaussMix"], "Unknown aug_with: " + aug_with
     print("aug_with:", aug_with)
 
