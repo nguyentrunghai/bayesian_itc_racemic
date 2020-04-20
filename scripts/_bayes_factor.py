@@ -669,6 +669,16 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     w_F = u_i_f - u_i_i
     w_R = u_f_i - u_f_f
 
+    w_F = filter_work(w_F)
+    w_R = filter_work(w_R)
+
+    if (len(w_F) == 0) or (len(w_R) == 0):
+        print("Empty work arrays:", w_F.shape, w_R.shape)
+        if bootstrap is None:
+            return 0.
+        else:
+            return 0., 0.
+
     delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
     bf = -delta_F
 
