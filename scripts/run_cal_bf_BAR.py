@@ -92,7 +92,7 @@ elif args.estimator_version == 2:
     bayes_factor = bayes_factor_v2
 else:
     raise ValueError("Unknown version: %d" % args.estimator_version)
-    
+
 bf_df = []
 for exper in experiments:
     print("\n\nCalculating Bayes Factors for " + exper)
