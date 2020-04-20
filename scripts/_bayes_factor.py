@@ -510,18 +510,26 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     nsamples_fin = len(sample_fin[vars_fin[0]])
     print("nsamples_fin = %d" % nsamples_fin)
 
-    # get redundant parameters from final state
-    sample_redun_fin = {}
+    # get var names
     if ini_fin_name in ["2c_rm", "2c_em"]:
+        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
         ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
         dh1_var_f = var_starts_with("DeltaH1", vars_fin)
         dh2_var_f = var_starts_with("DeltaH2", vars_fin)
 
+        dg_var_i = var_starts_with("DeltaG", vars_ini)
+        dh_var_i = var_starts_with("DeltaH", vars_ini)
+
+        if ini_fin_name == "2c_em":
+            r_var_f = var_starts_with("rho", vars_fin)
+
+    # get redundant parameters from final state
+    sample_redun_fin = {}
+    if ini_fin_name in ["2c_rm", "2c_em"]:
         sample_redun_fin["DeltaDeltaG"] = sample_fin[ddg_var_f]
         sample_redun_fin["DeltaDeltaH"] = sample_fin[dh2_var_f] - sample_fin[dh1_var_f]
 
         if ini_fin_name == "2c_em":
-            r_var_f = var_starts_with("rho", vars_fin)
             sample_redun_fin["rho"] = sample_fin[r_var_f]
 
     elif ini_fin_name == "rm_em":
@@ -554,18 +562,6 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     ini_fin_var_match = [("P0", "P0"), ("Ls", "Ls"), ("DeltaH_0", "DeltaH_0"), ("log_sigma", "log_sigma")]
     ini_fin_var_match_extra = [("DeltaG1", "DeltaG1"), ("DeltaDeltaG", "DeltaDeltaG"),
                                ("DeltaH1", "DeltaH1"), ("DeltaH2", "DeltaH2")]
-
-    if ini_fin_name in ["2c_rm", "2c_em"]:
-        dg1_var_f = var_starts_with("DeltaG1", vars_fin)
-        ddg_var_f = var_starts_with("DeltaDeltaG", vars_fin)
-        dh1_var_f = var_starts_with("DeltaH1", vars_fin)
-        dh2_var_f = var_starts_with("DeltaH2", vars_fin)
-
-        dg_var_i = var_starts_with("DeltaG", vars_ini)
-        dh_var_i = var_starts_with("DeltaH", vars_ini)
-
-        if ini_fin_name == "2c_em":
-            r_var_f = var_starts_with("rho", vars_fin)
 
 
     # potential for sample drawn from i estimated at state i
