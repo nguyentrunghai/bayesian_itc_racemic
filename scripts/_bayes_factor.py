@@ -599,7 +599,6 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
             var_fin = var_starts_with(kf, vars_fin)
             sample_tmp_ini[var_fin] = sample_ini[var_ini]
 
-        r_var_f = var_starts_with("rho", vars_fin)
         sample_tmp_ini[r_var_f] = sample_aug_ini["rho"]
 
     else:
@@ -615,7 +614,7 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
         sample_tmp_fin[var_ini] = sample_fin[var_fin]
 
     if ini_fin_name in ["2c_rm", "2c_em"]:
-        sample_tmp_fin[dg_var_i] = sample_fin[dg1_var_f] + sample_fin[ddg_var_f]
+        sample_tmp_fin[dg_var_i] = sample_fin[dg1_var_f] + 0.5 * sample_fin[ddg_var_f]
         sample_tmp_fin[dh_var_i] = 0.5 * (sample_fin[dh1_var_f] + sample_fin[dh2_var_f])
 
     elif ini_fin_name == "rm_em":
