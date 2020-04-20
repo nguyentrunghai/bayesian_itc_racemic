@@ -533,7 +533,6 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
             sample_redun_fin["rho"] = sample_fin[r_var_f]
 
     elif ini_fin_name == "rm_em":
-        r_var_f = var_starts_with("rho", vars_fin)
         sample_redun_fin["rho"] = sample_fin[r_var_f]
     else:
         pass
