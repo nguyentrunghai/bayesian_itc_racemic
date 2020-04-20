@@ -526,6 +526,9 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
         if ini_fin_name == "2c_em":
             r_var_f = var_starts_with("rho", vars_fin)
 
+    elif ini_fin_name == "rm_em":
+        r_var_f = var_starts_with("rho", vars_fin)
+
     # get redundant parameters from final state
     sample_redun_fin = {}
     if ini_fin_name in ["2c_rm", "2c_em"]:
