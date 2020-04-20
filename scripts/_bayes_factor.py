@@ -67,6 +67,10 @@ def get_values_from_trace(model, trace, thin=1, burn=0):
     :param burn: int, number of steps to exclude
     :return: dict: varname --> ndarray
     """
+    if isinstance(trace, dict):
+        trace_values = {var: trace[var][burn::thin] for var in trace}
+        return trace_values
+
     varnames = [var.name for var in model.vars]
     trace_values = {var: trace.get_values(var, thin=thin, burn=burn) for var in varnames}
     return trace_values
