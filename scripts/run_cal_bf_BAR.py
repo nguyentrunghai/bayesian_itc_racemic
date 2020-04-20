@@ -140,6 +140,7 @@ for exper in experiments:
         model_em_file = os.path.join(dirs_em[0], args.model_pickle)
     else:
         model_em_file = os.path.join(args.enantiomer_model_dir, exper, args.model_pickle)
+    print("Loading model: " + model_em_file)
     model_em = pickle.load(open(model_em_file))
     trace_list_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
     sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burn)
