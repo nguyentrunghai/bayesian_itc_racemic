@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from _bayes_factor import get_values_from_traces
-from _bayes_factor import bayes_factor
+from _bayes_factor import bayes_factor_v1, bayes_factor_v2
 
 parser = argparse.ArgumentParser()
 
@@ -34,6 +34,8 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
+parser.add_argument("--estimator_version", type=int, default=1)
+
 # "Normal", "Uniform", "GaussMix"
 parser.add_argument("--aug_with", type=str, default="GaussMix")
 
@@ -52,13 +54,6 @@ parser.add_argument("--bootstrap", type=int, default=None)
 
 parser.add_argument("--csv_out", type=str, default="bayes_factors.csv")
 args = parser.parse_args()
-
-experiments = args.experiments.split()
-print("experiments:", experiments)
-
-repeat_range = [int(s) for s in args.repeat_range.split()]
-assert len(repeat_range) == 2, "repeat_range must have two numbers."
-assert repeat_range[1] >= repeat_range[0], "the second number must be greater than or equal to the first."
 
 
 def enlarge_sample(sample, enlarge=1):
@@ -84,6 +79,20 @@ def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
         return False
 
 
+experiments = args.experiments.split()
+print("experiments:", experiments)
+
+repeat_range = [int(s) for s in args.repeat_range.split()]
+assert len(repeat_range) == 2, "repeat_range must have two numbers."
+assert repeat_range[1] >= repeat_range[0], "the second number must be greater than or equal to the first."
+
+if args.estimator_version == 1:
+    bayes_factor = bayes_factor_v1
+elif args.estimator_version == 2:
+    bayes_factor = bayes_factor_v2
+else:
+    raise ValueError("Unknown version: %d" % args.estimator_version)
+    
 bf_df = []
 for exper in experiments:
     print("\n\nCalculating Bayes Factors for " + exper)
