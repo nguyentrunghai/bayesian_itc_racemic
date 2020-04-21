@@ -336,6 +336,16 @@ def filter_nan_inf(x):
     return x
 
 
+def filter_high(x, percentile=97.5):
+    thres = np.percentile(x, percentile)
+    return x[x < thres]
+
+
+def filter_low(x, percentile=2.5):
+    thres = np.percentile(x, percentile)
+    return x[x > thres]
+
+
 def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
                  model_ini_name="2c", model_fin_name="rm",
                  aug_with="Normal", sigma_robust=False,
