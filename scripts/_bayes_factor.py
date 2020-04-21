@@ -329,11 +329,11 @@ def var_starts_with(start_str, list_of_strs):
     return found[0]
 
 
-def filter_work(w):
-    w = w[w != np.inf]
-    w = w[w != -np.inf]
-    w = w[~np.isnan(w)]
-    return w
+def filter_nan_inf(x):
+    x = x[x != np.inf]
+    x = x[x != -np.inf]
+    x = x[~np.isnan(x)]
+    return x
 
 
 def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
@@ -473,8 +473,8 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
     w_F = u_i_f - u_i_i
     w_R = u_f_i - u_f_f
 
-    w_F = filter_work(w_F)
-    w_R = filter_work(w_R)
+    w_F = filter_nan_inf(w_F)
+    w_R = filter_nan_inf(w_R)
 
     if (len(w_F) == 0) or (len(w_R) == 0):
         print("Empty work arrays:", w_F.shape, w_R.shape)
@@ -669,8 +669,8 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     w_F = u_i_f - u_i_i
     w_R = u_f_i - u_f_f
 
-    w_F = filter_work(w_F)
-    w_R = filter_work(w_R)
+    w_F = filter_nan_inf(w_F)
+    w_R = filter_nan_inf(w_R)
 
     if (len(w_F) == 0) or (len(w_R) == 0):
         print("Empty work arrays:", w_F.shape, w_R.shape)
