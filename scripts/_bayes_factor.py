@@ -350,7 +350,7 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
                     model_ini_name="2c", model_fin_name="rm",
                     aug_with="Normal", sigma_robust=False,
                     n_components=1, covariance_type="full",
-                    high_w_thres=99., low_w_thres=1.,
+                    high_w_thres=100., low_w_thres=0.,
                     bootstrap=None):
     """
     :param model_ini: pymc3 model
@@ -519,7 +519,7 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
                     model_ini_name="2c", model_fin_name="rm",
                     aug_with="GaussMix", sigma_robust=False,
                     n_components=1, covariance_type="full",
-                    high_w_thres=99., low_w_thres=1.,
+                    high_w_thres=100., low_w_thres=0.,
                     bootstrap=None):
     """
     :param model_ini: pymc3 model
