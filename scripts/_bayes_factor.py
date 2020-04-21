@@ -377,6 +377,9 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
     assert 0 <= high_w_thres <= 100, "high_w_thres out of range"
     assert 0 <= low_w_thres <= 100, "low_w_thres out of range"
 
+    print("high_w_thres = %0.5f" % high_w_thres)
+    print("low_w_thres = %0.5f" % low_w_thres)
+
     if aug_with == "Normal":
         mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
 
@@ -546,6 +549,9 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
 
     assert 0 <= high_w_thres <= 100, "high_w_thres out of range"
     assert 0 <= low_w_thres <= 100, "low_w_thres out of range"
+
+    print("high_w_thres = %0.5f" % high_w_thres)
+    print("low_w_thres = %0.5f" % low_w_thres)
 
     vars_ini = sample_ini.keys()
     print("vars_ini:", vars_ini)
