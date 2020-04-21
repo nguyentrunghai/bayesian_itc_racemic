@@ -685,7 +685,12 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     w_R = u_f_i - u_f_f
 
     w_F = filter_nan_inf(w_F)
+    w_F = filter_high(w_F, percentile=97.5)
+    w_F = filter_low(w_F, percentile=1.0)
+
     w_R = filter_nan_inf(w_R)
+    w_R = filter_high(w_R, percentile=97.5)
+    w_R = filter_low(w_R, percentile=1.0)
 
     if (len(w_F) == 0) or (len(w_R) == 0):
         print("Empty work arrays:", w_F.shape, w_R.shape)
