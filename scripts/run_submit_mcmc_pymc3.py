@@ -55,6 +55,8 @@ parser.add_argument("--out_dir", type=str, default="out")
 
 parser.add_argument("--var_transform_off", action="store_true", default=False)
 parser.add_argument("--last_trace_dir", type=str, default=None)
+parser.add_argument("--last_trace_pickle", type=str, default="trace_obj.pickle")
+
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
@@ -118,6 +120,8 @@ if args.write_qsub_script:
         else:
             last_trace_dir = " --last_trace_dir " + os.path.join(args.last_trace_dir, experiment)
 
+        last_trace_pickle = args.last_trace_pickle
+
         python_source_script = args.python_source_script
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
@@ -145,6 +149,7 @@ python ''' + this_script + \
         ''' --chains %d''' % chains + \
         ''' --thin %d''' % thin + \
         var_transform_off + last_trace_dir + \
+        ''' --last_trace_pickle ''' + last_trace_pickle + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -206,6 +211,9 @@ else:
     last_trace_dir = args.last_trace_dir
     print("last_trace_dir:", last_trace_dir)
 
+    last_trace_pickle = args.last_trace_pickle
+    print("last_trace_pickle:", last_trace_pickle)
+
     out_dir = args.out_dir
     print("out_dir", out_dir)
 
@@ -246,11 +254,16 @@ else:
             print("MAP:\n", start)
 
         else:
-            last_trace_file = os.path.join(last_trace_dir, "trace_obj.pickle")
+            last_trace_file = os.path.join(last_trace_dir, last_trace_pickle)
             print("Starting from last trace:", last_trace_file)
             with open(last_trace_file) as handle:
-                start = pickle.load(handle).point(-1)
+                last_trace = pickle.load(handle)
+                if isinstance(last_trace, dict):
+                    start = {k: last_trace[k][-1] for k in last_trace}
+                else:
+                    start = last_trace.point(-1)
             print("Starting config:\n", start)
+            del last_trace
 
         # Metropolis, HamiltonianMC, NUTS, SMC
         if step_method == "Metropolis":
