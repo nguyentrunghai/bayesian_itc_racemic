@@ -248,7 +248,7 @@ else:
     else:
         raise ValueError("Unknown model: " + model_name)
 
-    vars = pm_model.vars
+    vars = [var.name for var in pm_model.vars]
     print("vars: ", vars)
 
     with pm_model:
@@ -266,8 +266,10 @@ else:
                 if isinstance(last_trace, dict):
                     #start = {k: last_trace[k][-1] for k in last_trace}
                     start = {k: np.median(last_trace[k]) for k in last_trace}
+                    trace_vars = list(start.keys())
+                    print("trace_vars:", trace_vars)
 
-                    miss_vars = set(vars) - set(start.keys())
+                    miss_vars = set(vars) - set(trace_vars)
                     miss_vars = list(miss_vars)
                     if len(miss_vars) > 1:
                         print("miss_vars:", miss_vars)
