@@ -58,7 +58,7 @@ parser.add_argument("--out_dir", type=str, default="out")
 parser.add_argument("--var_transform_off", action="store_true", default=False)
 parser.add_argument("--last_trace_dir", type=str, default=None)
 parser.add_argument("--last_trace_pickle", type=str, default="trace_obj.pickle")
-
+parser.add_argument("--start_from_median", action="store_true", default=False)
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
@@ -124,6 +124,11 @@ if args.write_qsub_script:
 
         last_trace_pickle = args.last_trace_pickle
 
+        if args.start_from_median:
+            start_from_median = " --start_from_median "
+        else:
+            start_from_median = " "
+
         python_source_script = args.python_source_script
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
         log_file = os.path.join(out_dir, experiment + "_mcmc.log")
@@ -152,6 +157,7 @@ python ''' + this_script + \
         ''' --thin %d''' % thin + \
         var_transform_off + last_trace_dir + \
         ''' --last_trace_pickle ''' + last_trace_pickle + \
+        start_from_median + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -216,6 +222,9 @@ else:
     last_trace_pickle = args.last_trace_pickle
     print("last_trace_pickle:", last_trace_pickle)
 
+    start_from_median = args.start_from_median
+    print("start_from_median:", start_from_median)
+
     out_dir = args.out_dir
     print("out_dir", out_dir)
 
@@ -264,8 +273,12 @@ else:
             with open(last_trace_file) as handle:
                 last_trace = pickle.load(handle)
                 if isinstance(last_trace, dict):
-                    #start = {k: last_trace[k][-1] for k in last_trace}
-                    start = {k: np.median(last_trace[k]) for k in last_trace}
+
+                    if start_from_median:
+                        start = {k: np.median(last_trace[k]) for k in last_trace}
+                    else:
+                        start = {k: last_trace[k][-1] for k in last_trace}
+                        
                     trace_vars = list(start.keys())
                     print("trace_vars:", trace_vars)
 
