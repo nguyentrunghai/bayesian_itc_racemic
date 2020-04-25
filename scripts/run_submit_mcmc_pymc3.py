@@ -9,6 +9,8 @@ import argparse
 
 import pickle
 
+import numpy as np
+
 import pymc3
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -262,7 +264,8 @@ else:
             with open(last_trace_file) as handle:
                 last_trace = pickle.load(handle)
                 if isinstance(last_trace, dict):
-                    start = {k: last_trace[k][-1] for k in last_trace}
+                    #start = {k: last_trace[k][-1] for k in last_trace}
+                    start = {k: np.meadian(last_trace[k]) for k in last_trace}
 
                     miss_vars = set(vars) - set(start.keys())
                     miss_vars = list(miss_vars)
