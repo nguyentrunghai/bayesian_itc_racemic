@@ -278,7 +278,7 @@ else:
                         start = {k: np.median(last_trace[k]) for k in last_trace}
                     else:
                         start = {k: last_trace[k][-1] for k in last_trace}
-                        
+
                     trace_vars = list(start.keys())
                     print("trace_vars:", trace_vars)
 
