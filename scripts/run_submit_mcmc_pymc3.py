@@ -246,6 +246,9 @@ else:
     else:
         raise ValueError("Unknown model: " + model_name)
 
+    vars = pm_model.vars
+    print("vars: ", vars)
+
     with pm_model:
 
         if last_trace_dir is None:
@@ -260,6 +263,17 @@ else:
                 last_trace = pickle.load(handle)
                 if isinstance(last_trace, dict):
                     start = {k: last_trace[k][-1] for k in last_trace}
+
+                    miss_var = set(vars) - set(start.keys())
+                    miss_var = list(miss_var)
+                    if len(miss_var) > 1:
+                        print("miss_var:", miss_var)
+                        raise ValueError("There are more than one missing value:")
+
+                    if len(miss_var) == 1:
+                        assert "rho" in miss_var, "rho is not the missing value"
+                        start["rho"] = 0.5
+
                 else:
                     start = last_trace.point(-1)
             print("Starting config:\n", start)
