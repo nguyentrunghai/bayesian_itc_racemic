@@ -265,7 +265,7 @@ else:
                 last_trace = pickle.load(handle)
                 if isinstance(last_trace, dict):
                     #start = {k: last_trace[k][-1] for k in last_trace}
-                    start = {k: np.meadian(last_trace[k]) for k in last_trace}
+                    start = {k: np.median(last_trace[k]) for k in last_trace}
 
                     miss_vars = set(vars) - set(start.keys())
                     miss_vars = list(miss_vars)
