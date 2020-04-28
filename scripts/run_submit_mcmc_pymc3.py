@@ -57,9 +57,11 @@ parser.add_argument("--experiments_flat_prior_Ls", type=str, default="")
 parser.add_argument("--out_dir", type=str, default="out")
 
 parser.add_argument("--var_transform_off", action="store_true", default=False)
+
 parser.add_argument("--last_trace_dir", type=str, default=None)
 parser.add_argument("--last_trace_pickle", type=str, default="trace_obj.pickle")
-parser.add_argument("--start_from_median", action="store_true", default=False)
+# max, mean, median, last
+parser.add_argument("--stat_in_last_trace", type=str, default="last")
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
 parser.add_argument("--submit", action="store_true", default=False)
