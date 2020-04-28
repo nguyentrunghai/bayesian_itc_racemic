@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 
+from _bayes_factor import get_values_from_trace, log_posterior_trace
 from _data_io_py3 import ITCExperiment, load_heat_micro_cal
 from _pymc3_models import make_TwoComponentBindingModel, make_RacemicMixtureBindingModel
 
@@ -66,6 +67,19 @@ args = parser.parse_args()
 
 assert args.model in ["2cbm", "rmbm", "embm"], "Unknown model:" + args.model
 assert args.step_method in ["Metropolis", "HamiltonianMC", "NUTS", "SMC"], "Unknown step method: " + args.step_method
+
+
+def find_MAP_trace(model, trace):
+    tr_val = get_values_from_trace(model, trace)
+    logp = log_posterior_trace(model, tr_val)
+
+    idx_max = np.argmax(logp)
+    map_logp = logp[idx_max]
+
+    vars = list(tr_val.keys())
+    map_val = {v: tr_val[v][idx_max] for v in vars}
+    return map_val, map_logp
+
 
 if args.write_qsub_script:
     assert os.path.exists(args.exper_info_dir), args.exper_info_dir + " does not exist."
