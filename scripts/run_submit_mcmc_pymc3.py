@@ -60,7 +60,7 @@ parser.add_argument("--var_transform_off", action="store_true", default=False)
 
 parser.add_argument("--last_trace_dir", type=str, default=None)
 parser.add_argument("--last_trace_pickle", type=str, default="trace_obj.pickle")
-# max, mean, median, last
+# max, median, last
 parser.add_argument("--stat_in_last_trace", type=str, default="last")
 
 parser.add_argument("--write_qsub_script", action="store_true", default=False)
@@ -71,15 +71,14 @@ assert args.model in ["2cbm", "rmbm", "embm"], "Unknown model:" + args.model
 assert args.step_method in ["Metropolis", "HamiltonianMC", "NUTS", "SMC"], "Unknown step method: " + args.step_method
 
 
-def find_MAP_trace(model, trace):
-    tr_val = get_values_from_trace(model, trace)
-    logp = log_posterior_trace(model, tr_val)
+def find_MAP_trace(model, trace_val):
+    logp = log_posterior_trace(model, trace_val)
 
     idx_max = np.argmax(logp)
     map_logp = logp[idx_max]
 
-    vars = list(tr_val.keys())
-    map_val = {v: tr_val[v][idx_max] for v in vars}
+    vars = list(trace_val.keys())
+    map_val = {v: trace_val[v][idx_max] for v in vars}
     return map_val, map_logp
 
 
@@ -283,36 +282,33 @@ else:
             last_trace_file = os.path.join(last_trace_dir, last_trace_pickle)
             print("Starting from last trace:", last_trace_file)
             with open(last_trace_file) as handle:
-                last_trace = pickle.load(handle)
-                if isinstance(last_trace, dict):
+                last_trace = get_values_from_trace(pm_model, pickle.load(handle))
 
-                    if stat_in_last_trace == "last":
-                        start = {k: last_trace[k][-1] for k in last_trace}
+                if stat_in_last_trace == "last":
+                    start = {k: last_trace[k][-1] for k in last_trace}
 
-                    elif stat_in_last_trace == "median":
-                        start = {k: np.median(last_trace[k]) for k in last_trace}
+                elif stat_in_last_trace == "median":
+                    start = {k: np.median(last_trace[k]) for k in last_trace}
 
-                    elif stat_in_last_trace == "max":
-                        start, _ = find_MAP_trace(last_trace, pm_model)
-
-                    else:
-                        raise ValueError("Unknown stat_in_last_trace:" + stat_in_last_trace)
-
-                    trace_vars = list(start.keys())
-                    print("trace_vars:", trace_vars)
-
-                    miss_vars = set(vars) - set(trace_vars)
-                    miss_vars = list(miss_vars)
-                    if len(miss_vars) > 1:
-                        print("miss_vars:", miss_vars)
-                        raise ValueError("There are more than one missing value:")
-
-                    if len(miss_vars) == 1:
-                        assert "rho" in miss_vars, "rho is not the missing value"
-                        start["rho"] = 0.5
+                elif stat_in_last_trace == "max":
+                    start, _ = find_MAP_trace(pm_model, last_trace)
 
                 else:
-                    start = last_trace.point(-1)
+                    raise ValueError("Unknown stat_in_last_trace:" + stat_in_last_trace)
+
+                trace_vars = list(start.keys())
+                print("trace_vars:", trace_vars)
+
+                miss_vars = set(vars) - set(trace_vars)
+                miss_vars = list(miss_vars)
+                if len(miss_vars) > 1:
+                    print("miss_vars:", miss_vars)
+                    raise ValueError("There are more than one missing value:")
+
+                if len(miss_vars) == 1:
+                    assert "rho" in miss_vars, "rho is not the missing value"
+                    start["rho"] = 0.5
+
             print("Starting config:\n", start)
             del last_trace
 
