@@ -139,11 +139,7 @@ if args.write_qsub_script:
             last_trace_dir = " --last_trace_dir " + os.path.join(args.last_trace_dir, experiment)
 
         last_trace_pickle = args.last_trace_pickle
-
-        if args.start_from_median:
-            start_from_median = " --start_from_median "
-        else:
-            start_from_median = " "
+        stat_in_last_trace = args.stat_in_last_trace
 
         python_source_script = args.python_source_script
         qsub_file = os.path.join(out_dir, experiment + "_mcmc.job")
@@ -173,7 +169,7 @@ python ''' + this_script + \
         ''' --thin %d''' % thin + \
         var_transform_off + last_trace_dir + \
         ''' --last_trace_pickle ''' + last_trace_pickle + \
-        start_from_median + \
+        ''' --stat_in_last_trace ''' + stat_in_last_trace + \
         ''' --out_dir ''' + out_dir + \
         '''\ndate\n'''
 
@@ -238,8 +234,8 @@ else:
     last_trace_pickle = args.last_trace_pickle
     print("last_trace_pickle:", last_trace_pickle)
 
-    start_from_median = args.start_from_median
-    print("start_from_median:", start_from_median)
+    stat_in_last_trace = args.stat_in_last_trace
+    print("stat_in_last_trace:", stat_in_last_trace)
 
     out_dir = args.out_dir
     print("out_dir", out_dir)
@@ -290,10 +286,17 @@ else:
                 last_trace = pickle.load(handle)
                 if isinstance(last_trace, dict):
 
-                    if start_from_median:
-                        start = {k: np.median(last_trace[k]) for k in last_trace}
-                    else:
+                    if stat_in_last_trace == "last":
                         start = {k: last_trace[k][-1] for k in last_trace}
+
+                    elif stat_in_last_trace == "median":
+                        start = {k: np.median(last_trace[k]) for k in last_trace}
+
+                    elif stat_in_last_trace == "max":
+                        start, _ = find_MAP_trace(last_trace, pm_model)
+
+                    else:
+                        raise ValueError("Unknown stat_in_last_trace:" + stat_in_last_trace)
 
                     trace_vars = list(start.keys())
                     print("trace_vars:", trace_vars)
