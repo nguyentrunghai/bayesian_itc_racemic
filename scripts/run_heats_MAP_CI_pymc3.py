@@ -54,7 +54,7 @@ parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 args = parser.parse_args()
 
 
-def is_path_in_excluded_dirs(path, exclude_kws):
+def is_path_excluded(path, exclude_kws):
     for kw in exclude_kws:
         if kw in path:
             return True
@@ -104,16 +104,19 @@ for exper in experiments:
     heat_data[exper] = {}
     map_params[exper] = {}
 
-    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper))
-    dirs_2c = [p for p in dirs_2c if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
+    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_2c = [os.path.dirname(p) for p in dirs_2c]
+    dirs_2c = [p for p in dirs_2c if not is_path_excluded(p, exclude_repeats)]
     print("dirs_2c:", dirs_2c)
 
-    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper))
-    dirs_rm = [p for p in dirs_rm if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
+    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_rm = [os.path.dirname(p) for p in dirs_rm]
+    dirs_rm = [p for p in dirs_rm if not is_path_excluded(p, exclude_repeats)]
     print("dirs_rm:", dirs_rm)
 
-    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper))
-    dirs_em = [p for p in dirs_em if is_path_in_repeat_range(p, args.repeat_prefix, repeat_range)]
+    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_em = [os.path.dirname(p) for p in dirs_em]
+    dirs_em = [p for p in dirs_em if not is_path_excluded(p, exclude_repeats)]
     print("dirs_em:", dirs_em)
 
     model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
