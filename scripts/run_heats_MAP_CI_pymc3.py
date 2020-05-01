@@ -250,8 +250,8 @@ for exper in experiments:
     assert len(actual_q_mcal) == len(q_2c_cal) == len(q_rm_cal) == len(q_em_cal), "heats do not have the same len"
 
     heats["qs_2c"] = generate_heats_mcal(traces_2c, "2c", exper_info, thin=args.thin)
-    heats["qs_rm"] = generate_heats_mcal(traces_2c, "rm", exper_info, thin=args.thin)
-    heats["qs_em"] = generate_heats_mcal(traces_2c, "em", exper_info, thin=args.thin)
+    heats["qs_rm"] = generate_heats_mcal(traces_rm, "rm", exper_info, thin=args.thin)
+    heats["qs_em"] = generate_heats_mcal(traces_em, "em", exper_info, thin=args.thin)
 
     out_file = exper + ".pickle"
     pickle.dump(heats, open(out_file, "wb"))
