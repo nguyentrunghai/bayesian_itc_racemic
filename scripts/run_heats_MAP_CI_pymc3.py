@@ -84,8 +84,10 @@ def find_MAP_traces(model, traces):
     return map_val
 
 
-def is_nan_or_inf():
-    pass
+def is_nan_or_inf(x):
+    isnan = np.any(np.isnan(x))
+    isinf = np.any(np.isinf(x))
+    return isnan or isinf
 
 
 def generate_heats(trace, model_name, exper_info, thin=1):
@@ -102,7 +104,7 @@ def generate_heats(trace, model_name, exper_info, thin=1):
                                                    tr_val["DeltaH"][n], tr_val["DeltaH_0"][n],
                                                    beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                                    N=exper_info.get_number_injections())
-            
+
         elif model_name == "rm":
             q_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
                                                      exper_info.get_injection_volumes_liter(),
