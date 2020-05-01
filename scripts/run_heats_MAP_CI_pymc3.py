@@ -99,6 +99,15 @@ def value_from_trace(trace):
     return tr_val
 
 
+def value_from_traces(traces):
+    trace_value_list = [value_from_trace(t) for t in traces]
+    keys = trace_value_list[0].keys()
+    trace_values = {}
+    for key in keys:
+        trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
+    return trace_values
+
+
 def generate_heats(trace, model_name, exper_info, thin=1):
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     tr_val = {name: trace.get_values(name)[::thin] for name in free_vars}
