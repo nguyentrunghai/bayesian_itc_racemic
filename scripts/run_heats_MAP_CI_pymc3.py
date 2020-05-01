@@ -108,7 +108,7 @@ def value_from_traces(traces):
     return trace_values
 
 
-def generate_heats(traces, model_name, exper_info, thin=1):
+def generate_heats_mcal(traces, model_name, exper_info, thin=1):
     tr_val = value_from_traces(traces)
     varnames = list(tr_val.keys())
     tr_val = {name: tr_val[name][::thin] for name in varnames}
@@ -187,6 +187,10 @@ for exper in experiments:
     model_rm = pickle.load(open(os.path.join(dirs_rm[0], args.model_pickle)))
     model_em = pickle.load(open(os.path.join(dirs_em[0], args.model_pickle)))
 
+    traces_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
+    traces_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
+    traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
+
     if args.how_to_find_MAP == "optimization":
         print("Optimizing MAP_2C")
         map_2c = find_MAP_maximize(model_2c)
@@ -201,10 +205,6 @@ for exper in experiments:
         print("map_em", map_em)
 
     else:
-        traces_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
-        traces_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
-        traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
-
         print("Searching for MAP_2C in mcmc trace")
         map_2c = find_MAP_traces(model_2c, traces_2c)
         print("map_2c", map_2c)
@@ -255,10 +255,11 @@ for exper in experiments:
 
     assert len(actual_q_mcal) == len(q_2c_cal) == len(q_rm_cal) == len(q_em_cal), "heats do not have the same len"
 
-    qs_2c = generate_heats(trace, model_name, exper_info, thin=1)
+    heats["qs_2c"] = generate_heats_mcal(traces_2c, "2c", exper_info, thin=args.thin)
+    heats["qs_rm"] = generate_heats_mcal(traces_2c, "rm", exper_info, thin=args.thin)
+    heats["qs_em"] = generate_heats_mcal(traces_2c, "em", exper_info, thin=args.thin)
 
-# pickle data
-pickle.dump(heat_data, open("heats.pickle", "wb"))
-pickle.dump(map_params, open("map_params.pickle", "wb"))
+    out_file = exper + ".pickle"
+    pickle.dump(heats, open(out_file, "wb"))
 
 print("DONE")
