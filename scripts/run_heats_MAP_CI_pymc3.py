@@ -1,5 +1,5 @@
 """
-Calculate heat from MAP estimate of the parameters
+Make prediction of heat. MAP and confidence interval
 """
 
 from __future__ import print_function
@@ -30,7 +30,7 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str,
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 # inclusive
-parser.add_argument("--exclude_repeat", type=str, default="")
+parser.add_argument("--exclude_repeats", type=str, default="")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
@@ -53,25 +53,12 @@ parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 
 args = parser.parse_args()
 
-repeat_range = [int(s) for s in args.repeat_range.split()]
-assert len(repeat_range) == 2, "repeat_range must have two numbers."
-assert repeat_range[1] >= repeat_range[0], "the second number must be greater than or equal to the first."
 
-
-def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
-    pieces = path.split("/")
-    repeat_p = None
-    for p in pieces:
-        if repeat_prefix in p:
-            repeat_p = p
-
-    if repeat_p is None:
-        return False
-    num = int(repeat_p.split("_")[-1])
-    if (num >= repeat_range[0]) and num <= repeat_range[1]:
-        return True
-    else:
-        return False
+def is_path_in_excluded_dirs(path, exclude_kws):
+    for kw in exclude_kws:
+        if kw in path:
+            return True
+    return False
 
 
 def find_MAP_maximize(model, method="L-BFGS-B"):
@@ -97,7 +84,12 @@ def find_MAP_traces(model, traces):
     return map_val
 
 
-assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_to_find_MAP"
+assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_to_find_MAP: " + args.how_to_find_MAP
+print("how_to_find_MAP: ", args.how_to_find_MAP)
+
+exclude_repeats = args.exclude_repeats.split()
+exclude_repeats = [args.repeat_prefix + r  for r in exclude_repeats]
+print("exclude_repeats:", exclude_repeats)
 
 sns.set(font_scale=args.font_scale)
 
