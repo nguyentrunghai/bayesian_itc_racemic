@@ -155,8 +155,6 @@ exclude_repeats = args.exclude_repeats.split()
 exclude_repeats = [args.repeat_prefix + r  for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
 
-sns.set(font_scale=args.font_scale)
-
 KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
