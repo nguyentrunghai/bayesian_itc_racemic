@@ -84,6 +84,53 @@ def find_MAP_traces(model, traces):
     return map_val
 
 
+def is_nan_or_inf():
+    pass
+
+
+def generate_heats(trace, model_name, exper_info, thin=1):
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    tr_val = {name: trace.get_values(name)[::thin] for name in free_vars}
+    nsamples = len(tr_val[free_vars[0]])
+
+    heats = []
+    for n in range(nsamples):
+        if model_name == "2c":
+            q_cal = heats_TwoComponentBindingModel(exper_info.get_cell_volume_liter(),
+                                                   exper_info.get_injection_volumes_liter(),
+                                                   tr_val["P0"][n], tr_val["Ls"][n], tr_val["DeltaG"][n],
+                                                   tr_val["DeltaH"][n], tr_val["DeltaH_0"][n],
+                                                   beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                   N=exper_info.get_number_injections())
+            
+        elif model_name == "rm":
+            q_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                     exper_info.get_injection_volumes_liter(),
+                                                     tr_val["P0"][n], tr_val["Ls"][n], 0.5,
+                                                     tr_val["DeltaH1"][n], tr_val["DeltaH2"][n], tr_val["DeltaH_0"][n],
+                                                     tr_val["DeltaG1"][n], tr_val["DeltaDeltaG"][n],
+                                                     beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                     N=exper_info.get_number_injections())
+
+        elif model_name == "em":
+            q_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
+                                                     exper_info.get_injection_volumes_liter(),
+                                                     tr_val["P0"][n], tr_val["Ls"][n], tr_val["rho"][n],
+                                                     tr_val["DeltaH1"][n], tr_val["DeltaH2"][n], tr_val["DeltaH_0"][n],
+                                                     tr_val["DeltaG1"][n], tr_val["DeltaDeltaG"][n],
+                                                     beta=1 / KB / exper_info.get_target_temperature_kelvin(),
+                                                     N=exper_info.get_number_injections())
+
+        else:
+            raise ValueError("Unknown model_name: " + model_name)
+
+        q_mcal = q_cal * 10 ** 6
+        if not is_nan_or_inf(q_mcal):
+            heats.append(q_mcal)
+
+    return np.array(heats)
+
+
 assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_to_find_MAP: " + args.how_to_find_MAP
 print("how_to_find_MAP: ", args.how_to_find_MAP)
 
