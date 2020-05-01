@@ -50,10 +50,6 @@ parser.add_argument("--how_to_find_MAP", type=str, default="optimization")
 # thin out trace before calculate confidence intervals
 parser.add_argument("--thin", type=int, default=1)
 
-parser.add_argument("--font_scale", type=float, default=0.75)
-parser.add_argument("--xlabel", type=str, default="# injections")
-parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
-
 args = parser.parse_args()
 
 
