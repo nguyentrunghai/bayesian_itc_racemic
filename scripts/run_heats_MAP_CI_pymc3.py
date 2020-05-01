@@ -108,10 +108,11 @@ def value_from_traces(traces):
     return trace_values
 
 
-def generate_heats(trace, model_name, exper_info, thin=1):
-    free_vars = [name for name in trace.varnames if not name.endswith("__")]
-    tr_val = {name: trace.get_values(name)[::thin] for name in free_vars}
-    nsamples = len(tr_val[free_vars[0]])
+def generate_heats(traces, model_name, exper_info, thin=1):
+    tr_val = value_from_traces(traces)
+    varnames = list(tr_val.keys())
+    tr_val = {name: tr_val[name][::thin] for name in varnames}
+    nsamples = len(tr_val[varnames[0]])
 
     heats = []
     for n in range(nsamples):
