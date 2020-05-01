@@ -97,12 +97,8 @@ KB = 0.0019872041      # in kcal/mol/K
 
 experiments = args.experiments.split()
 
-heat_data = {}
-map_params = {}
 for exper in experiments:
     print("\n\n", exper)
-    heat_data[exper] = {}
-    map_params[exper] = {}
 
     dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
     dirs_2c = [os.path.dirname(p) for p in dirs_2c]
@@ -153,12 +149,14 @@ for exper in experiments:
         map_em = find_MAP_traces(model_em, traces_em)
         print("map_em", map_em)
 
-    map_params[exper]["2c"] = map_2c
-    map_params[exper]["rm"] = map_rm
-    map_params[exper]["em"] = map_em
+    heats = dict()
+    heats["map_2c"] = map_2c
+    heats["map_rm"] = map_rm
+    heats["map_em"] = map_em
 
     exper_info = ITCExperiment(os.path.join(args.exper_info_dir, exper, args.exper_info_file))
-    actual_q_micro_cal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
+    actual_q_mcal = load_heat_micro_cal(os.path.join(args.heat_dir, exper + ".DAT"))
+    heats["q_actual"] = actual_q_mcal
 
     # heat calculation using map parameters
     q_2c_cal = heats_TwoComponentBindingModel(exper_info.get_cell_volume_liter(),
@@ -167,7 +165,7 @@ for exper in experiments:
                                               map_2c["DeltaH_0"],
                                               beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                               N=exper_info.get_number_injections())
-    q_2c_micro_cal = q_2c_cal * 10 ** 6
+    heats["q_map_2c"] = q_2c_cal * 10 ** 6
 
     q_rm_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
                                                 exper_info.get_injection_volumes_liter(),
@@ -176,7 +174,7 @@ for exper in experiments:
                                                 map_rm["DeltaG1"], map_rm["DeltaDeltaG"],
                                                 beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                                 N=exper_info.get_number_injections())
-    q_rm_micro_cal = q_rm_cal * 10 ** 6
+    heats["q_map_rm"] = q_rm_cal * 10 ** 6
 
     q_em_cal = heats_RacemicMixtureBindingModel(exper_info.get_cell_volume_liter(),
                                                 exper_info.get_injection_volumes_liter(),
@@ -185,29 +183,9 @@ for exper in experiments:
                                                 map_em["DeltaG1"], map_em["DeltaDeltaG"],
                                                 beta=1 / KB / exper_info.get_target_temperature_kelvin(),
                                                 N=exper_info.get_number_injections())
-    q_em_micro_cal = q_em_cal * 10 ** 6
+    heats["q_map_em"] = q_em_cal * 10 ** 6
 
-    assert len(actual_q_micro_cal) == len(q_2c_micro_cal) == len(q_rm_micro_cal) == len(
-        q_em_micro_cal), "heats do not have the same len"
-    n_inj = len(actual_q_micro_cal)
-
-    heat_data[exper]["actual_q_micro_cal"] = actual_q_micro_cal
-    heat_data[exper]["q_2c_micro_cal"] = q_2c_micro_cal
-    heat_data[exper]["q_rm_micro_cal"] = q_rm_micro_cal
-    heat_data[exper]["q_em_micro_cal"] = q_em_micro_cal
-
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-    ax.scatter(range(1, n_inj + 1), actual_q_micro_cal, s=20, c="k", marker="o", label="observed")
-    ax.plot(range(1, n_inj + 1), q_2c_micro_cal, c="r", linestyle="-", label="2cbm")
-    ax.plot(range(1, n_inj + 1), q_rm_micro_cal, c="b", linestyle="-", label="rmbm")
-    ax.plot(range(1, n_inj + 1), q_em_micro_cal, c="g", linestyle="-", label="embm")
-
-    ax.set_xlabel(args.xlabel)
-    ax.set_ylabel(args.ylabel)
-    ax.legend(loc="lower right")
-
-    fig.tight_layout()
-    fig.savefig(exper + ".pdf", dpi=300)
+    assert len(actual_q_mcal) == len(q_2c_cal) == len(q_rm_cal) == len(q_em_cal), "heats do not have the same len"
 
 # pickle data
 pickle.dump(heat_data, open("heats.pickle", "wb"))
