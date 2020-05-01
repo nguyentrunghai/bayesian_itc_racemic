@@ -47,6 +47,9 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 # "optimization" or "mcmc_sampling"
 parser.add_argument("--how_to_find_MAP", type=str, default="optimization")
 
+# thin out trace before calculate confidence intervals
+parser.add_argument("--thin", type=int, default=1)
+
 parser.add_argument("--font_scale", type=float, default=0.75)
 parser.add_argument("--xlabel", type=str, default="# injections")
 parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
@@ -88,6 +91,12 @@ def is_nan_or_inf(x):
     isnan = np.any(np.isnan(x))
     isinf = np.any(np.isinf(x))
     return isnan or isinf
+
+
+def value_from_trace(trace):
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    tr_val = {name: trace.get_values(name) for name in free_vars}
+    return tr_val
 
 
 def generate_heats(trace, model_name, exper_info, thin=1):
@@ -235,6 +244,8 @@ for exper in experiments:
     heats["q_map_em"] = q_em_cal * 10 ** 6
 
     assert len(actual_q_mcal) == len(q_2c_cal) == len(q_rm_cal) == len(q_em_cal), "heats do not have the same len"
+
+    qs_2c = generate_heats(trace, model_name, exper_info, thin=1)
 
 # pickle data
 pickle.dump(heat_data, open("heats.pickle", "wb"))
