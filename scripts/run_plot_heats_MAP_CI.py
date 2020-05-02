@@ -25,6 +25,13 @@ parser.add_argument("--ylabel", type=str, default="heat ($\mu$cal)")
 args = parser.parse_args()
 
 
+def conf_interv(x, conf_level=90.):
+    alpha = 100 - conf_level
+    lowers = np.percentile(x, alpha/2, axis=0)
+    uppers = np.percentile(x, 100-(alpha/2), axis=0)
+    return lowers, uppers
+
+
 def plot_heats(q_actual,
                q_map_2c, lower_2c, upper_2c,
                q_map_rm, lower_rm, upper_rm,
@@ -53,7 +60,7 @@ def plot_heats(q_actual,
     axes[1].fill_between(x, lower_rm, upper_rm, facecolor='grey', alpha=0.5, label=ci_label)
     axes[1].set_xlabel(xlabel)
     axes[1].legend(loc="best")
-    axes[1].set_title("Racemicmixture")
+    axes[1].set_title("Racemic Mixture")
 
     axes[2].scatter(x, q_actual, c="k", marker="+", s=20, label="observed")
     axes[2].plot(x, q_map_em, c="k", label="MAP")
