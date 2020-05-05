@@ -49,9 +49,6 @@ parser.add_argument("--covariance_type", type=str, default="full")
 
 parser.add_argument("--aug_sample_enlarge", type=int, default=1)
 
-parser.add_argument("--high_w_thres", type=float, default=100.)
-parser.add_argument("--low_w_thres", type=float, default=0.)
-
 parser.add_argument("--burn", type=int, default=0)
 parser.add_argument("--thin", type=int, default=1)
 
@@ -149,7 +146,6 @@ for exper in experiments:
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      n_components=args.n_components, covariance_type=args.covariance_type,
-                                     high_w_thres=args.high_w_thres, low_w_thres=args.low_w_thres,
                                      bootstrap=args.bootstrap)
 
     print("\nEM over 2C")
@@ -159,7 +155,6 @@ for exper in experiments:
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      n_components=args.n_components, covariance_type=args.covariance_type,
-                                     high_w_thres=args.high_w_thres, low_w_thres=args.low_w_thres,
                                      bootstrap=args.bootstrap)
 
     print("\nEM over RM")
@@ -169,7 +164,6 @@ for exper in experiments:
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      n_components=args.n_components, covariance_type=args.covariance_type,
-                                     high_w_thres=args.high_w_thres, low_w_thres=args.low_w_thres,
                                      bootstrap=args.bootstrap)
 
     if args.bootstrap is not None:
