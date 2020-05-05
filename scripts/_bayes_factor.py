@@ -350,7 +350,6 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
                     model_ini_name="2c", model_fin_name="rm",
                     aug_with="Normal", sigma_robust=False,
                     n_components=1, covariance_type="full",
-                    high_w_thres=100., low_w_thres=0.,
                     bootstrap=None):
     """
     :param model_ini: pymc3 model
@@ -373,12 +372,6 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
 
     ini_fin_name = model_ini_name + "_" + model_fin_name
     assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
-
-    assert 0 <= high_w_thres <= 100, "high_w_thres out of range"
-    assert 0 <= low_w_thres <= 100, "low_w_thres out of range"
-
-    print("high_w_thres = %0.5f" % high_w_thres)
-    print("low_w_thres = %0.5f" % low_w_thres)
 
     if aug_with == "Normal":
         mu_sigma_fin = fit_normal_trace(sample_fin, sigma_robust=sigma_robust)
@@ -491,12 +484,7 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
     w_R = u_f_i - u_f_f
 
     w_F = filter_nan_inf(w_F)
-    w_F = filter_high(w_F, percentile=high_w_thres)
-    w_F = filter_low(w_F, percentile=low_w_thres)
-
     w_R = filter_nan_inf(w_R)
-    w_R = filter_high(w_R, percentile=high_w_thres)
-    w_R = filter_low(w_R, percentile=low_w_thres)
 
     if (len(w_F) == 0) or (len(w_R) == 0):
         print("Empty work arrays:", w_F.shape, w_R.shape)
@@ -522,7 +510,6 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
                     model_ini_name="2c", model_fin_name="rm",
                     aug_with="GaussMix", sigma_robust=False,
                     n_components=1, covariance_type="full",
-                    high_w_thres=100., low_w_thres=0.,
                     bootstrap=None):
     """
     :param model_ini: pymc3 model
@@ -546,12 +533,6 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
 
     ini_fin_name = model_ini_name + "_" + model_fin_name
     assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
-
-    assert 0 <= high_w_thres <= 100, "high_w_thres out of range"
-    assert 0 <= low_w_thres <= 100, "low_w_thres out of range"
-
-    print("high_w_thres = %0.5f" % high_w_thres)
-    print("low_w_thres = %0.5f" % low_w_thres)
 
     vars_ini = sample_ini.keys()
     print("vars_ini:", vars_ini)
@@ -699,12 +680,7 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     w_R = u_f_i - u_f_f
 
     w_F = filter_nan_inf(w_F)
-    w_F = filter_high(w_F, percentile=high_w_thres)
-    w_F = filter_low(w_F, percentile=low_w_thres)
-
     w_R = filter_nan_inf(w_R)
-    w_R = filter_high(w_R, percentile=high_w_thres)
-    w_R = filter_low(w_R, percentile=low_w_thres)
 
     if (len(w_F) == 0) or (len(w_R) == 0):
         print("Empty work arrays:", w_F.shape, w_R.shape)
