@@ -29,8 +29,7 @@ parser.add_argument("--racemic_mixture_model_dir", type=str, default=None)
 parser.add_argument("--enantiomer_model_dir", type=str, default=None)
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
-# inclusive
-parser.add_argument("--repeat_range", type=str, default="first last")
+parser.add_argument("--exclude_repeats", type=str, default="")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
@@ -70,28 +69,19 @@ def enlarge_sample(sample, enlarge=1):
     return sample_new
 
 
-def is_path_in_repeat_range(path, repeat_prefix, repeat_range):
-    pieces = path.split("/")
-    repeat_p = None
-    for p in pieces:
-        if repeat_prefix in p:
-            repeat_p = p
-
-    if repeat_p is None:
-        return False
-    num = int(repeat_p.split("_")[-1])
-    if (num >= repeat_range[0]) and num <= repeat_range[1]:
-        return True
-    else:
-        return False
+def is_path_excluded(path, exclude_kws):
+    for kw in exclude_kws:
+        if kw in path:
+            return True
+    return False
 
 
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
-repeat_range = [int(s) for s in args.repeat_range.split()]
-assert len(repeat_range) == 2, "repeat_range must have two numbers."
-assert repeat_range[1] >= repeat_range[0], "the second number must be greater than or equal to the first."
+exclude_repeats = args.exclude_repeats.split()
+exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
+print("exclude_repeats:", exclude_repeats)
 
 if args.estimator_version == 1:
     bayes_factor = bayes_factor_v1

@@ -151,7 +151,7 @@ assert args.how_to_find_MAP in ["optimization", "mcmc_sampling"], "Unknown how_t
 print("how_to_find_MAP: ", args.how_to_find_MAP)
 
 exclude_repeats = args.exclude_repeats.split()
-exclude_repeats = [args.repeat_prefix + r  for r in exclude_repeats]
+exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
 
 KB = 0.0019872041      # in kcal/mol/K
