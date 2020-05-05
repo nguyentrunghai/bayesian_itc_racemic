@@ -29,7 +29,6 @@ parser.add_argument("--enantiomer_mcmc_dir", type=str,
                     default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
-# inclusive
 parser.add_argument("--exclude_repeats", type=str, default="")
 
 parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
