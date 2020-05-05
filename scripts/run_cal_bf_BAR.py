@@ -94,17 +94,17 @@ bf_df = []
 for exper in experiments:
     print("\n\nCalculating Bayes Factors for " + exper)
 
-    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_2c = [os.path.dirname(p) for p in dirs_2c]
     dirs_2c = [p for p in dirs_2c if not is_path_excluded(p, exclude_repeats)]
     print("dirs_2c:", dirs_2c)
 
-    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_rm = [os.path.dirname(p) for p in dirs_rm]
     dirs_rm = [p for p in dirs_rm if not is_path_excluded(p, exclude_repeats)]
     print("dirs_rm:", dirs_rm)
 
-    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_em = [os.path.dirname(p) for p in dirs_em]
     dirs_em = [p for p in dirs_em if not is_path_excluded(p, exclude_repeats)]
     print("dirs_em:", dirs_em)
