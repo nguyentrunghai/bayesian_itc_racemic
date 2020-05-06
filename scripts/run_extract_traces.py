@@ -25,6 +25,9 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
+parser.add_argument("--burn", type=int, default=0)
+parser.add_argument("--thin", type=int, default=1)
+
 args = parser.parse_args()
 
 
@@ -51,3 +54,8 @@ for exper in experiments:
     print("dirs_2c:", dirs)
 
     model_file = os.path.join(dirs[0], args.model_pickle)
+
+    print("Loading model: " + model_file)
+    model = pickle.load(open(model_file))
+    trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
+    sample = get_values_from_traces(model, trace_list, thin=args.thin, burn=args.burn)
