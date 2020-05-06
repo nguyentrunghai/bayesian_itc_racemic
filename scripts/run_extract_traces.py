@@ -46,7 +46,11 @@ exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
 
 for exper in experiments:
-    print("\n\nCalculating Bayes Factors for " + exper)
+    print("\nLoading traces for " + exper)
+
+    out_dir = exper
+    if not os.path.isdir(out_dir):
+        os.makedirs(out_dir)
 
     dirs = glob.glob(os.path.join(args.mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs = [os.path.dirname(p) for p in dirs]
@@ -59,3 +63,12 @@ for exper in experiments:
     model = pickle.load(open(model_file))
     trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
     sample = get_values_from_traces(model, trace_list, thin=args.thin, burn=args.burn)
+
+    out_file = os.path.join(out_dir, args.trace_pickle)
+    if os.path.exists(out_file):
+        raise Exception("File exists: " + out_file)
+
+    with open(out_file, "wb") as handle:
+        pickle.dump(sample, handle)
+
+print("DONE")
