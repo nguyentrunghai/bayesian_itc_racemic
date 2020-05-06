@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import os
 import argparse
+import glob
 
 import pickle
 
@@ -26,3 +27,27 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 
 args = parser.parse_args()
 
+
+def is_path_excluded(path, exclude_kws):
+    for kw in exclude_kws:
+        if kw in path:
+            return True
+    return False
+
+
+experiments = args.experiments.split()
+print("experiments:", experiments)
+
+exclude_repeats = args.exclude_repeats.split()
+exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
+print("exclude_repeats:", exclude_repeats)
+
+for exper in experiments:
+    print("\n\nCalculating Bayes Factors for " + exper)
+
+    dirs = glob.glob(os.path.join(args.mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
+    dirs = [os.path.dirname(p) for p in dirs]
+    dirs = [p for p in dirs if not is_path_excluded(p, exclude_repeats)]
+    print("dirs_2c:", dirs)
+
+    model_file = os.path.join(dirs[0], args.model_pickle)
