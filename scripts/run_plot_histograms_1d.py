@@ -86,6 +86,12 @@ def conf_interv(x, conf_level=95.):
     return lower, upper
 
 
+def filter_outliers(x, thres=95.):
+    lower, upper = conf_interv(x, conf_level=thres)
+    keep = (x > lower) & (x < upper)
+    return x[keep]
+
+
 def plot_kde_hist(data_list, labels, colors, ax):
 
     for data, label, color in zip(data_list, labels, colors):
@@ -168,41 +174,50 @@ for exper in experiments:
     print("map_em", map_em)
 
     # plot DeltaG
-    fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, figsize=(9, 2.4))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
+    ylabel = "Probability density"
+    xlabel = "$\Delta G$"
 
     # 2c
     ax = axes[0]
     xs = [tr_val_2c["DeltaG"]]
+    xs = [filter_outliers(x) for x in xs]
     maps = [map_2c["DeltaG"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta G$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
 
     # rm
     ax = axes[1]
     xs = [tr_val_rm["DeltaG1"], tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]]
+    xs = [filter_outliers(x) for x in xs]
     maps = [map_rm["DeltaG1"], map_rm["DeltaG1"] + map_rm["DeltaDeltaG"]]
     cis = [conf_interv(x) for x in xs]
-    labels = ["$\Delta G1$", "$\Delta G2$"]
+    labels = ["$\Delta G_1$", "$\Delta G_2$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
+    ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
     # em
     ax = axes[2]
     xs = [tr_val_em["DeltaG1"], tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]]
+    xs = [filter_outliers(x) for x in xs]
     maps = [map_em["DeltaG1"], map_em["DeltaG1"] + map_em["DeltaDeltaG"]]
     cis = [conf_interv(x) for x in xs]
-    labels = ["$\Delta G1$", "$\Delta G2$"]
+    labels = ["$\Delta G_1$", "$\Delta G_2$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
+    ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
     out = exper + "_DeltaG.pdf"
