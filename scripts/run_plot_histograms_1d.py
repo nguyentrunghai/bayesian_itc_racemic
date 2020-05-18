@@ -59,6 +59,21 @@ def find_MAP_traces(model, traces):
     return map_val
 
 
+def value_from_trace(trace):
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    tr_val = {name: trace.get_values(name) for name in free_vars}
+    return tr_val
+
+
+def value_from_traces(traces):
+    trace_value_list = [value_from_trace(t) for t in traces]
+    keys = trace_value_list[0].keys()
+    trace_values = {}
+    for key in keys:
+        trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
+    return trace_values
+
+
 def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     sns.set(font_scale=0.7)
     figure_size = (3.2, 2.4)
