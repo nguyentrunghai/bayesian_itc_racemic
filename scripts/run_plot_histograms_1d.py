@@ -5,6 +5,7 @@ to compare histogram of DG, DH, P0 and Ls between twocomponent and racemicmixtur
 import argparse
 import os
 import pickle
+import glob
 
 import numpy as np
 
@@ -97,12 +98,41 @@ def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     plt.savefig(out, dpi=dpi)
     return None
 
+exclude_repeats = args.exclude_repeats.split()
+exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
+print("exclude_repeats:", exclude_repeats)
 
 experiments = args.experiments.split()
 print("experiments", experiments)
 
 colors = ("r", "b", "g")
 ylabel = "Probability density"
+
+for exper in experiments:
+    print("\n\n", exper)
+
+    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_2c = [os.path.dirname(p) for p in dirs_2c]
+    dirs_2c = [p for p in dirs_2c if not is_path_excluded(p, exclude_repeats)]
+    print("dirs_2c:", dirs_2c)
+
+    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_rm = [os.path.dirname(p) for p in dirs_rm]
+    dirs_rm = [p for p in dirs_rm if not is_path_excluded(p, exclude_repeats)]
+    print("dirs_rm:", dirs_rm)
+
+    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_em = [os.path.dirname(p) for p in dirs_em]
+    dirs_em = [p for p in dirs_em if not is_path_excluded(p, exclude_repeats)]
+    print("dirs_em:", dirs_em)
+
+    traces_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
+    traces_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
+    traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
+
+
+
+
 for experiment in experiments:
     print("Processing " + experiment)
     twocomponent_traces_file = os.path.join(args.twocomponent_mcmc_dir, experiment, args.mcmc_trace_file)
