@@ -331,3 +331,8 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
+    out = exper + "_Ls.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
+
+
