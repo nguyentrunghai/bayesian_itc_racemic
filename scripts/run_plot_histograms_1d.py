@@ -1,6 +1,7 @@
 """
 to compare histogram of DG, DH, P0 and Ls between twocomponent and racemicmixture models
 """
+from __future__ import print_function
 
 import argparse
 import os
@@ -180,7 +181,7 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
-    ax.set_title("2C")
+    ax.set_title("Two-Component")
 
     # rm
     ax = axes[1]
@@ -191,7 +192,7 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
-    ax.set_title("RM")
+    ax.set_title("Racemic Mixture")
 
     # em
     ax = axes[2]
@@ -202,4 +203,8 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
-    ax.set_title("EM")
+    ax.set_title("Enantiomer")
+
+    out = exper + "_DeltaG.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
