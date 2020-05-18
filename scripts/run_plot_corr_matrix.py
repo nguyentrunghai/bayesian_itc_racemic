@@ -32,6 +32,9 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
+# thin out trace before calculate confidence intervals
+parser.add_argument("--thin", type=int, default=1)
+
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
@@ -96,11 +99,11 @@ for exper in experiments:
     tr_val_rm = pd.DataFrame(value_from_traces(traces_rm))
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
 
-    corr_2c = tr_val_2c
+    corr_2c = tr_val_2c.corr()
     print("corr_2c", corr_2c)
-    corr_rm = tr_val_rm
+    corr_rm = tr_val_rm.corr()
     print("corr_rm", corr_rm)
-    corr_em = tr_val_em
+    corr_em = tr_val_em.corr()
     print("corr_em", corr_em)
 
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
