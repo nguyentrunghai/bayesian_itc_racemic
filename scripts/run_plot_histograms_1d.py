@@ -74,6 +74,13 @@ def value_from_traces(traces):
     return trace_values
 
 
+def conf_interv(x, conf_level=95.):
+    alpha = 100 - conf_level
+    lower = np.percentile(x, alpha/2)
+    upper = np.percentile(x, 100 - (alpha/2))
+    return lower, upper
+
+
 def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     sns.set(font_scale=0.7)
     figure_size = (3.2, 2.4)
@@ -90,8 +97,6 @@ def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     plt.savefig(out, dpi=dpi)
     return None
 
-
-assert args.alternative_model in ["racemicmixture", "enantiomer"], "unknown alternative model: " + args.alternative_model
 
 experiments = args.experiments.split()
 print("experiments", experiments)
