@@ -17,11 +17,11 @@ from _bayes_factor import get_values_from_trace, log_posterior_trace
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_met_2")
+                    default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_nuts_2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_met_2")
+                    default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_nuts_2")
 parser.add_argument("--enantiomer_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
+                    default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_nuts_2")
 
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 parser.add_argument("--exclude_repeats", type=str, default="")
