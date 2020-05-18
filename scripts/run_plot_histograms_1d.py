@@ -167,7 +167,7 @@ for exper in experiments:
     print("map_em", map_em)
 
     # plot DeltaG
-    fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True, figsize=(9, 2.4))
+    fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
 
@@ -181,4 +181,12 @@ for exper in experiments:
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
 
-    
+    # rm
+    ax = axes[1]
+    xs = [tr_val_rm["DeltaG1"], tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]]
+    maps = [map_rm["DeltaG1"], map_rm["DeltaG1"] + map_rm["DeltaDeltaG"]]
+    cis = [conf_interv(x) for x in xs]
+    labels = ["$\Delta G1$", "$\Delta G2$"]
+    plot_kde_hist(xs, labels, colors, ax)
+    plot_conf_intervs(cis, colors, ax)
+    plot_maps(maps, colors, ax)
