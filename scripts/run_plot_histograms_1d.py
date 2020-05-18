@@ -180,6 +180,7 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
+    ax.set_title("2C")
 
     # rm
     ax = axes[1]
@@ -190,3 +191,15 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
     plot_maps(maps, colors, ax)
+    ax.set_title("RM")
+
+    # em
+    ax = axes[2]
+    xs = [tr_val_em["DeltaG1"], tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]]
+    maps = [map_em["DeltaG1"], map_em["DeltaG1"] + map_em["DeltaDeltaG"]]
+    cis = [conf_interv(x) for x in xs]
+    labels = ["$\Delta G1$", "$\Delta G2$"]
+    plot_kde_hist(xs, labels, colors, ax)
+    plot_conf_intervs(cis, colors, ax)
+    plot_maps(maps, colors, ax)
+    ax.set_title("EM")
