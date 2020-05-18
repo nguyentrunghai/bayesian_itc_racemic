@@ -27,6 +27,7 @@ parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 parser.add_argument("--exclude_repeats", type=str, default="")
 
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
+parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
@@ -126,9 +127,22 @@ for exper in experiments:
     dirs_em = [p for p in dirs_em if not is_path_excluded(p, exclude_repeats)]
     print("dirs_em:", dirs_em)
 
+    model_2c = pickle.load(open(os.path.join(dirs_2c[0], args.model_pickle)))
+    model_rm = pickle.load(open(os.path.join(dirs_rm[0], args.model_pickle)))
+    model_em = pickle.load(open(os.path.join(dirs_em[0], args.model_pickle)))
+
     traces_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
     traces_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
     traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
+
+    map_2c = find_MAP_traces(model_2c, traces_2c)
+    print("map_2c", map_2c)
+
+    map_rm = find_MAP_traces(model_rm, traces_rm)
+    print("map_rm", map_rm)
+
+    map_em = find_MAP_traces(model_em, traces_em)
+    print("map_em", map_em)
 
 
 
