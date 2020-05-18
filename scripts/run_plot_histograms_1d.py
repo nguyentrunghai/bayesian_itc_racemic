@@ -173,7 +173,8 @@ for exper in experiments:
     map_em = find_MAP_traces(model_em, traces_em)
     print("map_em", map_em)
 
-    # plot DeltaG
+
+    # plot DeltaG ----------------------------------------------
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
@@ -221,5 +222,57 @@ for exper in experiments:
     ax.set_title("Enantiomer")
 
     out = exper + "_DeltaG.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
+
+
+    # plot DeltaG ----------------------------------------------
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
+    ylabel = "Probability density"
+    xlabel = "$\Delta H$"
+
+    # 2c
+    ax = axes[0]
+    xs = [tr_val_2c["DeltaH"]]
+    xs = [filter_outliers(x) for x in xs]
+    maps = [map_2c["DeltaH"]]
+    cis = [conf_interv(x) for x in xs]
+    labels = ["$\Delta H$"]
+    plot_kde_hist(xs, labels, colors, ax)
+    plot_conf_intervs(cis, colors, ax)
+    plot_maps(maps, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title("Two-Component")
+
+    # rm
+    ax = axes[1]
+    xs = [tr_val_rm["DeltaH1"], tr_val_rm["DeltaH2"]]
+    xs = [filter_outliers(x) for x in xs]
+    maps = [map_rm["DeltaH1"], map_rm["DeltaH2"]]
+    cis = [conf_interv(x) for x in xs]
+    labels = ["$\Delta H_1$", "$\Delta H_2$"]
+    plot_kde_hist(xs, labels, colors, ax)
+    plot_conf_intervs(cis, colors, ax)
+    plot_maps(maps, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_title("Racemic Mixture")
+
+    # em
+    ax = axes[2]
+    xs = [tr_val_em["DeltaH1"], tr_val_em["DeltaH2"]]
+    xs = [filter_outliers(x) for x in xs]
+    maps = [map_em["DeltaH1"], map_em["DeltaH2"]]
+    cis = [conf_interv(x) for x in xs]
+    labels = ["$\Delta H_1$", "$\Delta H_2$"]
+    plot_kde_hist(xs, labels, colors, ax)
+    plot_conf_intervs(cis, colors, ax)
+    plot_maps(maps, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_title("Enantiomer")
+
+    out = exper + "_DeltaH.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
