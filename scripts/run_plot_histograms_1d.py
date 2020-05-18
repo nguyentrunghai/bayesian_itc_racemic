@@ -164,14 +164,14 @@ for exper in experiments:
     tr_val_rm = value_from_traces(traces_rm)
     tr_val_em = value_from_traces(traces_em)
 
-    map_2c = find_MAP_traces(model_2c, traces_2c)
-    print("map_2c", map_2c)
+    #map_2c = find_MAP_traces(model_2c, traces_2c)
+    #print("map_2c", map_2c)
 
-    map_rm = find_MAP_traces(model_rm, traces_rm)
-    print("map_rm", map_rm)
+    #map_rm = find_MAP_traces(model_rm, traces_rm)
+    #print("map_rm", map_rm)
 
-    map_em = find_MAP_traces(model_em, traces_em)
-    print("map_em", map_em)
+    #map_em = find_MAP_traces(model_em, traces_em)
+    #print("map_em", map_em)
 
 
     # plot DeltaG ----------------------------------------------
@@ -185,12 +185,12 @@ for exper in experiments:
     ax = axes[0]
     xs = [tr_val_2c["DeltaG"]]
     xs = [filter_outliers(x) for x in xs]
-    maps = [map_2c["DeltaG"]]
+    #maps = [map_2c["DeltaG"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta G$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
-    plot_maps(maps, colors, ax)
+    #plot_maps(maps, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
@@ -199,12 +199,12 @@ for exper in experiments:
     ax = axes[1]
     xs = [tr_val_rm["DeltaG1"], tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]]
     xs = [filter_outliers(x) for x in xs]
-    maps = [map_rm["DeltaG1"], map_rm["DeltaG1"] + map_rm["DeltaDeltaG"]]
+    #maps = [map_rm["DeltaG1"], map_rm["DeltaG1"] + map_rm["DeltaDeltaG"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta G_1$", "$\Delta G_2$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
-    plot_maps(maps, colors, ax)
+    #plot_maps(maps, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
@@ -212,12 +212,12 @@ for exper in experiments:
     ax = axes[2]
     xs = [tr_val_em["DeltaG1"], tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]]
     xs = [filter_outliers(x) for x in xs]
-    maps = [map_em["DeltaG1"], map_em["DeltaG1"] + map_em["DeltaDeltaG"]]
+    #maps = [map_em["DeltaG1"], map_em["DeltaG1"] + map_em["DeltaDeltaG"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta G_1$", "$\Delta G_2$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
-    plot_maps(maps, colors, ax)
+    #plot_maps(maps, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
@@ -237,12 +237,12 @@ for exper in experiments:
     ax = axes[0]
     xs = [tr_val_2c["DeltaH"]]
     xs = [filter_outliers(x) for x in xs]
-    maps = [map_2c["DeltaH"]]
+    #maps = [map_2c["DeltaH"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta H$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
-    plot_maps(maps, colors, ax)
+    #plot_maps(maps, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
@@ -251,12 +251,12 @@ for exper in experiments:
     ax = axes[1]
     xs = [tr_val_rm["DeltaH1"], tr_val_rm["DeltaH2"]]
     xs = [filter_outliers(x) for x in xs]
-    maps = [map_rm["DeltaH1"], map_rm["DeltaH2"]]
+    #maps = [map_rm["DeltaH1"], map_rm["DeltaH2"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta H_1$", "$\Delta H_2$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
-    plot_maps(maps, colors, ax)
+    #plot_maps(maps, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
@@ -264,12 +264,12 @@ for exper in experiments:
     ax = axes[2]
     xs = [tr_val_em["DeltaH1"], tr_val_em["DeltaH2"]]
     xs = [filter_outliers(x) for x in xs]
-    maps = [map_em["DeltaH1"], map_em["DeltaH2"]]
+    #maps = [map_em["DeltaH1"], map_em["DeltaH2"]]
     cis = [conf_interv(x) for x in xs]
     labels = ["$\Delta H_1$", "$\Delta H_2$"]
     plot_kde_hist(xs, labels, colors, ax)
     plot_conf_intervs(cis, colors, ax)
-    plot_maps(maps, colors, ax)
+    #plot_maps(maps, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
