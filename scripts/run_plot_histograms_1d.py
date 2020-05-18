@@ -83,22 +83,34 @@ def conf_interv(x, conf_level=95.):
     return lower, upper
 
 
-def plot_kde_hist(data_list, labels, colors, xlabel, ylabel, ax):
+def plot_kde_hist(data_list, labels, colors, ax):
 
     for data, label, color in zip(data_list, labels, colors):
         sns.kdeplot(data, ax=ax, label=label, c=color)
 
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
     ax.legend(loc="best")
     return ax
 
 
-def plot_conf_intervs(conf_intervs, ax):
+def plot_conf_intervs(conf_intervs, colors, ax):
     y_low, y_high = ax.yaxis.get_data_interval()
     n = len(conf_intervs)
     ys = np.linspace(y_low, y_high, n + 2)
     ys = ys[1:-1]
+
+    for (xl, xh), y, c in zip(conf_intervs, ys, colors):
+        ax.plot([xl, xh], [y, y], color=c, linestyle="solid", marker="|")
+    return ax
+
+
+def plot_maps(maps, colors, ax):
+    y_low, y_high = ax.yaxis.get_data_interval()
+    yrange = y_high - y_low
+    y = y_low + yrange / 100.
+
+    for map, c in zip(maps, colors):
+        ax.scatter([map], [y], color=c, marker="v")
+    return ax
 
 
 exclude_repeats = args.exclude_repeats.split()
@@ -146,7 +158,10 @@ for exper in experiments:
     map_em = find_MAP_traces(model_em, traces_em)
     print("map_em", map_em)
 
-
+    # plot DeltaG
+    fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True, figsize=(9, 2.4))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
 
 
 for experiment in experiments:
