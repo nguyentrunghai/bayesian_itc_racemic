@@ -83,21 +83,23 @@ def conf_interv(x, conf_level=95.):
     return lower, upper
 
 
-def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
-    sns.set(font_scale=0.7)
-    figure_size = (3.2, 2.4)
-    dpi = 300
-    plt.figure(figsize=figure_size)
+def plot_kde_hist(data_list, labels, colors, xlabel, ylabel, ax):
 
     for data, label, color in zip(data_list, labels, colors):
-        sns.kdeplot(data, label=label, c=color)
+        sns.kdeplot(data, ax=ax, label=label, c=color)
 
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.legend(loc="best")
-    plt.tight_layout()
-    plt.savefig(out, dpi=dpi)
-    return None
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.legend(loc="best")
+    return ax
+
+
+def plot_conf_intervs(conf_intervs, ax):
+    y_low, y_high = ax.yaxis.get_data_interval()
+    n = len(conf_intervs)
+    ys = np.linspace(y_low, y_high, n + 2)
+    ys = ys[1:-1]
+
 
 exclude_repeats = args.exclude_repeats.split()
 exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
