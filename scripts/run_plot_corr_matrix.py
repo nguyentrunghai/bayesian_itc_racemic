@@ -106,7 +106,7 @@ for exper in experiments:
     corr_em = tr_val_em.corr()
     print("corr_em", corr_em)
 
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
+    fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(5, 15))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
 
