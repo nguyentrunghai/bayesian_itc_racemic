@@ -32,7 +32,7 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-parser.add_argument("--font_scale", type=float, default=0.5)
+parser.add_argument("--font_scale", type=float, default=0.7)
 
 args = parser.parse_args()
 
@@ -117,7 +117,6 @@ for exper in experiments:
     axes[2].set_title("Enantiomer")
 
     out = exper + ".pdf"
-    fig.tight_layout()
     fig.savefig(out, dpi=300)
 
 
