@@ -32,7 +32,7 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-parser.add_argument("--font_scale", type=float, default=0.6)
+parser.add_argument("--font_scale", type=float, default=0.7)
 
 args = parser.parse_args()
 
@@ -70,6 +70,8 @@ ylabel = "Probability density"
 
 font_scale = args.font_scale
 
+exclude_vars = ["DeltaH_0", "log_sigma"]
+
 for exper in experiments:
     print("\n\n", exper)
 
@@ -93,8 +95,13 @@ for exper in experiments:
     traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
 
     tr_val_2c = pd.DataFrame(value_from_traces(traces_2c))
+    tr_val_2c.drop(exclude_vars, axis=1)
+
     tr_val_rm = pd.DataFrame(value_from_traces(traces_rm))
+    tr_val_rm.drop(exclude_vars, axis=1)
+
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
+    tr_val_em.drop(exclude_vars, axis=1)
 
     corr_2c = tr_val_2c.corr()
     print("corr_2c", corr_2c)
