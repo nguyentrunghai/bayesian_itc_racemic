@@ -295,3 +295,39 @@ for exper in experiments:
     fig.tight_layout()
     fig.savefig(out, dpi=300)
 
+
+    # plot Ls ----------------------------------------------
+    fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, figsize=(9, 2.4))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
+    ylabel = "Probability density"
+    xlabel = "$[L]_s$ (mM)"
+
+    # 2c
+    ax = axes[0]
+    xs = [tr_val_2c["Ls"]]
+    xs = [filter_outliers(x) for x in xs]
+    labels = [None]
+    plot_kde_hist(xs, labels, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title("Two-Component")
+
+    # rm
+    ax = axes[1]
+    xs = [tr_val_rm["Ls"]]
+    xs = [filter_outliers(x) for x in xs]
+    labels = [None]
+    plot_kde_hist(xs, labels, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_title("Racemic Mixture")
+
+    # em
+    ax = axes[2]
+    xs = [tr_val_em["Ls"] * tr_val_em["rho"], tr_val_em["Ls"] * (1 - tr_val_em["rho"])]
+    xs = [filter_outliers(x) for x in xs]
+    labels = ["$[L_1]_s$", "$[L_2]_s$"]
+    plot_kde_hist(xs, labels, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_title("Enantiomer")
+
