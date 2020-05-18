@@ -179,7 +179,7 @@ for exper in experiments:
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
     ylabel = "Probability density"
-    xlabel = "$\Delta G$"
+    xlabel = "$\Delta G$ (kcal/mol)"
 
     # 2c
     ax = axes[0]
@@ -231,7 +231,7 @@ for exper in experiments:
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
     ylabel = "Probability density"
-    xlabel = "$\Delta H$"
+    xlabel = "$\Delta H$ (kcal/mol)"
 
     # 2c
     ax = axes[0]
@@ -276,3 +276,22 @@ for exper in experiments:
     out = exper + "_DeltaH.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
+
+
+    # plot P0 ----------------------------------------------
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
+    sns.set(font_scale=font_scale)
+    ylabel = "Probability density"
+    xlabel = "$[R]_0$ (mM)"
+
+    xs = [tr_val_2c["P0"], tr_val_rm["P0"], tr_val_em["P0"]]
+    xs = [filter_outliers(x) for x in xs]
+    labels = ["2C", "RM", "EM"]
+    plot_kde_hist(xs, labels, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    out = exper + "_P0.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
+
