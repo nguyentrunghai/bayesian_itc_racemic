@@ -97,8 +97,11 @@ for exper in experiments:
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
 
     corr_2c = tr_val_2c
+    print("corr_2c", corr_2c)
     corr_rm = tr_val_rm
+    print("corr_rm", corr_rm)
     corr_em = tr_val_em
+    print("corr_em", corr_em)
 
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
