@@ -32,10 +32,7 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-# thin out trace before calculate confidence intervals
-parser.add_argument("--thin", type=int, default=1)
-
-parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--font_scale", type=float, default=0.5)
 
 args = parser.parse_args()
 
@@ -106,17 +103,17 @@ for exper in experiments:
     corr_em = tr_val_em.corr()
     print("corr_em", corr_em)
 
-    fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(5, 15))
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
 
-    sns.heatmap(corr_2c, annot=True, fmt="0.3f", ax=axes[0])
+    sns.heatmap(corr_2c, annot=True, fmt="0.2f", ax=axes[0])
     axes[0].set_title("Two-Component")
 
-    sns.heatmap(corr_rm, annot=True, fmt="0.3f", ax=axes[1])
+    sns.heatmap(corr_rm, annot=True, fmt="0.2f", ax=axes[1])
     axes[1].set_title("Racemic Mixture")
 
-    sns.heatmap(corr_em, annot=True, fmt="0.3f", ax=axes[2])
+    sns.heatmap(corr_em, annot=True, fmt="0.2f", ax=axes[2])
     axes[2].set_title("Enantiomer")
 
     out = exper + ".pdf"
