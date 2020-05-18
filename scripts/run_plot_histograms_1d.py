@@ -6,9 +6,13 @@ import argparse
 import os
 import pickle
 
+import numpy as np
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
+
+from _bayes_factor import get_values_from_trace, log_posterior_trace
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--two_component_mcmc_dir", type=str,
@@ -34,6 +38,25 @@ def is_path_excluded(path, exclude_kws):
         if kw in path:
             return True
     return False
+
+
+def find_MAP_trace(model, trace):
+    tr_val = get_values_from_trace(model, trace)
+    logp = log_posterior_trace(model, tr_val)
+
+    idx_max = np.argmax(logp)
+    map_logp = logp[idx_max]
+
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    map_val = {name: trace.get_values(name)[idx_max] for name in free_vars}
+    return map_val, map_logp
+
+
+def find_MAP_traces(model, traces):
+    map_results = [find_MAP_trace(model, trace) for trace in traces]
+    map_results.sort(key=lambda i: i[1])
+    map_val = map_results[-1][0]
+    return map_val
 
 
 def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
