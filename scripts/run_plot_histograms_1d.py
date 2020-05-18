@@ -29,6 +29,13 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 args = parser.parse_args()
 
 
+def is_path_excluded(path, exclude_kws):
+    for kw in exclude_kws:
+        if kw in path:
+            return True
+    return False
+
+
 def _plot_kde_hist(data_list, labels, colors, xlabel, ylabel, out):
     sns.set(font_scale=0.7)
     figure_size = (3.2, 2.4)
