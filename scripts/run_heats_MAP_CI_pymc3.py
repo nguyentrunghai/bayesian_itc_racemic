@@ -12,9 +12,6 @@ import pickle
 import numpy as np
 import pymc3
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 from _bayes_factor import get_values_from_trace, log_posterior_trace
 from _data_io import ITCExperiment, load_heat_micro_cal
 from _models import heats_TwoComponentBindingModel, heats_RacemicMixtureBindingModel
