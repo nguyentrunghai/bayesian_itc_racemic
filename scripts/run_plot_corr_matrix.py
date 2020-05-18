@@ -95,13 +95,13 @@ for exper in experiments:
     traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
 
     tr_val_2c = pd.DataFrame(value_from_traces(traces_2c))
-    tr_val_2c.drop(exclude_vars, axis=1)
+    tr_val_2c = tr_val_2c.drop(exclude_vars, axis=1)
 
     tr_val_rm = pd.DataFrame(value_from_traces(traces_rm))
-    tr_val_rm.drop(exclude_vars, axis=1)
+    tr_val_rm = tr_val_rm.drop(exclude_vars, axis=1)
 
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
-    tr_val_em.drop(exclude_vars, axis=1)
+    tr_val_em = tr_val_em.drop(exclude_vars, axis=1)
 
     corr_2c = tr_val_2c.corr()
     print("corr_2c", corr_2c)
