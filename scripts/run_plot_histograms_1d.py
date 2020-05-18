@@ -86,7 +86,7 @@ def conf_interv(x, conf_level=95.):
     return lower, upper
 
 
-def filter_outliers(x, thres=95.):
+def filter_outliers(x, thres=99.):
     lower, upper = conf_interv(x, conf_level=thres)
     keep = (x > lower) & (x < upper)
     return x[keep]
