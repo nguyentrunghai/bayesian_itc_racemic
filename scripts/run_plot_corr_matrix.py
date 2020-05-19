@@ -118,7 +118,7 @@ for exper in experiments:
     print("corr_em", corr_em)
 
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
-    plt.subplots_adjust(wspace=0.3)
+    plt.subplots_adjust(wspace=0.1)
     sns.set(font_scale=font_scale)
 
     sns.heatmap(corr_2c, annot=True, fmt="0.2f", ax=axes[0])
