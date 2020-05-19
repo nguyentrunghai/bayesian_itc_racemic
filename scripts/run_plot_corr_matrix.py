@@ -32,7 +32,7 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-parser.add_argument("--font_scale", type=float, default=0.7)
+parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
 
@@ -96,12 +96,19 @@ for exper in experiments:
 
     tr_val_2c = pd.DataFrame(value_from_traces(traces_2c))
     tr_val_2c = tr_val_2c.drop(exclude_vars, axis=1)
+    tr_val_2c = tr_val_2c.sort_index(axis=1)
 
     tr_val_rm = pd.DataFrame(value_from_traces(traces_rm))
-    tr_val_rm = tr_val_rm.drop(exclude_vars, axis=1)
+    tr_val_rm["DeltaG2"] = tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]
+    tr_val_rm = tr_val_rm.drop(exclude_vars + ["DeltaDeltaG"], axis=1)
+    tr_val_rm = tr_val_rm.sort_index(axis=1)
 
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
-    tr_val_em = tr_val_em.drop(exclude_vars, axis=1)
+    tr_val_em["DeltaG2"] = tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]
+    tr_val_em["Ls1"] = tr_val_em["Ls"] * tr_val_em["rho"]
+    tr_val_em["Ls2"] = tr_val_em["Ls"] * (1 - tr_val_em["rho"])
+    tr_val_em = tr_val_em.drop(exclude_vars + ["DeltaDeltaG", "Ls", "rho"], axis=1)
+    tr_val_em = tr_val_em.sort_index(axis=1)
 
     corr_2c = tr_val_2c.corr()
     print("corr_2c", corr_2c)
