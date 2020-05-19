@@ -131,6 +131,7 @@ for exper in experiments:
     axes[2].set_title("Enantiomer")
 
     out = exper + ".pdf"
+    fig.tight_layout()
     fig.savefig(out, dpi=300)
 
 
