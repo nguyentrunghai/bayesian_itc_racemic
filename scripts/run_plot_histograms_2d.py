@@ -32,6 +32,8 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
+parser.add_argument("--sample_frac", type=float, default=1.)
+
 parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
@@ -99,6 +101,9 @@ font_scale = args.font_scale
 
 exclude_vars = ["DeltaH_0", "log_sigma"]
 
+sample_frac = args.sample_frac
+print("sample_frac:", sample_frac)
+
 for exper in experiments:
     print("\n\n", exper)
 
@@ -122,17 +127,20 @@ for exper in experiments:
     traces_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
 
     tr_val_2c = pd.DataFrame(value_from_traces(traces_2c))
+    tr_val_2c = tr_val_2c.sample(frac=sample_frac, replace=False)
     tr_val_2c = tr_val_2c.drop(exclude_vars, axis=1)
     tr_val_2c = tr_val_2c.sort_index(axis=1)
     tr_val_2c = filter_outliers(tr_val_2c)
 
     tr_val_rm = pd.DataFrame(value_from_traces(traces_rm))
+    tr_val_rm = tr_val_rm.sample(frac=sample_frac, replace=False)
     tr_val_rm["DeltaG2"] = tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]
     tr_val_rm = tr_val_rm.drop(exclude_vars + ["DeltaDeltaG"], axis=1)
     tr_val_rm = tr_val_rm.sort_index(axis=1)
     tr_val_rm = filter_outliers(tr_val_rm)
 
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
+    tr_val_em = tr_val_em.sample(frac=sample_frac, replace=False)
     tr_val_em["DeltaG2"] = tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]
     tr_val_em["Ls1"] = tr_val_em["Ls"] * tr_val_em["rho"]
     tr_val_em["Ls2"] = tr_val_em["Ls"] * (1 - tr_val_em["rho"])
