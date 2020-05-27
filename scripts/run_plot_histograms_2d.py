@@ -78,7 +78,7 @@ def pairplot(df, out, figsize):
 
     g = sns.PairGrid(df, diag_sharey=False)
     g.map_upper(sns.scatterplot)
-    g.map_lower(sns.kdeplot, colors="C0")
+    g.map_lower(sns.kdeplot)
     g.map_diag(sns.kdeplot, lw=2)
     plt.tight_layout()
     plt.savefig(out, dpi=300)
