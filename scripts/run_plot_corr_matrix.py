@@ -43,6 +43,7 @@ def is_path_excluded(path, exclude_kws):
             return True
     return False
 
+
 def value_from_trace(trace):
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
     tr_val = {name: trace.get_values(name) for name in free_vars}
@@ -56,6 +57,18 @@ def value_from_traces(traces):
     for key in keys:
         trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
     return trace_values
+
+
+def conf_interv(x, conf_level=95.):
+    alpha = 100 - conf_level
+    lower = np.percentile(x, alpha/2)
+    upper = np.percentile(x, 100 - (alpha/2))
+    return lower, upper
+
+
+def filter_outliers(df, thres=99):
+    for col in df.columns:
+        lower, upper = conf_interv(df[col], conf_level=thres)
 
 
 exclude_repeats = args.exclude_repeats.split()
