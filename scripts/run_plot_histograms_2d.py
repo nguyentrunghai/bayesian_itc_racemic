@@ -140,22 +140,15 @@ for exper in experiments:
     tr_val_em = tr_val_em.sort_index(axis=1)
     tr_val_em = filter_outliers(tr_val_em)
 
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(20, 20))
-    plt.subplots_adjust(wspace=0.1)
-    sns.set(font_scale=font_scale)
+    figsize = (20, 20)
+    out = exper + "_2C.pdf"
+    pairplot(tr_val_2c, out, figsize)
 
-    sns.heatmap(corr_2c, annot=True, fmt="0.2f", ax=axes[0])
-    axes[0].set_title("Two-Component")
+    out = exper + "_RM.pdf"
+    pairplot(tr_val_rm, out, figsize)
 
-    sns.heatmap(corr_rm, annot=True, fmt="0.2f", ax=axes[1])
-    axes[1].set_title("Racemic Mixture")
-
-    sns.heatmap(corr_em, annot=True, fmt="0.2f", ax=axes[2])
-    axes[2].set_title("Enantiomer")
-
-    out = exper + ".pdf"
-    fig.tight_layout()
-    fig.savefig(out, dpi=300)
+    out = exper + "_EM.pdf"
+    pairplot(tr_val_em, out, figsize)
 
 
 
