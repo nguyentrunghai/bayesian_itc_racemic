@@ -34,7 +34,7 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 
 parser.add_argument("--sample_frac", type=float, default=1.)
 
-parser.add_argument("--font_scale", type=float, default=0.75)
+parser.add_argument("--font_scale", type=float, default=1.)
 
 args = parser.parse_args()
 
