@@ -69,6 +69,8 @@ def conf_interv(x, conf_level=95.):
 def filter_outliers(df, thres=99):
     for col in df.columns:
         lower, upper = conf_interv(df[col], conf_level=thres)
+        df = df[(lower < df[col]) & (df[col] < upper)]
+    return df
 
 
 exclude_repeats = args.exclude_repeats.split()
