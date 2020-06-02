@@ -330,14 +330,14 @@ for exper in experiments:
     ax.set_ylim(ylim)
     ax.set_xlabel(var1)
     # ax.legend(loc="best")
-    ax.set_title("Racemic Mixture")
+    ax.set_title("Enantiomer")
 
     ax = axes[1, 1]
     ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var2)
     # ax.legend(loc="best")
-    ax.set_title("Racemic Mixture")
+    ax.set_title("Enantiomer")
 
     out = exper + "_DeltaH.pdf"
     fig.tight_layout()
