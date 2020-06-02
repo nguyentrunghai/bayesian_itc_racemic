@@ -72,6 +72,12 @@ def conf_interv(x, conf_level=95.):
     return lower, upper
 
 
+def filter_outliers(x, thres=99.):
+    lower, upper = conf_interv(x, conf_level=thres)
+    keep = (x > lower) & (x < upper)
+    return x[keep]
+
+
 def plot_conf_interv(ci, y, label, linestyle, color, ax):
     lower, upper = ci
     ax.plot([lower, upper], [y, y], color=color, linestyle=linestyle, marker="|", label=label)
@@ -144,3 +150,27 @@ for exper in experiments:
     tr_val_em_ln = value_from_traces(traces_em_ln)
     tr_val_em_ft = value_from_traces(traces_em_ft)
 
+    ylim = [0, 4]
+
+    # plot DeltaG ----------------------------------------------
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
+    xlabel = "$\Delta G$ (kcal/mol)"
+
+    # 2c
+    ax = axes[0]
+    y = 2
+    var = "DeltaG"
+    dg_ln = filter_outliers(tr_val_2c_ln[var])
+    dg_ft = filter_outliers(tr_val_2c_ft[var])
+
+    ci_ln = conf_interv(dg_ln)
+    ci_ft = conf_interv(dg_ft)
+
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(xlabel)
+    ax.legend(loc="best")
+
+    
