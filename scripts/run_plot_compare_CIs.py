@@ -109,3 +109,11 @@ for exper in experiments:
     dirs_em_ft = [os.path.dirname(p) for p in dirs_em_ft]
     print("dirs_em_ft:", dirs_em_ft)
 
+    traces_2c_ln = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c_ln]
+    traces_2c_ft = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c_ft]
+
+    traces_rm_ln = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm_ln]
+    traces_rm_fl = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm_ft]
+
+    traces_em_ln = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em_ln]
+    traces_em_ft = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em_ft]
