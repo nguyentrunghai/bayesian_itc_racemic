@@ -325,14 +325,14 @@ for exper in experiments:
     ci_2_ln = conf_interv(dh2_ln)
     ci_2_ft = conf_interv(dh2_ft)
 
-    ax = axes[0, 1]
+    ax = axes[1, 0]
     ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var1)
     # ax.legend(loc="best")
     ax.set_title("Racemic Mixture")
 
-    ax = axes[0, 2]
+    ax = axes[1, 1]
     ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var2)
