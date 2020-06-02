@@ -149,7 +149,7 @@ for exper in experiments:
     tr_val_em_ln = value_from_traces(traces_em_ln)
     tr_val_em_ft = value_from_traces(traces_em_ft)
 
-    ylim = [0, 4]
+    ylim = [0, 2]
 
     # plot DeltaG ----------------------------------------------
     fig, axes = plt.subplots(nrows=2, ncols=3, sharey=True, figsize=(9, 4.8))
@@ -159,7 +159,7 @@ for exper in experiments:
 
     # 2c
     ax = axes[0, 0]
-    y = 2.
+    y = 1.
     var = "$\Delta G$ (kcal/mol)"
     dg_ln = filter_outliers(tr_val_2c_ln["DeltaG"])
     dg_ft = filter_outliers(tr_val_2c_ft["DeltaG"])
@@ -175,7 +175,7 @@ for exper in experiments:
 
     # rm
     y1 = 1.
-    y2 = 3.
+    y2 = 1.
     var1 = "$\Delta G_1$ (kcal/mol)"
     var2 = "$\Delta G_2$ (kcal/mol)"
 
@@ -213,7 +213,7 @@ for exper in experiments:
 
     # em
     y1 = 1.
-    y2 = 3.
+    y2 = 1.
     var1 = "$\Delta G_1$ (kcal/mol)"
     var2 = "$\Delta G_2$ (kcal/mol)"
 
@@ -261,7 +261,7 @@ for exper in experiments:
 
     # 2c
     ax = axes[0, 0]
-    y = 2.
+    y = 1.
     var = "$\Delta H$ (kcal/mol)"
     dh_ln = filter_outliers(tr_val_2c_ln["DeltaH"])
     dh_ft = filter_outliers(tr_val_2c_ft["DeltaH"])
@@ -277,7 +277,7 @@ for exper in experiments:
 
     # rm
     y1 = 1.
-    y2 = 3.
+    y2 = 1.
     var1 = "$\Delta H_1$ (kcal/mol)"
     var2 = "$\Delta H_2$ (kcal/mol)"
 
@@ -309,7 +309,7 @@ for exper in experiments:
 
     # em
     y1 = 1.
-    y2 = 3.
+    y2 = 1.
     var1 = "$\Delta H_1$ (kcal/mol)"
     var2 = "$\Delta H_2$ (kcal/mol)"
 
