@@ -36,7 +36,6 @@ parser.add_argument("--enantiomer_flat_dir", type=str,
 parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
-parser.add_argument("--model_pickle", type=str, default="pm_model.pickle")
 
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
@@ -113,7 +112,17 @@ for exper in experiments:
     traces_2c_ft = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c_ft]
 
     traces_rm_ln = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm_ln]
-    traces_rm_fl = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm_ft]
+    traces_rm_ft = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm_ft]
 
     traces_em_ln = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em_ln]
     traces_em_ft = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em_ft]
+
+    tr_val_2c_ln = value_from_traces(traces_2c_ln)
+    tr_val_2c_ft = value_from_traces(traces_2c_ft)
+
+    tr_val_rm_ln = value_from_traces(traces_rm_ln)
+    tr_val_rm_ft = value_from_traces(traces_rm_ft)
+
+    tr_val_em_ln = value_from_traces(traces_em_ln)
+    tr_val_em_ft = value_from_traces(traces_em_ft)
+    
