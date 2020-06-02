@@ -37,8 +37,7 @@ parser.add_argument("--repeat_prefix", type=str, default="repeat_")
 
 parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 
-parser.add_argument("--experiments", type=str,
-default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
+parser.add_argument("--experiments", type=str, default="Fokkens_1_c Fokkens_1_d Fokkens_1_e")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
 
@@ -101,34 +100,34 @@ for exper in experiments:
 
     # 2c
     dirs_2c_ln = glob.glob(os.path.join(
-        args.two_component_lognormal_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+        args.two_component_lognormal_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_2c_ln = [os.path.dirname(p) for p in dirs_2c_ln]
     print("dirs_2c_ln:", dirs_2c_ln)
 
     dirs_2c_ft = glob.glob(
-        os.path.join(args.two_component_flat_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+        os.path.join(args.two_component_flat_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_2c_ft = [os.path.dirname(p) for p in dirs_2c_ft]
     print("dirs_2c_ft:", dirs_2c_ft)
 
     # rm
     dirs_rm_ln = glob.glob(os.path.join(
-        args.racemic_mixture_lognormal_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+        args.racemic_mixture_lognormal_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_rm_ln = [os.path.dirname(p) for p in dirs_rm_ln]
     print("dirs_rm_ln:", dirs_rm_ln)
 
     dirs_rm_ft = glob.glob(
-        os.path.join(args.racemic_mixture_flat_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+        os.path.join(args.racemic_mixture_flat_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_rm_ft = [os.path.dirname(p) for p in dirs_rm_ft]
     print("dirs_rm_ft:", dirs_rm_ft)
 
     # em
     dirs_em_ln = glob.glob(os.path.join(
-        args.enantiomer_lognormal_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+        args.enantiomer_lognormal_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_em_ln = [os.path.dirname(p) for p in dirs_em_ln]
     print("dirs_em_ln:", dirs_em_ln)
 
     dirs_em_ft = glob.glob(
-        os.path.join(args.enantiomer_flat_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+        os.path.join(args.enantiomer_flat_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_em_ft = [os.path.dirname(p) for p in dirs_em_ft]
     print("dirs_em_ft:", dirs_em_ft)
 
