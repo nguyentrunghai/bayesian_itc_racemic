@@ -78,6 +78,16 @@ def plot_conf_interv(ci, y, label, linestyle, color, ax):
     return ax
 
 
+def plot_pair(ci_ln, ci_ft, y, color, var, ax):
+    y_ln = y
+    label_ln = var + " LN"
+    plot_conf_interv(ci_ln, y_ln, label_ln, "solid", color, ax)
+
+    y_ft = y + 0.2
+    label_ft = var + " FT"
+    plot_conf_interv(ci_ft, y_ft, label_ft, "dashed", color, ax)
+
+    return ax
 
 
 for exper in experiments:
