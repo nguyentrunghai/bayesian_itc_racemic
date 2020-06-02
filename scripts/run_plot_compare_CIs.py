@@ -45,3 +45,17 @@ parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
 
+
+def value_from_trace(trace):
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    tr_val = {name: trace.get_values(name) for name in free_vars}
+    return tr_val
+
+
+def value_from_traces(traces):
+    trace_value_list = [value_from_trace(t) for t in traces]
+    keys = trace_value_list[0].keys()
+    trace_values = {}
+    for key in keys:
+        trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
+    return trace_values
