@@ -45,6 +45,11 @@ parser.add_argument("--font_scale", type=float, default=0.75)
 
 args = parser.parse_args()
 
+font_scale = args.font_scale
+
+experiments = args.experiments.split()
+print("experiments", experiments)
+
 
 def value_from_trace(trace):
     free_vars = [name for name in trace.varnames if not name.endswith("__")]
@@ -66,4 +71,41 @@ def conf_interv(x, conf_level=95.):
     lower = np.percentile(x, alpha/2)
     upper = np.percentile(x, 100 - (alpha/2))
     return lower, upper
+
+
+for exper in experiments:
+    print("\n\n", exper)
+
+    # 2c
+    dirs_2c_ln = glob.glob(os.path.join(
+        args.two_component_lognormal_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_2c_ln = [os.path.dirname(p) for p in dirs_2c_ln]
+    print("dirs_2c_ln:", dirs_2c_ln)
+
+    dirs_2c_ft = glob.glob(
+        os.path.join(args.two_component_flat_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_2c_ft = [os.path.dirname(p) for p in dirs_2c_ft]
+    print("dirs_2c_ft:", dirs_2c_ft)
+
+    # rm
+    dirs_rm_ln = glob.glob(os.path.join(
+        args.racemic_mixture_lognormal_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_rm_ln = [os.path.dirname(p) for p in dirs_rm_ln]
+    print("dirs_rm_ln:", dirs_rm_ln)
+
+    dirs_rm_ft = glob.glob(
+        os.path.join(args.racemic_mixture_flat_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_rm_ft = [os.path.dirname(p) for p in dirs_rm_ft]
+    print("dirs_rm_ft:", dirs_rm_ft)
+
+    # em
+    dirs_em_ln = glob.glob(os.path.join(
+        args.enantiomer_lognormal_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_em_ln = [os.path.dirname(p) for p in dirs_em_ln]
+    print("dirs_em_ln:", dirs_em_ln)
+
+    dirs_em_ft = glob.glob(
+        os.path.join(args.enantiomer_flat_dir, args.repeat_prefix + "*", exper, args.model_pickle))
+    dirs_em_ft = [os.path.dirname(p) for p in dirs_em_ft]
+    print("dirs_em_ft:", dirs_em_ft)
 
