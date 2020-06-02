@@ -152,7 +152,7 @@ for exper in experiments:
     ylim = [0, 4]
 
     # plot DeltaG ----------------------------------------------
-    fig, axes = plt.subplots(nrows=3, ncols=2, sharey=True, figsize=(6, 7.2))
+    fig, axes = plt.subplots(nrows=2, ncols=3, sharey=True, figsize=(9, 4.8))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
     #xlabel = "$\Delta G$ (kcal/mol)"
@@ -197,18 +197,18 @@ for exper in experiments:
     ci_2_ln = conf_interv(dg2_ln)
     ci_2_ft = conf_interv(dg2_ft)
 
-    ax = axes[1, 0]
+    ax = axes[0, 1]
     ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var1)
-    ax.legend(loc="best")
+    #ax.legend(loc="best")
     ax.set_title("Racemic Mixture")
 
-    ax = axes[1, 1]
+    ax = axes[0, 2]
     ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var2)
-    ax.legend(loc="best")
+    #ax.legend(loc="best")
     ax.set_title("Racemic Mixture")
 
     # rm
@@ -235,19 +235,19 @@ for exper in experiments:
     ci_2_ln = conf_interv(dg2_ln)
     ci_2_ft = conf_interv(dg2_ft)
 
-    ax = axes[2, 0]
+    ax = axes[1, 0]
     ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var1)
-    ax.legend(loc="best")
-    ax.set_title("Racemic Mixture")
+    #ax.legend(loc="best")
+    ax.set_title("Enantiomer")
 
-    ax = axes[2, 1]
+    ax = axes[1, 1]
     ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
     ax.set_ylim(ylim)
     ax.set_xlabel(var2)
-    ax.legend(loc="best")
-    ax.set_title("Racemic Mixture")
+    #ax.legend(loc="best")
+    ax.set_title("Enantiomer")
 
     out = exper + "_DeltaG.pdf"
     fig.tight_layout()
