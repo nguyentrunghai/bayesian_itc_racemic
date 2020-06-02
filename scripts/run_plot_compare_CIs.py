@@ -153,7 +153,7 @@ for exper in experiments:
     ylim = [0, 4]
 
     # plot DeltaG ----------------------------------------------
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
+    fig, axes = plt.subplots(nrows=1, ncols=3, sharey=True, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
     xlabel = "$\Delta G$ (kcal/mol)"
@@ -161,9 +161,9 @@ for exper in experiments:
     # 2c
     ax = axes[0]
     y = 2.
-    var = "DeltaG"
-    dg_ln = filter_outliers(tr_val_2c_ln[var])
-    dg_ft = filter_outliers(tr_val_2c_ft[var])
+    var = "$\Delta G$"
+    dg_ln = filter_outliers(tr_val_2c_ln["DeltaG"])
+    dg_ft = filter_outliers(tr_val_2c_ft["DeltaG"])
 
     ci_ln = conf_interv(dg_ln)
     ci_ft = conf_interv(dg_ft)
@@ -172,13 +172,14 @@ for exper in experiments:
     ax.set_ylim(ylim)
     ax.set_xlabel(xlabel)
     ax.legend(loc="best")
+    ax.set_title("Two-Component")
 
     # rm
     ax = ax[1]
     y1 = 1.
     y2 = 3.
-    var1 = "DeltaG1"
-    var2 = "DeltaG2"
+    var1 = "$\Delta G_1$"
+    var2 = "$\Delta G_2$"
 
     dg1_ln = tr_val_rm_ln["DeltaG1"]
     dg1_ft = tr_val_rm_ft["DeltaG1"]
@@ -203,3 +204,40 @@ for exper in experiments:
     ax.set_ylim(ylim)
     ax.set_xlabel(xlabel)
     ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    # em
+    ax = ax[2]
+    y1 = 1.
+    y2 = 3.
+    var1 = "$\Delta G_1$"
+    var2 = "$\Delta G_2$"
+
+    dg1_ln = tr_val_em_ln["DeltaG1"]
+    dg1_ft = tr_val_em_ft["DeltaG1"]
+
+    dg2_ln = dg1_ln + tr_val_em_ln["DeltaDeltaG"]
+    dg2_ft = dg1_ft + tr_val_em_ft["DeltaDeltaG"]
+
+    dg1_ln = filter_outliers(dg1_ln)
+    dg1_ft = filter_outliers(dg1_ft)
+
+    dg2_ln = filter_outliers(dg2_ln)
+    dg2_ft = filter_outliers(dg2_ft)
+
+    ci_1_ln = conf_interv(dg1_ln)
+    ci_1_ft = conf_interv(dg1_ft)
+
+    ci_2_ln = conf_interv(dg2_ln)
+    ci_2_ft = conf_interv(dg2_ft)
+
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(xlabel)
+    ax.legend(loc="best")
+    ax.set_title("Enantiomer")
+
+    out = exper + "_DeltaG.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
