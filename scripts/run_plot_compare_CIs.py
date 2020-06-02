@@ -59,3 +59,11 @@ def value_from_traces(traces):
     for key in keys:
         trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
     return trace_values
+
+
+def conf_interv(x, conf_level=95.):
+    alpha = 100 - conf_level
+    lower = np.percentile(x, alpha/2)
+    upper = np.percentile(x, 100 - (alpha/2))
+    return lower, upper
+
