@@ -72,6 +72,14 @@ def conf_interv(x, conf_level=95.):
     return lower, upper
 
 
+def plot_conf_interv(ci, y, label, linestyle, color, ax):
+    lower, upper = ci
+    ax.plot([lower, upper], [y, y], color=color, linestyle=linestyle, marker="|", label=label)
+    return ax
+
+
+
+
 for exper in experiments:
     print("\n\n", exper)
 
@@ -125,4 +133,4 @@ for exper in experiments:
 
     tr_val_em_ln = value_from_traces(traces_em_ln)
     tr_val_em_ft = value_from_traces(traces_em_ft)
-    
+
