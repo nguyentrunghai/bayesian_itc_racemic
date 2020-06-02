@@ -160,7 +160,7 @@ for exper in experiments:
 
     # 2c
     ax = axes[0]
-    y = 2
+    y = 2.
     var = "DeltaG"
     dg_ln = filter_outliers(tr_val_2c_ln[var])
     dg_ft = filter_outliers(tr_val_2c_ft[var])
@@ -173,4 +173,33 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.legend(loc="best")
 
-    
+    # rm
+    ax = ax[1]
+    y1 = 1.
+    y2 = 3.
+    var1 = "DeltaG1"
+    var2 = "DeltaG2"
+
+    dg1_ln = tr_val_rm_ln["DeltaG1"]
+    dg1_ft = tr_val_rm_ft["DeltaG1"]
+
+    dg2_ln = dg1_ln + tr_val_rm_ln["DeltaDeltaG"]
+    dg2_ft = dg1_ft + tr_val_rm_ft["DeltaDeltaG"]
+
+    dg1_ln = filter_outliers(dg1_ln)
+    dg1_ft = filter_outliers(dg1_ft)
+
+    dg2_ln = filter_outliers(dg2_ln)
+    dg2_ft = filter_outliers(dg2_ft)
+
+    ci_1_ln = conf_interv(dg1_ln)
+    ci_1_ft = conf_interv(dg1_ft)
+
+    ci_2_ln = conf_interv(dg2_ln)
+    ci_2_ft = conf_interv(dg2_ft)
+
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(xlabel)
+    ax.legend(loc="best")
