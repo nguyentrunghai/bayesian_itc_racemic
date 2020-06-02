@@ -160,7 +160,7 @@ for exper in experiments:
     # 2c
     ax = axes[0, 0]
     y = 2.
-    var = "$\Delta G$"
+    var = "$\Delta G$ (kcal/mol)"
     dg_ln = filter_outliers(tr_val_2c_ln["DeltaG"])
     dg_ft = filter_outliers(tr_val_2c_ft["DeltaG"])
 
@@ -176,8 +176,8 @@ for exper in experiments:
     # rm
     y1 = 1.
     y2 = 3.
-    var1 = "$\Delta G_1$"
-    var2 = "$\Delta G_2$"
+    var1 = "$\Delta G_1$ (kcal/mol)"
+    var2 = "$\Delta G_2$ (kcal/mol)"
 
     dg1_ln = tr_val_rm_ln["DeltaG1"]
     dg1_ft = tr_val_rm_ft["DeltaG1"]
@@ -211,11 +211,11 @@ for exper in experiments:
     #ax.legend(loc="best")
     ax.set_title("Racemic Mixture")
 
-    # rm
+    # em
     y1 = 1.
     y2 = 3.
-    var1 = "$\Delta G_1$"
-    var2 = "$\Delta G_2$"
+    var1 = "$\Delta G_1$ (kcal/mol)"
+    var2 = "$\Delta G_2$ (kcal/mol)"
 
     dg1_ln = tr_val_em_ln["DeltaG1"]
     dg1_ft = tr_val_em_ft["DeltaG1"]
@@ -250,5 +250,95 @@ for exper in experiments:
     ax.set_title("Enantiomer")
 
     out = exper + "_DeltaG.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
+
+    # plot DeltaH ----------------------------------------------
+    fig, axes = plt.subplots(nrows=2, ncols=3, sharey=True, figsize=(9, 4.8))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
+    # xlabel = "$\Delta G$ (kcal/mol)"
+
+    # 2c
+    ax = axes[0, 0]
+    y = 2.
+    var = "$\Delta H$ (kcal/mol)"
+    dh_ln = filter_outliers(tr_val_2c_ln["DeltaH"])
+    dh_ft = filter_outliers(tr_val_2c_ft["DeltaH"])
+
+    ci_ln = conf_interv(dh_ln)
+    ci_ft = conf_interv(dh_ft)
+
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var)
+    # ax.legend(loc="best")
+    ax.set_title("Two-Component")
+
+    # rm
+    y1 = 1.
+    y2 = 3.
+    var1 = "$\Delta H_1$ (kcal/mol)"
+    var2 = "$\Delta H_2$ (kcal/mol)"
+
+    dh1_ln = filter_outliers(tr_val_rm_ln["DeltaH1"])
+    dh1_ft = filter_outliers(tr_val_rm_ft["DeltaH1"])
+
+    dh2_ln = filter_outliers(tr_val_rm_ln["DeltaH2"])
+    dh2_ft = filter_outliers(tr_val_rm_ft["DeltaH2"])
+
+    ci_1_ln = conf_interv(dh1_ln)
+    ci_1_ft = conf_interv(dh1_ft)
+
+    ci_2_ln = conf_interv(dh2_ln)
+    ci_2_ft = conf_interv(dh2_ft)
+
+    ax = axes[0, 1]
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var1)
+    # ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    ax = axes[0, 2]
+    ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var2)
+    # ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    # em
+    y1 = 1.
+    y2 = 3.
+    var1 = "$\Delta H_1$ (kcal/mol)"
+    var2 = "$\Delta H_2$ (kcal/mol)"
+
+    dh1_ln = filter_outliers(tr_val_em_ln["DeltaH1"])
+    dh1_ft = filter_outliers(tr_val_em_ft["DeltaH1"])
+
+    dh2_ln = filter_outliers(tr_val_em_ln["DeltaH2"])
+    dh2_ft = filter_outliers(tr_val_em_ft["DeltaH2"])
+
+    ci_1_ln = conf_interv(dh1_ln)
+    ci_1_ft = conf_interv(dh1_ft)
+
+    ci_2_ln = conf_interv(dh2_ln)
+    ci_2_ft = conf_interv(dh2_ft)
+
+    ax = axes[0, 1]
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var1)
+    # ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    ax = axes[0, 2]
+    ax = plot_pair(ci_2_ln, ci_2_ft, y2, "b", var2, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var2)
+    # ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    out = exper + "_DeltaH.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
