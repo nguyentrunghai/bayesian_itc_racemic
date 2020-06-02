@@ -174,7 +174,7 @@ for exper in experiments:
     ax.set_title("Two-Component")
 
     # rm
-    ax = ax[1]
+    ax = axes[1]
     y1 = 1.
     y2 = 3.
     var1 = "$\Delta G_1$"
@@ -206,7 +206,7 @@ for exper in experiments:
     ax.set_title("Racemic Mixture")
 
     # em
-    ax = ax[2]
+    ax = axes[2]
     y1 = 1.
     y2 = 3.
     var1 = "$\Delta G_1$"
