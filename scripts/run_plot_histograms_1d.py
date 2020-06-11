@@ -324,7 +324,7 @@ for exper in experiments:
     ylabel = "Probability density"
 
     ax = axes[0]
-    xlabel = "$\rho$"
+    xlabel = "$rho$"
     xs = [tr_val_em["rho"]]
     labels = ["rho"]
     plot_kde_hist(xs, labels, colors, ax)
