@@ -278,24 +278,6 @@ for exper in experiments:
     fig.savefig(out, dpi=300)
 
 
-    # plot P0 ----------------------------------------------
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(3.2, 2.4))
-    sns.set(font_scale=font_scale)
-    ylabel = "Probability density"
-    xlabel = "$[R]_0$ (mM)"
-
-    xs = [tr_val_2c["P0"], tr_val_rm["P0"], tr_val_em["P0"]]
-    xs = [filter_outliers(x) for x in xs]
-    labels = ["2C", "RM", "EM"]
-    plot_kde_hist(xs, labels, colors, ax)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-
-    out = exper + "_P0.pdf"
-    fig.tight_layout()
-    fig.savefig(out, dpi=300)
-
-
     # plot Ls ----------------------------------------------
     fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
@@ -332,6 +314,36 @@ for exper in experiments:
     ax.set_title("Enantiomer")
 
     out = exper + "_Ls.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
+
+
+    # plot rho and P0 ----------------------------------------------
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(6.4, 2.4))
+    sns.set(font_scale=font_scale)
+    ylabel = "Probability density"
+
+    ax = axes[0]
+    xlabel = "$\rho$"
+    xs = [tr_val_em["rho"]]
+    labels = ["rho"]
+    plot_kde_hist(xs, labels, colors, ax)
+    ax.set_xlim([0, 1])
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    # P0
+    ax = axes[1]
+    xlabel = "$[R]_0$ (mM)"
+
+    xs = [tr_val_2c["P0"], tr_val_rm["P0"], tr_val_em["P0"]]
+    xs = [filter_outliers(x) for x in xs]
+    labels = ["2C", "RM", "EM"]
+    plot_kde_hist(xs, labels, colors, ax)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    out = exper + "_rho_P0.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
 
