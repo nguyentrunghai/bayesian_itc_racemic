@@ -143,10 +143,11 @@ for exper in experiments:
 
     tr_val_em = pd.DataFrame(value_from_traces(traces_em))
     tr_val_em = tr_val_em.sample(frac=sample_frac, replace=False)
-    tr_val_em["DeltaG2"] = tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]
-    tr_val_em["Ls1"] = tr_val_em["Ls"] * tr_val_em["rho"]
-    tr_val_em["Ls2"] = tr_val_em["Ls"] * (1 - tr_val_em["rho"])
-    tr_val_em = tr_val_em.drop(exclude_vars + ["DeltaDeltaG", "Ls"], axis=1)
+    #tr_val_em["DeltaG2"] = tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]
+    #tr_val_em["Ls1"] = tr_val_em["Ls"] * tr_val_em["rho"]
+    #tr_val_em["Ls2"] = tr_val_em["Ls"] * (1 - tr_val_em["rho"])
+    #tr_val_em = tr_val_em.drop(exclude_vars + ["DeltaDeltaG", "Ls"], axis=1)
+    tr_val_em = tr_val_em.drop(exclude_vars, axis=1)
     tr_val_em = tr_val_em.sort_index(axis=1)
     tr_val_em = filter_outliers(tr_val_em)
 
