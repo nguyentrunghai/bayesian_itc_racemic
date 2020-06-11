@@ -135,8 +135,9 @@ for exper in experiments:
 
     tr_val_rm = pd.DataFrame(value_from_traces(traces_rm))
     tr_val_rm = tr_val_rm.sample(frac=sample_frac, replace=False)
-    tr_val_rm["DeltaG2"] = tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]
-    tr_val_rm = tr_val_rm.drop(exclude_vars + ["DeltaDeltaG"], axis=1)
+    #tr_val_rm["DeltaG2"] = tr_val_rm["DeltaG1"] + tr_val_rm["DeltaDeltaG"]
+    #tr_val_rm = tr_val_rm.drop(exclude_vars + ["DeltaDeltaG"], axis=1)
+    tr_val_rm = tr_val_rm.drop(exclude_vars, axis=1)
     tr_val_rm = tr_val_rm.sort_index(axis=1)
     tr_val_rm = filter_outliers(tr_val_rm)
 
