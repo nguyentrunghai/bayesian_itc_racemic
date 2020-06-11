@@ -324,9 +324,9 @@ for exper in experiments:
 
     # em
     ax = axes[2]
-    xs = [tr_val_em["Ls"] * tr_val_em["rho"], tr_val_em["Ls"] * (1 - tr_val_em["rho"])]
+    xs = [tr_val_em["Ls"], tr_val_em["Ls"] * tr_val_em["rho"], tr_val_em["Ls"] * (1 - tr_val_em["rho"])]
     xs = [filter_outliers(x) for x in xs]
-    labels = ["$[L_1]_s$", "$[L_2]_s$"]
+    labels = ["$[L]_s$", "$[L_1]_s$", "$[L_2]_s$"]
     plot_kde_hist(xs, labels, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
