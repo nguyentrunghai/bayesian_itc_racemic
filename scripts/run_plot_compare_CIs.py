@@ -450,3 +450,21 @@ for exper in experiments:
     ax.set_xlabel(var)
     # ax.legend(loc="best")
     ax.set_title("Enantiomer")
+
+    #----------
+    # rho em
+    y = 1.
+    var = "rho"
+    ax = axes[2, 0]
+
+    rho_ln = filter_outliers(tr_val_em_ln["rho"])
+    rho_ft = filter_outliers(tr_val_em_ft["rho"])
+
+    ci_ln = conf_interv(rho_ln)
+    ci_ft = conf_interv(rho_ft)
+
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var)
+    # ax.legend(loc="best")
+    ax.set_title("Enantiomer")
