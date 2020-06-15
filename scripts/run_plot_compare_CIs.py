@@ -215,25 +215,25 @@ for exper in experiments:
     y1 = 1.
     y2 = 1.
     var1 = "$\Delta G_1$ (kcal/mol)"
-    var2 = "$\Delta G_2$ (kcal/mol)"
+    var2 = "$\Delta \Delta G$ (kcal/mol)"
 
     dg1_ln = tr_val_em_ln["DeltaG1"]
     dg1_ft = tr_val_em_ft["DeltaG1"]
 
-    dg2_ln = dg1_ln + tr_val_em_ln["DeltaDeltaG"]
-    dg2_ft = dg1_ft + tr_val_em_ft["DeltaDeltaG"]
+    ddg_ln = tr_val_em_ln["DeltaDeltaG"]
+    ddg_ft = tr_val_em_ft["DeltaDeltaG"]
 
     dg1_ln = filter_outliers(dg1_ln)
     dg1_ft = filter_outliers(dg1_ft)
 
-    dg2_ln = filter_outliers(dg2_ln)
-    dg2_ft = filter_outliers(dg2_ft)
+    ddg_ln = filter_outliers(ddg_ln)
+    ddg_ft = filter_outliers(ddg_ft)
 
     ci_1_ln = conf_interv(dg1_ln)
     ci_1_ft = conf_interv(dg1_ft)
 
-    ci_2_ln = conf_interv(dg2_ln)
-    ci_2_ft = conf_interv(dg2_ft)
+    ci_2_ln = conf_interv(ddg_ln)
+    ci_2_ft = conf_interv(ddg_ft)
 
     ax = axes[1, 0]
     ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
