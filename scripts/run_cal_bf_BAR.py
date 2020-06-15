@@ -18,11 +18,11 @@ from _bayes_factor import bayes_factor_v1, bayes_factor_v2
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--two_component_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_met_2")
+                    default="/home/tnguye46/bayesian_itc_racemic/07.twocomponent_mcmc/pymc3_nuts_2")
 parser.add_argument("--racemic_mixture_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_met_2")
+                    default="/home/tnguye46/bayesian_itc_racemic/08.racemicmixture_mcmc/pymc3_nuts_2")
 parser.add_argument("--enantiomer_mcmc_dir", type=str,
-                    default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_met_2")
+                    default="/home/tnguye46/bayesian_itc_racemic/09.enantiomer_mcmc/pymc3_nuts_2")
 
 parser.add_argument("--two_component_model_dir", type=str, default=None)
 parser.add_argument("--racemic_mixture_model_dir", type=str, default=None)
