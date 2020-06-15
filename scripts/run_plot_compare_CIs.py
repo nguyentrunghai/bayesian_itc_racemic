@@ -349,58 +349,52 @@ for exper in experiments:
     sns.set(font_scale=font_scale)
 
     # Ls 2c
-    y1 = 1.
-    y2 = 1.
-    var1 = "$[L]_s$ (mM)"
-    var2 = "$[L]_s$ (mM)"
+    y = 1.
+    var = "$[L]_s$ (mM)"
     ax = axes[0, 0]
 
     ls_ln = filter_outliers(tr_val_2c_ln["Ls"])
     ls_ft = filter_outliers(tr_val_2c_ft["Ls"])
 
     ci_ln = conf_interv(ls_ln)
-    ci_ft = conf_interv(ls_ln)
+    ci_ft = conf_interv(ls_ft)
 
-    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
     ax.set_ylim(ylim)
-    ax.set_xlabel(var1)
+    ax.set_xlabel(var)
     # ax.legend(loc="best")
     ax.set_title("Two-Component")
 
     # Ls rm
-    y1 = 1.
-    y2 = 1.
-    var1 = "$[L]_s$ (mM)"
-    var2 = "$[L]_s$ (mM)"
+    y = 1.
+    var = "$[L]_s$ (mM)"
     ax = axes[0, 1]
 
     ls_ln = filter_outliers(tr_val_rm_ln["Ls"])
     ls_ft = filter_outliers(tr_val_rm_ft["Ls"])
 
     ci_ln = conf_interv(ls_ln)
-    ci_ft = conf_interv(ls_ln)
+    ci_ft = conf_interv(ls_ft)
 
-    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
     ax.set_ylim(ylim)
-    ax.set_xlabel(var1)
+    ax.set_xlabel(var)
     # ax.legend(loc="best")
     ax.set_title("Racemic Mixture")
 
     # Ls em
-    y1 = 1.
-    y2 = 1.
-    var1 = "$[L]_s$ (mM)"
-    var2 = "$[L]_s$ (mM)"
+    y = 1.
+    var = "$[L]_s$ (mM)"
     ax = axes[0, 2]
 
     ls_ln = filter_outliers(tr_val_em_ln["Ls"])
     ls_ft = filter_outliers(tr_val_em_ft["Ls"])
 
     ci_ln = conf_interv(ls_ln)
-    ci_ft = conf_interv(ls_ln)
+    ci_ft = conf_interv(ls_ft)
 
-    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
     ax.set_ylim(ylim)
-    ax.set_xlabel(var1)
+    ax.set_xlabel(var)
     # ax.legend(loc="best")
     ax.set_title("Enantiomer")
