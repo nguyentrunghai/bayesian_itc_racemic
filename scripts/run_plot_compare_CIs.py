@@ -468,4 +468,7 @@ for exper in experiments:
     ax.set_xlabel(var)
     # ax.legend(loc="best")
     ax.set_title("Enantiomer")
-    
+
+    out = exper + "Ls_P0_rho.pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
