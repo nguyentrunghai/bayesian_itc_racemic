@@ -342,3 +342,65 @@ for exper in experiments:
     out = exper + "_DeltaH.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
+
+    # plot concentration --------------------------------
+    fig, axes = plt.subplots(nrows=3, ncols=3, sharey=True, figsize=(9, 7.4))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
+
+    # Ls 2c
+    y1 = 1.
+    y2 = 1.
+    var1 = "$[L]_s$ (mM)"
+    var2 = "$[L]_s$ (mM)"
+    ax = axes[0, 0]
+
+    ls_ln = filter_outliers(tr_val_2c_ln["Ls"])
+    ls_ft = filter_outliers(tr_val_2c_ft["Ls"])
+
+    ci_ln = conf_interv(ls_ln)
+    ci_ft = conf_interv(ls_ln)
+
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var1)
+    # ax.legend(loc="best")
+    ax.set_title("Two-Component")
+
+    # Ls rm
+    y1 = 1.
+    y2 = 1.
+    var1 = "$[L]_s$ (mM)"
+    var2 = "$[L]_s$ (mM)"
+    ax = axes[0, 1]
+
+    ls_ln = filter_outliers(tr_val_rm_ln["Ls"])
+    ls_ft = filter_outliers(tr_val_rm_ft["Ls"])
+
+    ci_ln = conf_interv(ls_ln)
+    ci_ft = conf_interv(ls_ln)
+
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var1)
+    # ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    # Ls em
+    y1 = 1.
+    y2 = 1.
+    var1 = "$[L]_s$ (mM)"
+    var2 = "$[L]_s$ (mM)"
+    ax = axes[0, 2]
+
+    ls_ln = filter_outliers(tr_val_em_ln["Ls"])
+    ls_ft = filter_outliers(tr_val_em_ft["Ls"])
+
+    ci_ln = conf_interv(ls_ln)
+    ci_ft = conf_interv(ls_ln)
+
+    ax = plot_pair(ci_1_ln, ci_1_ft, y1, "r", var1, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var1)
+    # ax.legend(loc="best")
+    ax.set_title("Enantiomer")
