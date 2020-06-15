@@ -398,3 +398,55 @@ for exper in experiments:
     ax.set_xlabel(var)
     # ax.legend(loc="best")
     ax.set_title("Enantiomer")
+
+    #----------
+    # P0 2c
+    y = 1.
+    var = "$[R]_0$ (mM)"
+    ax = axes[1, 0]
+
+    p0_ln = filter_outliers(tr_val_2c_ln["P0"])
+    p0_ft = filter_outliers(tr_val_2c_ft["P0"])
+
+    ci_ln = conf_interv(p0_ln)
+    ci_ft = conf_interv(p0_ft)
+
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var)
+    # ax.legend(loc="best")
+    ax.set_title("Two-Component")
+
+    # P0 rm
+    y = 1.
+    var = "$[R]_0$ (mM)"
+    ax = axes[1, 1]
+
+    p0_ln = filter_outliers(tr_val_rm_ln["P0"])
+    p0_ft = filter_outliers(tr_val_rm_ft["P0"])
+
+    ci_ln = conf_interv(p0_ln)
+    ci_ft = conf_interv(p0_ft)
+
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var)
+    # ax.legend(loc="best")
+    ax.set_title("Racemic Mixture")
+
+    # P0 em
+    y = 1.
+    var = "$[R]_0$ (mM)"
+    ax = axes[1, 2]
+
+    p0_ln = filter_outliers(tr_val_em_ln["P0"])
+    p0_ft = filter_outliers(tr_val_em_ft["P0"])
+
+    ci_ln = conf_interv(p0_ln)
+    ci_ft = conf_interv(p0_ft)
+
+    ax = plot_pair(ci_ln, ci_ft, y, "r", var, ax)
+    ax.set_ylim(ylim)
+    ax.set_xlabel(var)
+    # ax.legend(loc="best")
+    ax.set_title("Enantiomer")
