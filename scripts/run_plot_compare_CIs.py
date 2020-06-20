@@ -182,8 +182,8 @@ for exper in experiments:
     dg1_ln = tr_val_rm_ln["DeltaG1"]
     dg1_ft = tr_val_rm_ft["DeltaG1"]
 
-    dg2_ln = dg1_ln + tr_val_rm_ln["DeltaGDeltaG"]
-    dg2_ft = dg1_ft + tr_val_rm_ft["DeltaGDeltaG"]
+    dg2_ln = dg1_ln + tr_val_rm_ln["DeltaDeltaG"]
+    dg2_ft = dg1_ft + tr_val_rm_ft["DeltaDeltaG"]
 
     dg1_ln = filter_outliers(dg1_ln)
     dg1_ft = filter_outliers(dg1_ft)
