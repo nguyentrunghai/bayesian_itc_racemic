@@ -42,3 +42,40 @@ print("experiments", experiments)
 
 prior_dirs = args.prior_dirs.split()
 print("prior_dirs", prior_dirs)
+
+
+def value_from_trace(trace):
+    free_vars = [name for name in trace.varnames if not name.endswith("__")]
+    tr_val = {name: trace.get_values(name) for name in free_vars}
+    return tr_val
+
+
+def value_from_traces(traces):
+    trace_value_list = [value_from_trace(t) for t in traces]
+    keys = trace_value_list[0].keys()
+    trace_values = {}
+    for key in keys:
+        trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
+    return trace_values
+
+
+def conf_interv(x, conf_level=95.):
+    alpha = 100 - conf_level
+    lower = np.percentile(x, alpha/2)
+    upper = np.percentile(x, 100 - (alpha/2))
+    return lower, upper
+
+
+def filter_outliers(x, thres=99.):
+    lower, upper = conf_interv(x, conf_level=thres)
+    keep = (x > lower) & (x < upper)
+    return x[keep]
+
+
+def plot_conf_interv(ci, y, label, linestyle, color, ax):
+    lower, upper = ci
+    ax.plot([lower, upper], [y, y], color=color, linestyle=linestyle, marker="|", label=label)
+    return ax
+
+
+
