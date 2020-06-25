@@ -128,7 +128,7 @@ for exper in experiments:
 
         traces_em.append(value_from_traces(trace))
 
-    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(9, 4.8))
+    fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(11.4, 7.2))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
 
@@ -141,7 +141,8 @@ for exper in experiments:
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta G (kcal/mol)$")
     ax.set_ylabel("Two-Component")
-    ax.yticks([])
+    ax.set_yticks([])
+    ax.set_yticklabels([])
 
     # plot 2c, DH
     ax = axes[0, 1]
@@ -151,7 +152,8 @@ for exper in experiments:
     ylim = [ys[0] - 1, ys[-1] + 1]
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta H (kcal/mol)$")
-    ax.yticks([])
+    ax.set_yticks([])
+    ax.set_yticklabels([])
 
     out = exper + ".pdf"
     fig.tight_layout()
