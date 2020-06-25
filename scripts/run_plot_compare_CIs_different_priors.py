@@ -96,35 +96,62 @@ for exper in experiments:
     traces_2c = []
     for prior_dir in prior_dirs:
 
-        dirs = glob.glob(os.path.join(
-            args.two_component_dir, prior_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
+        dirs = glob.glob(os.path.join( args.two_component_dir, prior_dir, args.repeat_prefix + "*",
+                                       exper, args.trace_pickle))
         dirs = [os.path.dirname(p) for p in dirs]
         print("Loading traces from", dirs)
         trace = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
 
-        traces_2c.append(trace)
+        traces_2c.append(value_from_traces(trace))
 
     # load rm
     traces_rm = []
     for prior_dir in prior_dirs:
 
-        dirs = glob.glob(os.path.join(
-            args.racemic_mixture_dir, prior_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
+        dirs = glob.glob(os.path.join(args.racemic_mixture_dir, prior_dir, args.repeat_prefix + "*",
+                                      exper, args.trace_pickle))
         dirs = [os.path.dirname(p) for p in dirs]
         print("Loading traces from", dirs)
         trace = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
 
-        traces_rm.append(trace)
+        traces_rm.append(value_from_traces(trace))
 
     # load em
     traces_em = []
     for prior_dir in prior_dirs:
 
-        dirs = glob.glob(os.path.join(
-            args.enantiomer_dir, prior_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
+        dirs = glob.glob(os.path.join(args.enantiomer_dir, prior_dir, args.repeat_prefix + "*",
+                                      exper, args.trace_pickle))
         dirs = [os.path.dirname(p) for p in dirs]
         print("Loading traces from", dirs)
         trace = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
 
-        traces_em.append(trace)
+        traces_em.append(value_from_traces(trace))
+
+    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(9, 4.8))
+    plt.subplots_adjust(wspace=0.02)
+    sns.set(font_scale=font_scale)
+
+    # plot 2c, DG
+    ax = axes[0, 0]
+    cis = [filter_outliers(trace_2c["DeltaG"]) for trace_2c in traces_2c]
+    ys = list(range(1, len(cis)+1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0]-1, y[-1]+1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta G (kcal/mol)$")
+    ax.set_title("Two-Component")
+
+    # plot 2c, DH
+    ax = axes[0, 1]
+    cis = [filter_outliers(trace_2c["DeltaH"]) for trace_2c in traces_2c]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, y[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta H (kcal/mol)$")
+
+    out = exper + ".pdf"
+    fig.tight_layout()
+    fig.savefig(out, dpi=300)
 
