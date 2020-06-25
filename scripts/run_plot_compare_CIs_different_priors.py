@@ -140,7 +140,8 @@ for exper in experiments:
     ylim = [ys[0]-1, ys[-1]+1]
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta G (kcal/mol)$")
-    ax.set_title("Two-Component")
+    ax.set_ylabel("Two-Component")
+    ax.yticks([])
 
     # plot 2c, DH
     ax = axes[0, 1]
@@ -150,6 +151,7 @@ for exper in experiments:
     ylim = [ys[0] - 1, ys[-1] + 1]
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta H (kcal/mol)$")
+    ax.yticks([])
 
     out = exper + ".pdf"
     fig.tight_layout()
