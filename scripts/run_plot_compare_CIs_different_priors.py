@@ -131,29 +131,66 @@ for exper in experiments:
     fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(11.4, 7.2))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
+    for ax in axes.flatten():
+        ax.set_yticks([])
+        ax.set_yticklabels([])
 
     # plot 2c, DG
     ax = axes[0, 0]
-    cis = [conf_interv(trace_2c["DeltaG"]) for trace_2c in traces_2c]
+    cis = [conf_interv(tr["DeltaG"]) for tr in traces_2c]
     ys = list(range(1, len(cis)+1))
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
     ylim = [ys[0]-1, ys[-1]+1]
     ax.set_ylim(ylim)
-    ax.set_xlabel("$\Delta G (kcal/mol)$")
+    ax.set_xlabel("$\Delta G$ (kcal/mol)")
     ax.set_ylabel("Two-Component")
-    ax.set_yticks([])
-    ax.set_yticklabels([])
 
     # plot 2c, DH
     ax = axes[0, 1]
-    cis = [conf_interv(trace_2c["DeltaH"]) for trace_2c in traces_2c]
+    cis = [conf_interv(tr["DeltaH"]) for tr in traces_2c]
     ys = list(range(1, len(cis) + 1))
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
     ylim = [ys[0] - 1, ys[-1] + 1]
     ax.set_ylim(ylim)
-    ax.set_xlabel("$\Delta H (kcal/mol)$")
-    ax.set_yticks([])
-    ax.set_yticklabels([])
+    ax.set_xlabel("$\Delta H$ (kcal/mol)")
+
+    #----------------------------------
+    # plot rm, DG1
+    ax = axes[1, 0]
+    cis = [conf_interv(tr["DeltaG1"]) for tr in traces_rm]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta G_1$ (kcal/mol)")
+    ax.set_ylabel("Racemic Mixture")
+
+    # plot rm, DG2
+    ax = axes[1, 1]
+    cis = [conf_interv(tr["DeltaG1"] + tr["DeltaDeltaG"]) for tr in traces_rm]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta G_2$ (kcal/mol)")
+
+    # plot rm, DH1
+    ax = axes[1, 2]
+    cis = [conf_interv(tr["DeltaH1"]) for tr in traces_rm]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta H_1$ (kcal/mol)")
+
+    # plot rm, DH2
+    ax = axes[1, 3]
+    cis = [conf_interv(tr["DeltaH2"]) for tr in traces_rm]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta H_1$ (kcal/mol)")
 
     out = exper + ".pdf"
     fig.tight_layout()
