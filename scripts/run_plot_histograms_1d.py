@@ -194,6 +194,7 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
+
     ci_str = "[%0.3f, %0.3f]" % cis[0]
     print(exper + ", 2C, DeltaG: " + ci_str)
 
@@ -210,6 +211,11 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
+    ci1_str = "[%0.3f, %0.3f]" % cis[0]
+    ci2_str = "[%0.3f, %0.3f]" % cis[1]
+    print(exper + ", RM, DeltaG1: " + ci1_str)
+    print(exper + ", RM, DeltaG2: " + ci2_str)
+
     # em
     ax = axes[2]
     xs = [tr_val_em["DeltaG1"], tr_val_em["DeltaG1"] + tr_val_em["DeltaDeltaG"]]
@@ -223,12 +229,17 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
+    ci1_str = "[%0.3f, %0.3f]" % cis[0]
+    ci2_str = "[%0.3f, %0.3f]" % cis[1]
+    print(exper + ", EM, DeltaG1: " + ci1_str)
+    print(exper + ", EM, DeltaG2: " + ci2_str)
+
     out = exper + "_DeltaG.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
 
 
-    # plot DeltaG ----------------------------------------------
+    # plot DeltaH ----------------------------------------------
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
