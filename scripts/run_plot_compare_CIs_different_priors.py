@@ -192,6 +192,45 @@ for exper in experiments:
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta H_1$ (kcal/mol)")
 
+
+    # ----------------------------------
+    # plot em, DG1
+    ax = axes[2, 0]
+    cis = [conf_interv(tr["DeltaG1"]) for tr in traces_em]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta G_1$ (kcal/mol)")
+    ax.set_ylabel("Enantiomer")
+
+    # plot em, DG2
+    ax = axes[2, 1]
+    cis = [conf_interv(tr["DeltaG1"] + tr["DeltaDeltaG"]) for tr in traces_em]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta G_2$ (kcal/mol)")
+
+    # plot em, DH1
+    ax = axes[2, 2]
+    cis = [conf_interv(tr["DeltaH1"]) for tr in traces_em]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta H_1$ (kcal/mol)")
+
+    # plot em, DH2
+    ax = axes[2, 3]
+    cis = [conf_interv(tr["DeltaH2"]) for tr in traces_em]
+    ys = list(range(1, len(cis) + 1))
+    plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
+    ylim = [ys[0] - 1, ys[-1] + 1]
+    ax.set_ylim(ylim)
+    ax.set_xlabel("$\Delta H_1$ (kcal/mol)")
+
     out = exper + ".pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
