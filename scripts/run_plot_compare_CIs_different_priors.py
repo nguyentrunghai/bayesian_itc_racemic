@@ -132,11 +132,6 @@ for exper in experiments:
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
 
-    label_chars = "abcdef"
-    yticklabels = ["(%s)" % label_chars[i] for i in range(len(prior_dirs))]
-    for ax in axes.flatten():
-        ax.set_yticklabels([yticklabels])
-
     # plot 2c, DG
     ax = axes[0, 0]
     cis = [conf_interv(tr["DeltaG"]) for tr in traces_2c]
@@ -232,6 +227,15 @@ for exper in experiments:
     ylim = [ys[0] - 1, ys[-1] + 1]
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta H_2$ (kcal/mol)")
+
+    label_chars = "abcdef"
+
+    yticks = list(range(ys[-1] + 2))
+    yticklabels = [""] + ["(%s)" % label_chars[i] for i in range(len(prior_dirs))] + [""]
+    
+    for ax in axes.flatten():
+        ax.set_yticks(yticks)
+        ax.set_yticklabels(yticklabels)
 
     out = exper + ".pdf"
     fig.tight_layout()
