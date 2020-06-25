@@ -131,9 +131,11 @@ for exper in experiments:
     fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(11.4, 7.2))
     plt.subplots_adjust(wspace=0.02)
     sns.set(font_scale=font_scale)
+
+    label_chars = "abcdef"
+    yticklabels = ["(%s)" % label_chars[i] for i in range(len(prior_dirs))]
     for ax in axes.flatten():
-        ax.set_yticks([])
-        ax.set_yticklabels([])
+        ax.set_yticklabels([yticklabels])
 
     # plot 2c, DG
     ax = axes[0, 0]
