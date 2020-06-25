@@ -173,7 +173,7 @@ for exper in experiments:
     #map_em = find_MAP_traces(model_em, traces_em)
     #print("map_em", map_em)
 
-
+    print("\nConfidence intervals")
     # plot DeltaG ----------------------------------------------
     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
@@ -194,6 +194,8 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
+    ci_str = "[%0.3f, %0.3f]" % cis[0]
+    print(exper + ", 2C, DeltaG: " + ci_str)
 
     # rm
     ax = axes[1]
