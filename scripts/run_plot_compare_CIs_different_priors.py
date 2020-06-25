@@ -78,4 +78,15 @@ def plot_conf_interv(ci, y, label, linestyle, color, ax):
     return ax
 
 
+def plot_conf_intervs(cis, ys, label, linestyle, color, ax):
+    for i, (ci, y) in enumerate(zip(cis, ys)):
+        if i == 0:
+            label = label
+        else:
+            label = None
+
+        plot_conf_interv(ci, y, label, linestyle, color, ax)
+    return ax
+
+
 
