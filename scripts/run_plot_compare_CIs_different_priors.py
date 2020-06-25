@@ -92,9 +92,9 @@ def plot_conf_intervs(cis, ys, label, linestyle, color, ax):
 for exper in experiments:
     print("\n\n", exper)
 
+    # load 2c
     traces_2c = []
     for prior_dir in prior_dirs:
-        print(prior_dir)
 
         dirs = glob.glob(os.path.join(
             args.two_component_dir, prior_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
@@ -104,4 +104,15 @@ for exper in experiments:
 
         traces_2c.append(trace)
 
-        
+    # load rm
+    traces_rm = []
+    for prior_dir in prior_dirs:
+
+        dirs = glob.glob(os.path.join(
+            args.racemic_mixture_dir, prior_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
+        dirs = [os.path.dirname(p) for p in dirs]
+        print("Loading traces from", dirs)
+        trace = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
+
+        traces_rm.append(trace)
+
