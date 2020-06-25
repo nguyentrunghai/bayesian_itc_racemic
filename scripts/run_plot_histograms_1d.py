@@ -196,7 +196,7 @@ for exper in experiments:
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
 
-    ci_str = "[%0.3f, %0.3f]" % cis[0]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
     print(exper + ", 2C, DeltaG: " + ci_str)
 
     # rm
@@ -212,8 +212,8 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
-    ci1_str = "[%0.3f, %0.3f]" % cis[0]
-    ci2_str = "[%0.3f, %0.3f]" % cis[1]
+    ci1_str = "[%0.2f, %0.2f]" % cis[0]
+    ci2_str = "[%0.2f, %0.2f]" % cis[1]
     print(exper + ", RM, DeltaG1: " + ci1_str)
     print(exper + ", RM, DeltaG2: " + ci2_str)
 
@@ -230,8 +230,8 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
-    ci1_str = "[%0.3f, %0.3f]" % cis[0]
-    ci2_str = "[%0.3f, %0.3f]" % cis[1]
+    ci1_str = "[%0.2f, %0.2f]" % cis[0]
+    ci2_str = "[%0.2f, %0.2f]" % cis[1]
     print(exper + ", EM, DeltaG1: " + ci1_str)
     print(exper + ", EM, DeltaG2: " + ci2_str)
     print("")
@@ -262,7 +262,7 @@ for exper in experiments:
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
 
-    ci_str = "[%0.3f, %0.3f]" % cis[0]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
     print(exper + ", 2C, DeltaH: " + ci_str)
 
     # rm
@@ -278,8 +278,8 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
-    ci1_str = "[%0.3f, %0.3f]" % cis[0]
-    ci2_str = "[%0.3f, %0.3f]" % cis[1]
+    ci1_str = "[%0.2f, %0.2f]" % cis[0]
+    ci2_str = "[%0.2f, %0.2f]" % cis[1]
     print(exper + ", RM, DeltaH1: " + ci1_str)
     print(exper + ", RM, DeltaH2: " + ci2_str)
 
@@ -296,8 +296,8 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
 
-    ci1_str = "[%0.3f, %0.3f]" % cis[0]
-    ci2_str = "[%0.3f, %0.3f]" % cis[1]
+    ci1_str = "[%0.2f, %0.2f]" % cis[0]
+    ci2_str = "[%0.2f, %0.2f]" % cis[1]
     print(exper + ", EM, DeltaH1: " + ci1_str)
     print(exper + ", EM, DeltaH2: " + ci2_str)
     print("-------------------------------------")
