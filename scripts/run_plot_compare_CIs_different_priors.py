@@ -134,7 +134,7 @@ for exper in experiments:
 
     # plot 2c, DG
     ax = axes[0, 0]
-    cis = [filter_outliers(trace_2c["DeltaG"]) for trace_2c in traces_2c]
+    cis = [conf_interv(trace_2c["DeltaG"]) for trace_2c in traces_2c]
     ys = list(range(1, len(cis)+1))
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
     ylim = [ys[0]-1, y[-1]+1]
@@ -144,7 +144,7 @@ for exper in experiments:
 
     # plot 2c, DH
     ax = axes[0, 1]
-    cis = [filter_outliers(trace_2c["DeltaH"]) for trace_2c in traces_2c]
+    cis = [conf_interv(trace_2c["DeltaH"]) for trace_2c in traces_2c]
     ys = list(range(1, len(cis) + 1))
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
     ylim = [ys[0] - 1, y[-1] + 1]
