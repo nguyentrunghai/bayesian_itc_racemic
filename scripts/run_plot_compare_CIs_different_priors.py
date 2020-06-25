@@ -137,7 +137,7 @@ for exper in experiments:
     cis = [conf_interv(trace_2c["DeltaG"]) for trace_2c in traces_2c]
     ys = list(range(1, len(cis)+1))
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
-    ylim = [ys[0]-1, y[-1]+1]
+    ylim = [ys[0]-1, ys[-1]+1]
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta G (kcal/mol)$")
     ax.set_title("Two-Component")
@@ -147,7 +147,7 @@ for exper in experiments:
     cis = [conf_interv(trace_2c["DeltaH"]) for trace_2c in traces_2c]
     ys = list(range(1, len(cis) + 1))
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
-    ylim = [ys[0] - 1, y[-1] + 1]
+    ylim = [ys[0] - 1, ys[-1] + 1]
     ax.set_ylim(ylim)
     ax.set_xlabel("$\Delta H (kcal/mol)$")
 
