@@ -187,7 +187,7 @@ for exper in experiments:
     plot_conf_intervs(cis, ys, label=None, linestyle="-", color="k", ax=ax)
     ylim = [ys[0] - 1, ys[-1] + 1]
     ax.set_ylim(ylim)
-    ax.set_xlabel("$\Delta H_1$ (kcal/mol)")
+    ax.set_xlabel("$\Delta H_2$ (kcal/mol)")
 
 
     # ----------------------------------
