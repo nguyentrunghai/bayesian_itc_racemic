@@ -138,7 +138,7 @@ bf_df = bf_df[cols]
 out = "bayes_factors_ln.csv"
 bf_df.to_csv(out, float_format="%0.5f", index=False)
 
-bf_df[cols] = bf_df[cols] * np.log10(np.e)
+bf_df[num_cols] = bf_df[num_cols] * np.log10(np.e)
 out = "bayes_factors_log10.csv"
 bf_df.to_csv(out, float_format="%0.5f", index=False)
 print("Done")
