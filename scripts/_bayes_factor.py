@@ -394,9 +394,9 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
     else:
         pass
 
-    vars_ini = sample_ini.keys()
+    vars_ini = [var for var in sample_ini.keys() if var != "logp"]
     print("vars_ini:", vars_ini)
-    vars_fin = sample_fin.keys()
+    vars_fin = [var for var in sample_fin.keys() if var != "logp"]
     print("vars_fin:", vars_fin)
 
     if ini_fin_name == "2c_rm":
@@ -541,12 +541,12 @@ def bayes_factor_v2(model_ini, sample_ini, model_fin, sample_fin,
     ini_fin_name = model_ini_name + "_" + model_fin_name
     assert ini_fin_name in ["2c_rm", "2c_em", "rm_em"], "Unknown ini_fin_name: " + ini_fin_name
 
-    vars_ini = sample_ini.keys()
+    vars_ini = [var for var in sample_ini.keys() if var != "logp"]
     print("vars_ini:", vars_ini)
     nsamples_ini = len(sample_ini[vars_ini[0]])
     print("nsamples_ini = %d" % nsamples_ini)
 
-    vars_fin = sample_fin.keys()
+    vars_fin = [var for var in sample_fin.keys() if var != "logp"]
     print("vars_fin:", vars_fin)
     nsamples_fin = len(sample_fin[vars_fin[0]])
     print("nsamples_fin = %d" % nsamples_fin)
