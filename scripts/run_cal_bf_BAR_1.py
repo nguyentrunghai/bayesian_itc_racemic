@@ -118,7 +118,6 @@ for exper in experiments:
     if args.bootstrap is not None:
         bf_rm_over_2c, err_rm_over_2c = result_rm_over_2c
         bf_em_over_2c, err_em_over_2c = result_em_over_2c
-        bf_em_over_rm, err_em_over_rm = result_em_over_rm
     else:
         bf_rm_over_2c = result_rm_over_2c
         err_rm_over_2c = None
@@ -126,20 +125,15 @@ for exper in experiments:
         bf_em_over_2c = result_em_over_2c
         err_em_over_2c = None
 
-        bf_em_over_rm = result_em_over_rm
-        err_em_over_rm = None
-
     res_dic = {"Experiment": exper,
                "bf_rm_over_2c": bf_rm_over_2c, "err_rm_over_2c": err_rm_over_2c,
-               "bf_em_over_2c": bf_em_over_2c, "err_em_over_2c": err_em_over_2c,
-               "bf_em_over_rm": bf_em_over_rm, "err_em_over_rm": err_em_over_rm}
+               "bf_em_over_2c": bf_em_over_2c, "err_em_over_2c": err_em_over_2c}
     bf_df.append(res_dic)
 
     print("------------------------------")
 
 bf_df = pd.DataFrame(bf_df)
-cols = ["Experiment", "bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c",
-        "bf_em_over_rm", "err_em_over_rm"]
+cols = ["Experiment", "bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c"]
 bf_df = bf_df[cols]
 bf_df.to_csv(args.csv_out, index=False)
 
