@@ -84,7 +84,16 @@ for exper in experiments:
     pm_model = pickle.load(open(model_file))
     trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
 
-    sample = get_values_from_traces(pm_model, trace_list)
-
+    samples = get_values_from_traces(pm_model, trace_list)
     del trace_list
 
+    logp = log_posterior_trace(pm_model, samples)
+
+    samples["logp"] = logp
+
+    out_file = exper + ".pickle"
+    print("Saving " + out_file)
+    with open(out_file, "wb") as handle:
+        pickle.dump(samples, handle)
+
+print("DONE")
