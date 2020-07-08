@@ -9,7 +9,8 @@ import os
 import glob
 import pickle
 
-from _bayes_factor import get_values_from_traces
+import numpy as np
+
 from _bayes_factor import log_posterior_trace
 
 parser = argparse.ArgumentParser()
@@ -35,7 +36,7 @@ def is_path_excluded(path, exclude_kws):
     return False
 
 
-def get_values_org_var_from_trace(model, trace, thin=1, burn=0):
+def get_values_from_trace(model, trace, thin=1, burn=0):
     """
     :param model: pymc3 model
     :param trace: pymc3 trace object
@@ -43,7 +44,7 @@ def get_values_org_var_from_trace(model, trace, thin=1, burn=0):
     :param burn: int, number of steps to exclude
     :return: dict: varname --> ndarray
     """
-    varnames = [name for name in model.named_vars.keys() if not name.endswith("__")]
+    varnames = [var.name for var in model.unobserved_RVs]
 
     if isinstance(trace, dict):
         trace_values = {var: trace[var][burn::thin] for var in varnames}
@@ -53,8 +54,8 @@ def get_values_org_var_from_trace(model, trace, thin=1, burn=0):
     return trace_values
 
 
-def get_values_org_var_from_traces(model, traces, thin=1, burn=0):
-    trace_value_list = [get_values_org_var_from_trace(model, trace, thin=thin, burn=burn) for trace in traces]
+def get_values_from_traces(model, traces, thin=1, burn=0):
+    trace_value_list = [get_values_from_trace(model, trace, thin=thin, burn=burn) for trace in traces]
     keys = trace_value_list[0].keys()
     trace_values = {}
     for key in keys:
@@ -82,6 +83,8 @@ for exper in experiments:
 
     pm_model = pickle.load(open(model_file))
     trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
-    sample_free_vars = get_values_from_traces(pm_model, trace_list)
+
+    sample = get_values_from_traces(pm_model, trace_list)
+
     del trace_list
 
