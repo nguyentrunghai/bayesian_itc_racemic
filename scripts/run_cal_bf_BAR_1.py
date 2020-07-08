@@ -7,13 +7,11 @@ from __future__ import print_function
 
 import argparse
 import os
-import glob
 import pickle
 
 import numpy as np
 import pandas as pd
 
-from _bayes_factor import get_values_from_traces
 from _bayes_factor import bayes_factor_v1, bayes_factor_v2
 
 parser = argparse.ArgumentParser()
@@ -77,53 +75,27 @@ bf_df = []
 for exper in experiments:
     print("\n\nCalculating Bayes Factors for " + exper)
 
-    dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
-    dirs_2c = [os.path.dirname(p) for p in dirs_2c]
-    dirs_2c = [p for p in dirs_2c if not is_path_excluded(p, exclude_repeats)]
-    print("dirs_2c:", dirs_2c)
-
-    dirs_rm = glob.glob(os.path.join(args.racemic_mixture_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
-    dirs_rm = [os.path.dirname(p) for p in dirs_rm]
-    dirs_rm = [p for p in dirs_rm if not is_path_excluded(p, exclude_repeats)]
-    print("dirs_rm:", dirs_rm)
-
-    dirs_em = glob.glob(os.path.join(args.enantiomer_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
-    dirs_em = [os.path.dirname(p) for p in dirs_em]
-    dirs_em = [p for p in dirs_em if not is_path_excluded(p, exclude_repeats)]
-    print("dirs_em:", dirs_em)
-
-    # load data for 2cbm
-    if args.two_component_model_dir is None:
-        model_2c_file = os.path.join(dirs_2c[0], args.model_pickle)
-    else:
-        model_2c_file = os.path.join(args.two_component_model_dir, exper, args.model_pickle)
-    print("Loading model: " + model_2c_file)
+    trace_file_2c = os.path.join(args.two_component_mcmc_dir, args.collected_trace_dir, exper+".pickle")
+    print("Loading " + trace_file_2c)
+    sample_2c = pickle.load(open(trace_file_2c))
+    model_2c_file = os.path.join(args.two_component_mcmc_dir, args.model_dir, exper, args.model_pickle)
+    print("Loading " + model_2c_file )
     model_2c = pickle.load(open(model_2c_file))
-    trace_list_2c = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_2c]
-    sample_2c = get_values_from_traces(model_2c, trace_list_2c, thin=args.thin, burn=args.burn)
-    del trace_list_2c
 
-    # load data for rmbm
-    if args.racemic_mixture_model_dir is None:
-        model_rm_file = os.path.join(dirs_rm[0], args.model_pickle)
-    else:
-        model_rm_file = os.path.join(args.racemic_mixture_model_dir, exper, args.model_pickle)
-    print("Loading model: " + model_rm_file)
+    trace_file_rm = os.path.join(args.racemic_mixture_mcmc_dir, args.collected_trace_dir, exper + ".pickle")
+    print("Loading " + trace_file_rm)
+    sample_rm = pickle.load(open(trace_file_rm))
+    model_rm_file = os.path.join(args.racemic_mixture_mcmc_dir, args.model_dir, exper, args.model_pickle)
+    print("Loading " + model_rm_file)
     model_rm = pickle.load(open(model_rm_file))
-    trace_list_rm = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_rm]
-    sample_rm = get_values_from_traces(model_rm, trace_list_rm, thin=args.thin, burn=args.burn)
-    del trace_list_rm
 
-    # load data for embm
-    if args.enantiomer_model_dir is None:
-        model_em_file = os.path.join(dirs_em[0], args.model_pickle)
-    else:
-        model_em_file = os.path.join(args.enantiomer_model_dir, exper, args.model_pickle)
-    print("Loading model: " + model_em_file)
+    trace_file_em = os.path.join(args.enantiomer_mcmc_dir, args.collected_trace_dir, exper + ".pickle")
+    print("Loading " + trace_file_em)
+    sample_em = pickle.load(open(trace_file_em))
+    model_em_file = os.path.join(args.enantiomer_mcmc_dir, args.model_dir, exper, args.model_pickle)
+    print("Loading " + model_em_file)
     model_em = pickle.load(open(model_em_file))
-    trace_list_em = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs_em]
-    sample_em = get_values_from_traces(model_em, trace_list_em, thin=args.thin, burn=args.burn)
-    del trace_list_em
+
 
     print("\nRM over 2C")
     result_rm_over_2c = bayes_factor(model_2c, enlarge_sample(sample_2c, enlarge=args.aug_sample_enlarge),
@@ -138,15 +110,6 @@ for exper in experiments:
     result_em_over_2c = bayes_factor(model_2c, enlarge_sample(sample_2c, enlarge=args.aug_sample_enlarge),
                                      model_em, sample_em,
                                      model_ini_name="2c", model_fin_name="em",
-                                     aug_with=args.aug_with,
-                                     sigma_robust=args.sigma_robust,
-                                     n_components=args.n_components, covariance_type=args.covariance_type,
-                                     bootstrap=args.bootstrap)
-
-    print("\nEM over RM")
-    result_em_over_rm = bayes_factor(model_rm, enlarge_sample(sample_rm, enlarge=args.aug_sample_enlarge),
-                                     model_em, sample_em,
-                                     model_ini_name="rm", model_fin_name="em",
                                      aug_with=args.aug_with,
                                      sigma_robust=args.sigma_robust,
                                      n_components=args.n_components, covariance_type=args.covariance_type,
