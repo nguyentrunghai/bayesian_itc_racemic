@@ -243,6 +243,10 @@ class GaussMix(object):
 
 
 def log_posterior_trace(model, trace_values):
+    if "logp" in trace_values:
+        print("_bayes_factor.log_posterior_trace: Use precomputed logp in trace_values")
+        return trace_values["logp"]
+
     model_vars = [var.name for var in model.vars]
     trace_vars = trace_values.keys()
 
