@@ -47,8 +47,11 @@ parser.add_argument("--aug_sample_enlarge", type=int, default=1)
 parser.add_argument("--sigma_robust", action="store_true", default=False)
 parser.add_argument("--bootstrap", type=int, default=None)
 
+parser.add_argument("--random_state", type=int, default=4273)
+
 args = parser.parse_args()
 
+np.random.seed(args.random_state)
 
 def enlarge_sample(sample, enlarge=1):
     sample_new = sample.copy()
