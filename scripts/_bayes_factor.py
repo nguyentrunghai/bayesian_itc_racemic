@@ -243,16 +243,18 @@ class GaussMix(object):
 
 
 def log_posterior_trace(model, trace_values):
-    model_vars = set([var.name for var in model.vars])
-    trace_vars = set(trace_values.keys())
-    if model_vars != trace_vars:
-        print("model_vars:", model_vars)
-        print("trace_vars:", trace_vars)
-        raise ValueError("model_vars and trace_vars are not the same set")
+    model_vars = [var.name for var in model.vars]
+    trace_vars = trace_values.keys()
 
-    trace_values = dict_to_list(trace_values)
+    trace_v = {}
+    for var in model_vars:
+        if var not in trace_vars:
+            raise KeyError(var + " is not in trace")
+        trace_v[var] = trace_values[var]
+
+    trace_v = dict_to_list(trace_v)
     get_logp = np.vectorize(model.logp)
-    logp = get_logp(trace_values)
+    logp = get_logp(trace_v)
     return logp
 
 
