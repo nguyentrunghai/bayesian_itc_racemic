@@ -50,4 +50,11 @@ for exper in experiments:
     dirs = [p for p in dirs if not is_path_excluded(p, exclude_repeats)]
     print("dirs:", dirs)
 
-    
+    model_file = os.path.join(dirs[0], args.model_pickle)
+    print("Loading model: " + model_file)
+
+    model = pickle.load(open(model_file))
+    trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
+    sample = get_values_from_traces(model, trace_list)
+    del trace_list
+
