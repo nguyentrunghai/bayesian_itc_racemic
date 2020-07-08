@@ -25,5 +25,29 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
-
 args = parser.parse_args()
+
+
+def is_path_excluded(path, exclude_kws):
+    for kw in exclude_kws:
+        if kw in path:
+            return True
+    return False
+
+
+experiments = args.experiments.split()
+print("experiments:", experiments)
+
+exclude_repeats = args.exclude_repeats.split()
+exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
+print("exclude_repeats:", exclude_repeats)
+
+for exper in experiments:
+    print("\n\nProcessing " + exper)
+
+    dirs = glob.glob(os.path.join(args.mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
+    dirs = [os.path.dirname(p) for p in dirs]
+    dirs = [p for p in dirs if not is_path_excluded(p, exclude_repeats)]
+    print("dirs:", dirs)
+
+    
