@@ -35,6 +35,24 @@ def is_path_excluded(path, exclude_kws):
     return False
 
 
+def get_values_org_var_from_trace(model, trace, thin=1, burn=0):
+    """
+    :param model: pymc3 model
+    :param trace: pymc3 trace object
+    :param thin: int
+    :param burn: int, number of steps to exclude
+    :return: dict: varname --> ndarray
+    """
+    varnames = [name for name in model.named_vars.keys() if not name.endswith("__")]
+
+    if isinstance(trace, dict):
+        trace_values = {var: trace[var][burn::thin] for var in varnames}
+        return trace_values
+
+    trace_values = {var: trace.get_values(var, thin=thin, burn=burn) for var in varnames}
+    return trace_values
+
+
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
@@ -55,6 +73,6 @@ for exper in experiments:
 
     model = pickle.load(open(model_file))
     trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
-    sample = get_values_from_traces(model, trace_list)
+    sample_free_vars = get_values_from_traces(model, trace_list)
     del trace_list
 
