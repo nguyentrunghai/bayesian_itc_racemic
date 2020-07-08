@@ -53,6 +53,15 @@ def get_values_org_var_from_trace(model, trace, thin=1, burn=0):
     return trace_values
 
 
+def get_values_org_var_from_traces(model, traces, thin=1, burn=0):
+    trace_value_list = [get_values_org_var_from_trace(model, trace, thin=thin, burn=burn) for trace in traces]
+    keys = trace_value_list[0].keys()
+    trace_values = {}
+    for key in keys:
+        trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
+    return trace_values
+
+
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
@@ -71,8 +80,8 @@ for exper in experiments:
     model_file = os.path.join(dirs[0], args.model_pickle)
     print("Loading model: " + model_file)
 
-    model = pickle.load(open(model_file))
+    pm_model = pickle.load(open(model_file))
     trace_list = [pickle.load(open(os.path.join(d, args.trace_pickle))) for d in dirs]
-    sample_free_vars = get_values_from_traces(model, trace_list)
+    sample_free_vars = get_values_from_traces(pm_model, trace_list)
     del trace_list
 
