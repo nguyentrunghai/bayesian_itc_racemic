@@ -44,9 +44,6 @@ parser.add_argument("--covariance_type", type=str, default="full")
 
 parser.add_argument("--aug_sample_enlarge", type=int, default=1)
 
-parser.add_argument("--burn", type=int, default=0)
-parser.add_argument("--thin", type=int, default=1)
-
 parser.add_argument("--sigma_robust", action="store_true", default=False)
 parser.add_argument("--bootstrap", type=int, default=None)
 
