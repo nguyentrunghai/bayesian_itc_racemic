@@ -50,7 +50,6 @@ parser.add_argument("--thin", type=int, default=1)
 parser.add_argument("--sigma_robust", action="store_true", default=False)
 parser.add_argument("--bootstrap", type=int, default=None)
 
-parser.add_argument("--csv_out", type=str, default="bayes_factors.csv")
 args = parser.parse_args()
 
 
@@ -133,8 +132,13 @@ for exper in experiments:
     print("------------------------------")
 
 bf_df = pd.DataFrame(bf_df)
-cols = ["Experiment", "bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c"]
+num_cols = ["bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c"]
+cols = ["Experiment"] + num_cols
 bf_df = bf_df[cols]
-bf_df.to_csv(args.csv_out, index=False)
+out = "bayes_factors_ln.csv"
+bf_df.to_csv(out, float_format="%0.5f", index=False)
 
+bf_df[cols] = bf_df[cols] * np.log10(np.e)
+out = "bayes_factors_log10.csv"
+bf_df.to_csv(out, float_format="%0.5f", index=False)
 print("Done")
