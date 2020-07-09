@@ -71,7 +71,7 @@ elif args.estimator_version == 2:
 else:
     raise ValueError("Unknown version: %d" % args.estimator_version)
 
-# TODO Remove after testing.
+# TODO: Remove after testing.
 logp_mod_rm = {exper: 0. for exper in experiments}
 logp_mod_rm["Fokkens_1_a"] = 0.
 
@@ -103,6 +103,9 @@ for exper in experiments:
     print("Loading " + model_em_file)
     model_em = pickle.load(open(model_em_file))
 
+    # TODO: Remove after testing.
+    sample_rm["logp"] = sample_rm["logp"] + logp_mod_rm[exper]
+    sample_em["logp"] = sample_em["logp"] + logp_mod_em[exper]
 
     print("\nRM over 2C")
     result_rm_over_2c = bayes_factor(model_2c, enlarge_sample(sample_2c, enlarge=args.aug_sample_enlarge),
