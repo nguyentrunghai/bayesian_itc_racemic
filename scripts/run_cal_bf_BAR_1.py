@@ -51,7 +51,6 @@ parser.add_argument("--random_state", type=int, default=4273)
 
 args = parser.parse_args()
 
-np.random.seed(args.random_state)
 
 def enlarge_sample(sample, enlarge=1):
     sample_new = sample.copy()
@@ -59,6 +58,8 @@ def enlarge_sample(sample, enlarge=1):
         sample_new[k] = np.repeat(sample_new[k], enlarge)
     return sample_new
 
+
+np.random.seed(args.random_state)
 
 experiments = args.experiments.split()
 print("experiments:", experiments)
@@ -69,6 +70,13 @@ elif args.estimator_version == 2:
     bayes_factor = bayes_factor_v2
 else:
     raise ValueError("Unknown version: %d" % args.estimator_version)
+
+# TODO Remove after testing.
+logp_mod_rm = {exper: 0. for exper in experiments}
+logp_mod_rm["Fokkens_1_a"] = 0.
+
+logp_mod_em = {exper: 0. for exper in experiments}
+logp_mod_em["Fokkens_1_a"] = 0.
 
 bf_df = []
 for exper in experiments:
