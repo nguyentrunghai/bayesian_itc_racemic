@@ -10,6 +10,7 @@ import glob
 import pickle
 
 import numpy as np
+import pandas as pd
 
 from _bayes_factor import log_posterior_trace
 
@@ -28,6 +29,8 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 
 parser.add_argument("--burn", type=int, default=0)
 parser.add_argument("--thin", type=int, default=1)
+
+parser.add_argument("--logp_shift_file", type=str, default=None)
 
 args = parser.parse_args()
 
@@ -64,6 +67,13 @@ def get_values_from_traces(model, traces, thin=1, burn=0):
     for key in keys:
         trace_values[key] = np.concatenate([tr_val[key] for tr_val in trace_value_list])
     return trace_values
+
+
+def load_logp_shift(csv_file):
+    df = pd.read_csv(csv_file)
+    df = df.set_index("experiment")
+    ser = df["val"]
+    return ser
 
 
 experiments = args.experiments.split()
