@@ -83,6 +83,13 @@ exclude_repeats = args.exclude_repeats.split()
 exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
 
+if args.logp_shift_file is None:
+    logp_shift = {exper: 0 for exper in experiments}
+    logp_shift = pd.Series(logp_shift)
+else:
+    logp_shift = load_logp_shift(args.logp_shift_file)
+print("logp_shift")
+
 for exper in experiments:
     print("\n\nProcessing " + exper)
 
@@ -101,7 +108,7 @@ for exper in experiments:
     del trace_list
 
     logp = log_posterior_trace(pm_model, samples)
-
+    logp = logp + logp_shift[exper]
     samples["logp"] = logp
 
     out_file = exper + ".pickle"
