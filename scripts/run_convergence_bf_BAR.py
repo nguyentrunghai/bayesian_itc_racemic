@@ -56,32 +56,46 @@ def take_rnd_sample(sample, proportion):
     keys = sample.keys()
     total_n_samples = len(sample[keys[0]])
     n_samples = int(proportion * total_n_samples)
-    n_samples = np.min(n_samples, total_n_samples)
+    n_samples = np.min([n_samples, total_n_samples])
 
     rnd_idx = np.random.choice(total_n_samples, size=n_samples, replace=True)
-    sample_rnd = {sample[key][rnd_idx] for key in keys}
-    
+    sample_rnd = {key: sample[key][rnd_idx] for key in keys}
+
     return sample_rnd
 
+
 def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
-                     sample_proportion, repeats,
+                     estimator_version, sample_proportion, repeats,
                      model_ini_name="2c", model_fin_name="rm",
                      aug_with="Normal", sigma_robust=False,
                      n_components=1, covariance_type="ful"):
 
+    if estimator_version == 1:
+        bayes_factor = bayes_factor_v1
+    elif estimator_version == 2:
+        bayes_factor = bayes_factor_v2
+    else:
+        raise ValueError("Unknown version: %d" % estimator_version)
+
+    bfs = []
+    for _ in range(repeats):
+        sample_ini_rnd = take_rnd_sample(sample_ini, sample_proportion)
+        sample_fin_rnd = take_rnd_sample(sample_fin, sample_proportion)
+
+        bf = bayes_factor(model_ini, sample_ini_rnd,
+                          model_fin, sample_fin_rnd,
+                          model_ini_name=model_ini_name, model_fin_name=model_fin_name,
+                          aug_with=aug_with, sigma_robust=sigma_robust,
+                          n_components=n_components, covariance_type=covariance_type, bootstrap=None)
+        bfs.appedn(bf)
+
+    return np.mean(bfs), np.std(bfs)
 
 
 np.random.seed(args.random_state)
 
 experiments = args.experiments.split()
 print("experiments:", experiments)
-
-if args.estimator_version == 1:
-    bayes_factor = bayes_factor_v1
-elif args.estimator_version == 2:
-    bayes_factor = bayes_factor_v2
-else:
-    raise ValueError("Unknown version: %d" % args.estimator_version)
 
 sample_proportions = [float(s) for s in args.sample_proportions.split()]
 
