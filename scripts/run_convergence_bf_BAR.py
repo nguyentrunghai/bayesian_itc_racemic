@@ -61,7 +61,7 @@ def take_rnd_sample(sample, proportion):
     rnd_idx = np.random.choice(total_n_samples, size=n_samples, replace=True)
     sample_rnd = {key: sample[key][rnd_idx] for key in keys}
 
-    return sample_rnd
+    return n_samples, sample_rnd
 
 
 def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
@@ -79,8 +79,8 @@ def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
 
     bfs = []
     for _ in range(repeats):
-        sample_ini_rnd = take_rnd_sample(sample_ini, sample_proportion)
-        sample_fin_rnd = take_rnd_sample(sample_fin, sample_proportion)
+        nsamples_ini, sample_ini_rnd = take_rnd_sample(sample_ini, sample_proportion)
+        nsamples_fin, sample_fin_rnd = take_rnd_sample(sample_fin, sample_proportion)
 
         bf = bayes_factor(model_ini, sample_ini_rnd,
                           model_fin, sample_fin_rnd,
@@ -89,7 +89,7 @@ def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
                           n_components=n_components, covariance_type=covariance_type, bootstrap=None)
         bfs.appedn(bf)
 
-    return np.mean(bfs), np.std(bfs)
+    return nsamples_ini, nsamples_fin, np.mean(bfs), np.std(bfs)
 
 
 np.random.seed(args.random_state)
