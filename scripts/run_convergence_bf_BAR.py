@@ -49,8 +49,26 @@ parser.add_argument("--random_state", type=int, default=4273)
 parser.add_argument("--sample_proportions", type=str, default="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0")
 parser.add_argument("--repeats", type=int, default=10)
 
-
 args = parser.parse_args()
+
+
+def take_rnd_sample(sample, proportion):
+    keys = sample.keys()
+    total_n_samples = len(sample[keys[0]])
+    n_samples = int(proportion * total_n_samples)
+    n_samples = np.min(n_samples, total_n_samples)
+
+    rnd_idx = np.random.choice(total_n_samples, size=n_samples, replace=True)
+    sample_rnd = {sample[key][rnd_idx] for key in keys}
+    
+    return sample_rnd
+
+def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
+                     sample_proportion, repeats,
+                     model_ini_name="2c", model_fin_name="rm",
+                     aug_with="Normal", sigma_robust=False,
+                     n_components=1, covariance_type="ful"):
+
 
 
 np.random.seed(args.random_state)
