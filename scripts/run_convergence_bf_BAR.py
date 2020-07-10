@@ -78,6 +78,7 @@ def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
         raise ValueError("Unknown version: %d" % estimator_version)
 
     bfs = []
+    nsamples_ini, nsamples_fin = 0, 0
     for _ in range(repeats):
         nsamples_ini, sample_ini_rnd = take_rnd_sample(sample_ini, sample_proportion)
         nsamples_fin, sample_fin_rnd = take_rnd_sample(sample_fin, sample_proportion)
@@ -87,7 +88,7 @@ def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
                           model_ini_name=model_ini_name, model_fin_name=model_fin_name,
                           aug_with=aug_with, sigma_robust=sigma_robust,
                           n_components=n_components, covariance_type=covariance_type, bootstrap=None)
-        bfs.appedn(bf)
+        bfs.append(bf)
 
     return nsamples_ini, nsamples_fin, np.mean(bfs), np.std(bfs)
 
