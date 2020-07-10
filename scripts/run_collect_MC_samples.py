@@ -88,7 +88,7 @@ if args.logp_shift_file is None:
     logp_shift = pd.Series(logp_shift)
 else:
     logp_shift = load_logp_shift(args.logp_shift_file)
-print("logp_shift")
+print("logp_shift", logp_shift)
 
 for exper in experiments:
     print("\n\nProcessing " + exper)
