@@ -85,7 +85,7 @@ for exper in experiments:
         x = sample[var]
         nsamples = len(x)
         out_file_handle = open(exper + "_" + var + ".dat", "w")
-        out_file_handle.write("#proportion   nsamples" + qs_str + "\n")
+        out_file_handle.write("proportion   nsamples" + qs_str + "\n")
 
         for samp_pro in sample_proportions:
             nsamp_pro = int(nsamples * samp_pro)
