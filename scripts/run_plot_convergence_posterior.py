@@ -42,6 +42,7 @@ ylabels = {}
 ylabels["DeltaH"] = "$\Delta H$"
 ylabels["DeltaH1"] = "$\Delta H_1$"
 ylabels["DeltaH2"] = "$\Delta H_2$"
+ylabels["DeltaG"] = "$\Delta G$"
 ylabels["DeltaG1"] = "$\Delta G_1$"
 ylabels["DeltaDeltaG"] = "$\Delta \Delta G$"
 ylabels["P0"] = "$[R]_0$"
