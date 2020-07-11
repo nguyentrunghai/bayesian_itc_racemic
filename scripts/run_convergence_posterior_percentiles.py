@@ -46,9 +46,9 @@ def percentiles(x, q, nsamples, repeats):
 
 def print_percentiles(p_mean, p_err):
     if isinstance(p_mean, float) and isinstance(p_err, float):
-        return "%10.5f%10.5f" % (p_mean, p_err)
+        return "%12.5f%12.5f" % (p_mean, p_err)
     else:
-        p_str = "".join(["%10.5f%10.5f" % (p_m, p_e) for p_m, p_e in zip(p_mean, p_err)])
+        p_str = "".join(["%12.5f%12.5f" % (p_m, p_e) for p_m, p_e in zip(p_mean, p_err)])
         return p_str
 
 
@@ -58,7 +58,7 @@ experiments = args.experiments.split()
 print("experiments:", experiments)
 
 qs = [float(s) for s in args.percentiles.split()]
-qs_str = "".join(["%10.2f" % q for q in qs])
+qs_str = "".join(["%10.1f-th error   " % q for q in qs])
 print("qs:", qs_str)
 
 vars = args.vars.split()
