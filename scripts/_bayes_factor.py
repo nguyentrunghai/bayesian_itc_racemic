@@ -288,15 +288,18 @@ def pot_ener_uniform_aug(sample, model, sample_aug, lower_upper):
     return u
 
 
-def bootstrap_BAR(w_F, w_R, repeats):
+def bootstrap_BAR(w_F, w_R, repeats, sample_proportion):
     """
     :param w_F: ndarray
     :param w_R: ndarray
     :param repeats: int
     :return: std, float
     """
-    n_F = len(w_F)
-    n_R = len(w_R)
+    assert 0 <= sample_proportion <= 1, "sample_proportion out of range"
+
+    n_F = int(len(w_F) * sample_proportion)
+    n_R = int(len(w_R) * sample_proportion)
+
     delta_Fs = []
     for _ in range(repeats):
         w_F_rand = np.random.choice(w_F, size=n_F, replace=True)
@@ -309,7 +312,10 @@ def bootstrap_BAR(w_F, w_R, repeats):
     delta_Fs = delta_Fs[~np.isnan(delta_Fs)]
     delta_Fs = delta_Fs[~np.isinf(delta_Fs)]
 
-    return delta_Fs.std()
+    df_mean = delta_Fs.mean()
+    df_std = delta_Fs.std()
+
+    return df_mean, df_std
 
 
 def is_var_starts_with(probe_str, str_to_be_probed):
