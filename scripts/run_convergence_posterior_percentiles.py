@@ -57,7 +57,7 @@ np.random.seed(args.random_state)
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
-qs = [float(s) for s in args.percentiles]
+qs = [float(s) for s in args.percentiles.split()]
 qs_str = "".join(["%10.2f" % q for q in qs])
 print("qs:", qs_str)
 
