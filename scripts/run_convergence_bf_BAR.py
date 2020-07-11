@@ -157,7 +157,7 @@ for exper in experiments:
                                                           covariance_type=args.covariance_type)
         bf = bf * np.log10(np.e)
         fb_err = fb_err * np.log10(np.e)
-        
+
         out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
 
