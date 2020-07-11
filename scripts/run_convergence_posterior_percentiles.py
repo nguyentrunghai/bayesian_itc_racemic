@@ -58,7 +58,7 @@ experiments = args.experiments.split()
 print("experiments:", experiments)
 
 qs = [float(s) for s in args.percentiles.split()]
-qs_str = "".join(["%10.1f-th error   " % q for q in qs])
+qs_str = "".join(["%10.1f-th    error  " % q for q in qs])
 print("qs:", qs_str)
 
 vars = args.vars.split()
