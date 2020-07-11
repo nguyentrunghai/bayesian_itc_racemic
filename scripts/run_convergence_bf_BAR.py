@@ -90,7 +90,10 @@ def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
                           n_components=n_components, covariance_type=covariance_type, bootstrap=None)
         bfs.append(bf)
 
-    return nsamples_ini, nsamples_fin, np.mean(bfs), np.std(bfs)
+    bf_mean = np.mean(bfs)
+    bf_err = np.std(bfs)
+
+    return nsamples_ini, nsamples_fin, bf_mean, bf_err
 
 
 np.random.seed(args.random_state)
@@ -108,7 +111,7 @@ for exper in experiments:
     print("Loading " + trace_file_2c)
     sample_2c = pickle.load(open(trace_file_2c))
     model_2c_file = os.path.join(args.two_component_mcmc_dir, args.model_dir, exper, args.model_pickle)
-    print("Loading " + model_2c_file )
+    print("Loading " + model_2c_file)
     model_2c = pickle.load(open(model_2c_file))
 
     trace_file_rm = os.path.join(args.racemic_mixture_mcmc_dir, args.collected_trace_dir, exper + ".pickle")
@@ -126,48 +129,18 @@ for exper in experiments:
     model_em = pickle.load(open(model_em_file))
 
     print("\nRM over 2C")
-    result_rm_over_2c = bayes_factor(model_2c, sample_2c,
-                                     model_rm, sample_rm,
-                                     model_ini_name="2c", model_fin_name="rm",
-                                     aug_with=args.aug_with,
-                                     sigma_robust=args.sigma_robust,
-                                     n_components=args.n_components, covariance_type=args.covariance_type,
-                                     bootstrap=args.bootstrap)
-
-    print("\nEM over 2C")
-    result_em_over_2c = bayes_factor(model_2c, sample_2c,
-                                     model_em, sample_em,
-                                     model_ini_name="2c", model_fin_name="em",
-                                     aug_with=args.aug_with,
-                                     sigma_robust=args.sigma_robust,
-                                     n_components=args.n_components, covariance_type=args.covariance_type,
-                                     bootstrap=args.bootstrap)
-
-    if args.bootstrap is not None:
-        bf_rm_over_2c, err_rm_over_2c = result_rm_over_2c
-        bf_em_over_2c, err_em_over_2c = result_em_over_2c
-    else:
-        bf_rm_over_2c = result_rm_over_2c
-        err_rm_over_2c = None
-
-        bf_em_over_2c = result_em_over_2c
-        err_em_over_2c = None
-
-    res_dic = {"Experiment": exper,
-               "bf_rm_over_2c": bf_rm_over_2c, "err_rm_over_2c": err_rm_over_2c,
-               "bf_em_over_2c": bf_em_over_2c, "err_em_over_2c": err_em_over_2c}
-    bf_df.append(res_dic)
-
-    print("------------------------------")
-
-bf_df = pd.DataFrame(bf_df)
-num_cols = ["bf_rm_over_2c", "err_rm_over_2c", "bf_em_over_2c", "err_em_over_2c"]
-cols = ["Experiment"] + num_cols
-bf_df = bf_df[cols]
-out = "bayes_factors_ln.csv"
-bf_df.to_csv(out, float_format="%0.5f", index=False)
-
-bf_df[num_cols] = bf_df[num_cols] * np.log10(np.e)
-out = "bayes_factors_log10.csv"
-bf_df.to_csv(out, float_format="%0.5f", index=False)
-print("Done")
+    bf_converg_rm_over_2c = []
+    nsamples_2c = []
+    nsamples_rm = []
+    out_file_handle = open(exper + "_RM_over_2C.dat", "w")
+    out_file_handle.write("# proportion   nsamples_2c    nsamples_rm   bf     bf_err\n")
+    for sample_prop in sample_proportions:
+        nsam_ini, nsam_fin, bf, fb_err = bayes_factor_rnd(model_2c, sample_2c,
+                                                          model_rm, sample_rm,
+                                                          args.estimator_version, sample_prop, args.repeats,
+                                                          model_ini_name="2c", model_fin_name="rm",
+                                                          aug_with=args.aug_with, sigma_robust=args.sigma_robust,
+                                                          n_components=args.n_components,
+                                                          covariance_type=args.covariance_type)
+        out_file_handle.write("%10.5f %10d %10d %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
+    out_file_handle.close()
