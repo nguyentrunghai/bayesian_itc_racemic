@@ -363,7 +363,7 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
                     model_ini_name="2c", model_fin_name="rm",
                     aug_with="Normal", sigma_robust=False,
                     n_components=1, covariance_type="full",
-                    bootstrap=None):
+                    bootstrap=None, sample_proportion=None):
     """
     :param model_ini: pymc3 model
     :param sample_ini: dict: var_name -> ndarray
@@ -379,6 +379,9 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
     :return: bf if bootstrap is None
              (bf, err) if bootstrap is an int
     """
+    if (sample_proportion is not None) and bootstrap is None:
+        raise ValueError("When sample_proportion = %0.5f, bootstrap must not be None" % sample_proportion)
+
     print("Use estimator version 1")
     assert aug_with in ["Normal", "Uniform", "GaussMix"], "Unknown aug_with: " + aug_with
     print("aug_with:", aug_with)
@@ -506,16 +509,21 @@ def bayes_factor_v1(model_ini, sample_ini, model_fin, sample_fin,
         else:
             return 0., 0.
 
-    delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
-    bf = -delta_F
+    if sample_proportion is None:
+        delta_F = pymbar.BAR(w_F, w_R, compute_uncertainty=False, relative_tolerance=1e-12, verbose=True)
+        bf = -delta_F
 
-    if bootstrap is None:
-        print("log10(bf) = %0.5f" % (bf * np.log10(np.e)))
-        return bf
+        if bootstrap is None:
+            print("log10(bf) = %0.5f" % (bf * np.log10(np.e)))
+            return bf
+        else:
+            print("Running %d bootstraps to estimate error." % bootstrap)
+            _, bf_err = bootstrap_BAR(w_F, w_R, bootstrap, sample_proportion=1.)
+            print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
+            return bf, bf_err
+
     else:
-        print("Running %d bootstraps to estimate error." % bootstrap)
-        bf_err = bootstrap_BAR(w_F, w_R, bootstrap)
-        print("log10(bf) = %0.5f +/- %0.5f" % (bf * np.log10(np.e), bf_err * np.log10(np.e)))
+        bf, bf_err = bootstrap_BAR(w_F, w_R, bootstrap, sample_proportion=sample_proportion)
         return bf, bf_err
 
 
