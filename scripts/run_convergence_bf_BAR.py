@@ -162,6 +162,19 @@ for exper in experiments:
     print("\nEM over 2C")
     out_file_handle = open(exper + "_EM_over_2C.dat", "w")
     out_file_handle.write("# proportion   nsamples_2c    nsamples_em   bf     bf_err\n")
-    
+    for sample_prop in sample_proportions:
+        bf, fb_err = bayes_factor(model_2c, sample_2c, model_em, sample_em,
+                                  model_ini_name="2c", model_fin_name="em",
+                                  aug_with=args.aug_with, sigma_robust=args.sigma_robust,
+                                  n_components=args.n_components, covariance_type=args.covariance_type,
+                                  bootstrap=args.repeats, sample_proportion=sample_prop)
+        bf = bf * np.log10(np.e)
+        fb_err = fb_err * np.log10(np.e)
+
+        nsam_ini = nsamples_2c * sample_prop
+        nsam_fin = nsamples_em * sample_prop
+
+        out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
+    out_file_handle.close()
 
 print("DONE")
