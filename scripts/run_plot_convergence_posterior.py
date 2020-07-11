@@ -57,7 +57,7 @@ print("err_cols:", err_cols)
 legends = ["%d-th" % q for q in qs]
 
 colors = ["b", "g", "r", "c", "m"]
-line_styles = ["solid", "dotted", "dashed", "dashdot", "dashdoted"]
+line_styles = ["solid", "dotted", "dashed", "dashdot", "solid"]
 
 for exper in experiments:
     print("\n\nPloting " + exper)
