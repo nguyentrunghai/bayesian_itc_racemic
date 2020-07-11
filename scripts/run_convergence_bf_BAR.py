@@ -50,7 +50,7 @@ parser.add_argument("--repeats", type=int, default=10)
 
 args = parser.parse_args()
 
-
+"""
 def take_rnd_sample(sample, proportion):
     keys = sample.keys()
     total_n_samples = len(sample[keys[0]])
@@ -91,9 +91,15 @@ def bayes_factor_rnd(model_ini, sample_ini, model_fin, sample_fin,
 
     bf_mean = np.mean(bfs)
     bf_err = np.std(bfs)
+    return bf_mean, bf_err
+"""
 
-    return nsamples_ini, nsamples_fin, bf_mean, bf_err
-
+if args.estimator_version == 1:
+    bayes_factor = bayes_factor_v1
+elif args.estimator_version == 2:
+    bayes_factor = bayes_factor_v2
+else:
+    raise ValueError("Unknown version: %d" % args.estimator_version)
 
 np.random.seed(args.random_state)
 
@@ -127,19 +133,28 @@ for exper in experiments:
     print("Loading " + model_em_file)
     model_em = pickle.load(open(model_em_file))
 
+    vars_2c = sample_2c.keys()
+    vars_rm = sample_rm.keys()
+    vars_em = sample_em.keys()
+
+    nsamples_2c = len(sample_2c[vars_2c[0]])
+    nsamples_rm = len(sample_rm[vars_rm[0]])
+    nsamples_em = len(sample_em[vars_em[0]])
+
     print("\nRM over 2C")
     out_file_handle = open(exper + "_RM_over_2C.dat", "w")
     out_file_handle.write("# proportion   nsamples_2c    nsamples_rm   bf     bf_err\n")
     for sample_prop in sample_proportions:
-        nsam_ini, nsam_fin, bf, fb_err = bayes_factor_rnd(model_2c, sample_2c,
-                                                          model_rm, sample_rm,
-                                                          args.estimator_version, sample_prop, args.repeats,
-                                                          model_ini_name="2c", model_fin_name="rm",
-                                                          aug_with=args.aug_with, sigma_robust=args.sigma_robust,
-                                                          n_components=args.n_components,
-                                                          covariance_type=args.covariance_type)
+        bf, fb_err = bayes_factor(model_2c, sample_2c, model_rm, sample_rm,
+                                  model_ini_name="2c", model_fin_name="rm",
+                                  aug_with=args.aug_with, sigma_robust=args.sigma_robust,
+                                  n_components=args.n_components, covariance_type=args.covariance_type,
+                                  bootstrap=args.repeats, sample_proportion=sample_prop)
         bf = bf * np.log10(np.e)
         fb_err = fb_err * np.log10(np.e)
+
+        nsam_ini = nsamples_2c * sample_prop
+        nsam_fin = nsamples_rm * sample_prop
 
         out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
@@ -147,18 +162,6 @@ for exper in experiments:
     print("\nEM over 2C")
     out_file_handle = open(exper + "_EM_over_2C.dat", "w")
     out_file_handle.write("# proportion   nsamples_2c    nsamples_em   bf     bf_err\n")
-    for sample_prop in sample_proportions:
-        nsam_ini, nsam_fin, bf, fb_err = bayes_factor_rnd(model_2c, sample_2c,
-                                                          model_em, sample_em,
-                                                          args.estimator_version, sample_prop, args.repeats,
-                                                          model_ini_name="2c", model_fin_name="em",
-                                                          aug_with=args.aug_with, sigma_robust=args.sigma_robust,
-                                                          n_components=args.n_components,
-                                                          covariance_type=args.covariance_type)
-        bf = bf * np.log10(np.e)
-        fb_err = fb_err * np.log10(np.e)
-
-        out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
-    out_file_handle.close()
+    
 
 print("DONE")
