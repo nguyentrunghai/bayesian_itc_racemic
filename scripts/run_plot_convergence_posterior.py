@@ -47,9 +47,6 @@ ylabels["DeltaDeltaG"] = "$\Delta \Delta G$"
 ylabels["P0"] = "$[R]_0$"
 ylabels["Ls"] = "$[L]_s$"
 
-ylabels = args.ylabels.split(", ")
-assert len(ylabels) == len(vars), "ylables and vars must have the same len"
-
 xlabel = args.xlabel
 
 qs = [float(s) for s in args.percentiles.split()]
