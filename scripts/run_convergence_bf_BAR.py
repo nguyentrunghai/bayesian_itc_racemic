@@ -156,6 +156,7 @@ for exper in experiments:
         nsam_ini = nsamples_2c * sample_prop
         nsam_fin = nsamples_rm * sample_prop
 
+        print("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
         out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
 
@@ -174,6 +175,7 @@ for exper in experiments:
         nsam_ini = nsamples_2c * sample_prop
         nsam_fin = nsamples_em * sample_prop
 
+        print("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
         out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
 
