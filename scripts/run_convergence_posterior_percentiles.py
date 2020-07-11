@@ -42,13 +42,22 @@ def percentiles(x, q, nsamples, repeats):
     return p_mean, p_err
 
 
+def print_percentiles(p_mean, p_err):
+    if isinstance(p_mean, float) and isinstance(p_err, float):
+        return "%10.5f%10.5f" % (p_mean, p_err)
+    else:
+        p_str = "".join(["%10.5f%10.5f" % (p_m, p_e) for p_m, p_e in zip(p_mean, p_err)])
+        return p_str
+
+
 np.random.seed(args.random_state)
 
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
 qs = [float(s) for s in args.percentiles]
-print("qs:", qs)
+qs_str = "".join(["%10.2f" % q for q in qs])
+print("qs:", qs_str)
 
 vars = args.vars.split()
 print("vars:", vars)
@@ -74,7 +83,16 @@ for exper in experiments:
         x = sample[var]
         nsamples = len(x)
         out_file_handle = open(exper + "_" + var + ".dat", "w")
+        out_file_handle.write("#proportion   nsamples" + qs_str + "\n")
 
         for samp_pro in sample_proportions:
             nsamp_pro = int(nsamples * samp_pro)
             p_mean, p_err = percentiles(x, qs, nsamp_pro, args.repeats)
+
+            out_str = "%10.5f%10d" % (samp_pro, nsamp_pro) + print_percentiles(p_mean, p_err) + "\n"
+
+            out_file_handle.write(out_str)
+
+        out_file_handle.close()
+
+print("DONE")
