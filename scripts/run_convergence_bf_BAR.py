@@ -129,9 +129,6 @@ for exper in experiments:
     model_em = pickle.load(open(model_em_file))
 
     print("\nRM over 2C")
-    bf_converg_rm_over_2c = []
-    nsamples_2c = []
-    nsamples_rm = []
     out_file_handle = open(exper + "_RM_over_2C.dat", "w")
     out_file_handle.write("# proportion   nsamples_2c    nsamples_rm   bf     bf_err\n")
     for sample_prop in sample_proportions:
@@ -142,5 +139,21 @@ for exper in experiments:
                                                           aug_with=args.aug_with, sigma_robust=args.sigma_robust,
                                                           n_components=args.n_components,
                                                           covariance_type=args.covariance_type)
-        out_file_handle.write("%10.5f %10d %10d %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
+        out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
+
+    print("\nEM over 2C")
+    out_file_handle = open(exper + "_EM_over_2C.dat", "w")
+    out_file_handle.write("# proportion   nsamples_2c    nsamples_rm   bf     bf_err\n")
+    for sample_prop in sample_proportions:
+        nsam_ini, nsam_fin, bf, fb_err = bayes_factor_rnd(model_2c, sample_2c,
+                                                          model_em, sample_em,
+                                                          args.estimator_version, sample_prop, args.repeats,
+                                                          model_ini_name="2c", model_fin_name="em",
+                                                          aug_with=args.aug_with, sigma_robust=args.sigma_robust,
+                                                          n_components=args.n_components,
+                                                          covariance_type=args.covariance_type)
+        out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
+    out_file_handle.close()
+
+print("DONE")
