@@ -39,14 +39,14 @@ assert len(vars) in [4, 6], "len of vars must be 4 or 6"
 print("vars:", vars)
 
 ylabels = {}
-ylabels["DeltaH"] = "$\Delta H$"
-ylabels["DeltaH1"] = "$\Delta H_1$"
-ylabels["DeltaH2"] = "$\Delta H_2$"
-ylabels["DeltaG"] = "$\Delta G$"
-ylabels["DeltaG1"] = "$\Delta G_1$"
-ylabels["DeltaDeltaG"] = "$\Delta \Delta G$"
-ylabels["P0"] = "$[R]_0$"
-ylabels["Ls"] = "$[L]_s$"
+ylabels["DeltaH"] = "$\Delta H$ (kcal/mol)"
+ylabels["DeltaH1"] = "$\Delta H_1$ (kcal/mol)"
+ylabels["DeltaH2"] = "$\Delta H_2$ (kcal/mol)"
+ylabels["DeltaG"] = "$\Delta G$ (kcal/mol)"
+ylabels["DeltaG1"] = "$\Delta G_1$ (kcal/mol)"
+ylabels["DeltaDeltaG"] = "$\Delta \Delta G$ (kcal/mol)"
+ylabels["P0"] = "$[R]_0$ (mM)"
+ylabels["Ls"] = "$[L]_s$ (mM)"
 
 xlabel = args.xlabel
 
