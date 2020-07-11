@@ -146,7 +146,7 @@ for exper in experiments:
 
     print("\nEM over 2C")
     out_file_handle = open(exper + "_EM_over_2C.dat", "w")
-    out_file_handle.write("# proportion   nsamples_2c    nsamples_rm   bf     bf_err\n")
+    out_file_handle.write("# proportion   nsamples_2c    nsamples_em   bf     bf_err\n")
     for sample_prop in sample_proportions:
         nsam_ini, nsam_fin, bf, fb_err = bayes_factor_rnd(model_2c, sample_2c,
                                                           model_em, sample_em,
