@@ -81,7 +81,7 @@ for exper in experiments:
             y = data[data_col]
             yerr = data[err_col]
 
-            ax.errorbar(x, y, yerrs=yerr, linestyle=line_style, c=color, label=legend)
+            ax.errorbar(x, y, yerr=yerr, linestyle=line_style, c=color, label=legend)
 
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
