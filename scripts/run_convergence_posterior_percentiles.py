@@ -47,8 +47,8 @@ np.random.seed(args.random_state)
 experiments = args.experiments.split()
 print("experiments:", experiments)
 
-percentiles = [float(s) for s in args.percentiles]
-print("percentiles:", percentiles)
+qs = [float(s) for s in args.percentiles]
+print("qs:", qs)
 
 vars = args.vars.split()
 print("vars:", vars)
@@ -77,4 +77,4 @@ for exper in experiments:
 
         for samp_pro in sample_proportions:
             nsamp_pro = int(nsamples * samp_pro)
-            p_mean, p_err = percentiles(x, percentiles, nsamp_pro, args.repeats)
+            p_mean, p_err = percentiles(x, qs, nsamp_pro, args.repeats)
