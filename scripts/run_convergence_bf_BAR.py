@@ -10,7 +10,6 @@ import os
 import pickle
 
 import numpy as np
-import pandas as pd
 
 from _bayes_factor import bayes_factor_v1, bayes_factor_v2
 
@@ -139,6 +138,9 @@ for exper in experiments:
                                                           aug_with=args.aug_with, sigma_robust=args.sigma_robust,
                                                           n_components=args.n_components,
                                                           covariance_type=args.covariance_type)
+        bf = bf * np.log10(np.e)
+        fb_err = fb_err * np.log10(np.e)
+
         out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
 
@@ -153,6 +155,9 @@ for exper in experiments:
                                                           aug_with=args.aug_with, sigma_robust=args.sigma_robust,
                                                           n_components=args.n_components,
                                                           covariance_type=args.covariance_type)
+        bf = bf * np.log10(np.e)
+        fb_err = fb_err * np.log10(np.e)
+        
         out_file_handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % (sample_prop, nsam_ini, nsam_fin, bf, fb_err))
     out_file_handle.close()
 
