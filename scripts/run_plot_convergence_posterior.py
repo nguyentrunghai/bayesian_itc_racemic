@@ -23,7 +23,7 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 parser.add_argument("--percentiles", type=str, default="5 25 50 75 95")
 
 parser.add_argument("--vars", type=str, default="DeltaH DeltaG P0 Ls")
-parser.add_argument("--ylabels", type=str, default="$\Delta H$ $\Delta G$ $[R]_0$ $[L]_s$")
+parser.add_argument("--ylabels", type=str, default="$\Delta H$, $\Delta G$, $[R]_0$, $[L]_s$")
 parser.add_argument("--xlabel", type=str, default="Sample proportion")
 
 parser.add_argument("--font_scale", type=float, default=0.75)
@@ -39,7 +39,7 @@ vars = args.vars.split()
 assert len(vars) in [4, 6], "len of vars must be 4 or 6"
 print("vars:", vars)
 
-ylabels = args.ylabels.split()
+ylabels = args.ylabels.split(", ")
 assert len(ylabels) == len(vars), "ylables and vars must have the same len"
 
 xlabel = args.xlabel
