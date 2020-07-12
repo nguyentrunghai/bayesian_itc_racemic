@@ -58,15 +58,19 @@ print("err_cols:", err_cols)
 legends = ["%d-th" % q for q in qs]
 
 colors = ["b", "g", "r", "c", "m"]
-line_styles = ["solid", "dotted", "dashed", "dashdot", "solid"]
+#line_styles = ["solid", "dotted", "dashed", "dashdot", "solid"]
+line_styles = ["solid" for _ in range(5)]
+markers = ["o", "s", "d", "^", "v"]
 
 for exper in experiments:
     print("\n\nPloting " + exper)
 
     if len(vars) == 4:
-        fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(6.4, 4.8))
+        fig, axes = plt.subplots(ncols=2, nrows=2, figsize=(6.4, 4.4))
+        plt.subplots_adjust(wspace=0., hspace=0.)
     elif len(vars) == 6:
-        fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(9.6, 4.8))
+        fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(6.4, 6.6))
+        plt.subplots_adjust(wspace=0., hspace=0.)
 
     axes = axes.flatten()
 
@@ -83,16 +87,19 @@ for exper in experiments:
             err_col = err_cols[i]
             color = colors[i]
             line_style = line_styles[i]
+            marker = markers[i]
             legend = legends[i]
 
             y = data[data_col]
             yerr = data[err_col]
 
-            ax.errorbar(x, y, yerr=yerr, linestyle=line_style, c=color, label=legend)
+            ax.errorbar(x, y, yerr=yerr, linestyle=line_style, c=color, marker=marker, markersize=10, label=legend)
 
-        ax.set_xlabel(xlabel)
+        #ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
-        ax.legend(loc="best")
+        #ax.legend(loc="best")
+    axes[-1].set_xlabel(xlabel)
+    axes[-2].set_xlabel(xlabel)
 
     out = exper + ".pdf"
     fig.tight_layout()
