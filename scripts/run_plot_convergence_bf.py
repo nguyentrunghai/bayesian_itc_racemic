@@ -5,7 +5,7 @@ To plot convergence lines for Bayes factors
 import argparse
 import os
 
-import nump as np
+import numpy as np
 
 import matplotlib.pyplot as plt
 import seaborn as sns
