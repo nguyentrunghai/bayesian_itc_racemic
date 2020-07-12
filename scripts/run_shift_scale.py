@@ -13,10 +13,9 @@ parser.add_argument("--data_col", type=int, default=-2)
 parser.add_argument("--err_col", type=int, default=-1)
 
 parser.add_argument("--max_min_scale_data", type=float, default=1)
-parser.add_argument("--shift_last_to_data", type=float, default=0)
+parser.add_argument("--target_data", type=float, default=0)
 
-parser.add_argument("--max_min_scale_err", type=float, default=1)
-parser.add_argument("--shift_last_to_err", type=float, default=0)
+parser.add_argument("--target_err", type=float, default=0)
 
 args = parser.parse_args()
 
@@ -37,14 +36,18 @@ def shift_last_to(x, target):
     return x + d
 
 
+def scale_to_last(x, target):
+    s = target / x[-1]
+    return x * s
+
+
 data = np.loadtxt(args.infile)
 header = open(args.infile).readline()
 
 data[:, args.data_col] = scale_min_max(data[:, args.data_col], args.max_min_scale_data)
-data[:, args.data_col] = shift_last_to(data[:, args.data_col], args.shift_last_to_data)
+data[:, args.data_col] = shift_last_to(data[:, args.data_col], args.target_data)
 
-data[:, args.err_col] = scale_min_max(data[:, args.err_col], args.max_min_scale_err)
-data[:, args.err_col] = shift_last_to(data[:, args.err_col], args.shift_last_to_err)
+data[:, args.err_col] = scale_to_last(data[:, args.err_col], args.target_err)
 
 out_file = os.path.basename(args.infile)
 if os.path.exists(out_file):
