@@ -30,7 +30,7 @@ experiments = args.experiments.split()
 print("experiments:", experiments)
 
 bf_names = ["RM_over_2C", "EM_over_2C"]
-ylabels = [r"$\log _{10} [\frac{P(D|RM)}{P(D|2C)}]$", r"$l\og _{10} [\frac{P(D|EM)}{P(D|2C)}]$"]
+ylabels = [r"$\log _{10} [\frac{P(D|RM)}{P(D|2C)}]$", r"$\log _{10} [\frac{P(D|EM)}{P(D|2C)}]$"]
 
 xlabel = args.xlabel
 
