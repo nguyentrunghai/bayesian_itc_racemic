@@ -30,7 +30,7 @@ experiments = args.experiments.split()
 print("experiments:", experiments)
 
 bf_names = ["RM_over_2C", "EM_over_2C"]
-ylabels = [r"$log_{10} [\frac{P(D|RM)}{P(D|2C)}]$", r"$log_{10} [\frac{P(D|EM)}{P(D|2C)}]$"]
+ylabels = [r"$\log _{10} [\frac{P(D|RM)}{P(D|2C)}]$", r"$l\og _{10} [\frac{P(D|EM)}{P(D|2C)}]$"]
 
 xlabel = args.xlabel
 
@@ -49,7 +49,7 @@ for exper in experiments:
         y = data[:, -2]
         yerr = data[:, -1]
 
-        ax.errorbar(x, y, yerr=yerr, linestyle="solid", c="k", marker="o", markersize=5)
+        ax.errorbar(x, y, yerr=yerr, linestyle="solid", c="k", marker="o", markersize=3)
         ax.set_ylabel(ylabel)
         ax.set_xlabel(xlabel)
 
