@@ -53,6 +53,6 @@ if os.path.exists(out_file):
 with open(out_file, "w") as handle:
     handle.write(header)
     for row in data:
-        handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % row)
+        handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % tuple(row))
 
 print("DONE")
