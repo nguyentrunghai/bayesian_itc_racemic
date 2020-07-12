@@ -50,7 +50,7 @@ out_file = os.path.basename(args.infile)
 if os.path.exists(out_file):
     raise ValueError(out_file + " exists.")
 
-with open(out_file) as handle:
+with open(out_file, "w") as handle:
     handle.write(header)
     for row in data:
         handle.write("%10.5f %10d %10d     %10.5f %10.5f\n" % row)
