@@ -66,10 +66,10 @@ for exper in experiments:
     print("\n\nPloting " + exper)
 
     if len(vars) == 4:
-        fig, axes = plt.subplots(ncols=2, nrows=2, figsize=(6.4, 4.4))
+        fig, axes = plt.subplots(ncols=2, nrows=2, sharex=True, figsize=(6.4, 4.4))
         plt.subplots_adjust(wspace=0., hspace=0.)
     elif len(vars) == 6:
-        fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(6.4, 6.6))
+        fig, axes = plt.subplots(ncols=2, nrows=3, sharex=True, figsize=(6.4, 6.6))
         plt.subplots_adjust(wspace=0., hspace=0.)
 
     axes = axes.flatten()
@@ -93,7 +93,7 @@ for exper in experiments:
             y = data[data_col]
             yerr = data[err_col]
 
-            ax.errorbar(x, y, yerr=yerr, linestyle=line_style, c=color, marker=marker, markersize=10, label=legend)
+            ax.errorbar(x, y, yerr=yerr, linestyle=line_style, c=color, marker=marker, markersize=5, label=legend)
 
         #ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
