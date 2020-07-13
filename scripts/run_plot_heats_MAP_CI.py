@@ -38,7 +38,6 @@ def plot_heats(q_actual,
                q_map_2c, lower_2c, upper_2c,
                q_map_rm, lower_rm, upper_rm,
                q_map_em, lower_em, upper_em,
-               font_scale=1,
                xlabel="# injections", ylabel="heat ($\mu$cal)",
                ci_label="90% CI",
                out="out.pdf"):
@@ -47,7 +46,6 @@ def plot_heats(q_actual,
 
     fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=True, figsize=(9, 2.4))
     plt.subplots_adjust(wspace=0.02)
-    sns.set(font_scale=font_scale)
 
     axes[0].scatter(x, q_actual, c="k", marker="+", s=20, label="observed")
     axes[0].plot(x, q_map_2c, c="k", label="MAP")
@@ -98,12 +96,11 @@ for exper in experiments:
     lowers_em, uppers_em = conf_interv(data["qs_em"], conf_level=ci_level)
 
     out = exper + ".pdf"
-
+    sns.set(font_scale=args.font_scale)
     plot_heats(q_actual,
                q_map_2c, lowers_2c, uppers_2c,
                q_map_rm, lowers_rm, uppers_rm,
                q_map_em, lowers_em, uppers_em,
-               font_scale=args.font_scale,
                xlabel=args.xlabel, ylabel=args.ylabel,
                ci_label=ci_label,
                out=out)
