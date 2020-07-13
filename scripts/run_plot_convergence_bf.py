@@ -47,7 +47,7 @@ for exper in experiments:
         data = np.loadtxt(infile)
         x = data[:, 0]
         y = data[:, -2]
-        yerr = data[:, -1]
+        yerr = data[:, -1] / 2.
 
         ax.errorbar(x, y, yerr=yerr, linestyle="solid", c="k", marker="o", markersize=3)
         ax.set_ylabel(ylabel)
