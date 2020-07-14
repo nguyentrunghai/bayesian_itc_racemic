@@ -300,7 +300,7 @@ for exper in experiments:
     ci2_str = "[%0.2f, %0.2f]" % cis[1]
     print(exper + ", EM, DeltaH1: " + ci1_str)
     print(exper + ", EM, DeltaH2: " + ci2_str)
-    print("-------------------------------------")
+    print(" ")
 
     out = exper + "_DeltaH.pdf"
     fig.tight_layout()
@@ -359,6 +359,7 @@ for exper in experiments:
 
     ci_str = "[%0.2f, %0.2f]" % cis[2]
     print(exper + ", EM, Ls2: " + ci_str)
+    print(" ")
 
     out = exper + "_Ls.pdf"
     fig.tight_layout()
@@ -382,6 +383,7 @@ for exper in experiments:
     cis = [conf_interv(x) for x in xs]
     ci_str = "[%0.2f, %0.2f]" % cis[0]
     print(exper + ", EM, rho: " + ci_str)
+    print(" ")
 
     # P0
     ax = axes[1]
@@ -403,6 +405,7 @@ for exper in experiments:
 
     ci_str = "[%0.2f, %0.2f]" % cis[2]
     print(exper + ", EM, P0: " + ci_str)
+    print("----------------------------")
 
     out = exper + "_rho_P0.pdf"
     fig.tight_layout()
