@@ -354,6 +354,12 @@ for exper in experiments:
     ci_str = "[%0.2f, %0.2f]" % cis[0]
     print(exper + ", EM, Ls: " + ci_str)
 
+    ci_str = "[%0.2f, %0.2f]" % cis[1]
+    print(exper + ", EM, Ls1: " + ci_str)
+
+    ci_str = "[%0.2f, %0.2f]" % cis[2]
+    print(exper + ", EM, Ls2: " + ci_str)
+
     out = exper + "_Ls.pdf"
     fig.tight_layout()
     fig.savefig(out, dpi=300)
