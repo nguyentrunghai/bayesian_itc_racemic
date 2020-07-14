@@ -373,6 +373,10 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
 
+    cis = [conf_interv(x) for x in xs]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
+    print(exper + ", EM, rho: " + ci_str)
+
     # P0
     ax = axes[1]
     xlabel = "$[R]_0$ (mM)"
@@ -383,6 +387,16 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+
+    cis = [conf_interv(x) for x in xs]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
+    print(exper + ", 2c, P0: " + ci_str)
+
+    ci_str = "[%0.2f, %0.2f]" % cis[1]
+    print(exper + ", RM, P0: " + ci_str)
+
+    ci_str = "[%0.2f, %0.2f]" % cis[2]
+    print(exper + ", EM, P0: " + ci_str)
 
     out = exper + "_rho_P0.pdf"
     fig.tight_layout()
