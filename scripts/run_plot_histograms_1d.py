@@ -390,7 +390,7 @@ for exper in experiments:
 
     cis = [conf_interv(x) for x in xs]
     ci_str = "[%0.2f, %0.2f]" % cis[0]
-    print(exper + ", 2c, P0: " + ci_str)
+    print(exper + ", 2C, P0: " + ci_str)
 
     ci_str = "[%0.2f, %0.2f]" % cis[1]
     print(exper + ", RM, P0: " + ci_str)
