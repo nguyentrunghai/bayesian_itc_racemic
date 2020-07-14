@@ -324,6 +324,10 @@ for exper in experiments:
     ax.set_ylabel(ylabel)
     ax.set_title("Two-Component")
 
+    cis = [conf_interv(x) for x in xs]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
+    print(exper + ", 2C, Ls: " + ci_str)
+
     # rm
     ax = axes[1]
     xs = [tr_val_rm["Ls"]]
@@ -333,6 +337,10 @@ for exper in experiments:
     ax.set_xlabel(xlabel)
     ax.set_title("Racemic Mixture")
 
+    cis = [conf_interv(x) for x in xs]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
+    print(exper + ", RM, Ls: " + ci_str)
+
     # em
     ax = axes[2]
     xs = [tr_val_em["Ls"], tr_val_em["Ls"] * tr_val_em["rho"], tr_val_em["Ls"] * (1 - tr_val_em["rho"])]
@@ -341,6 +349,10 @@ for exper in experiments:
     plot_kde_hist(xs, labels, colors, ax)
     ax.set_xlabel(xlabel)
     ax.set_title("Enantiomer")
+
+    cis = [conf_interv(x) for x in xs]
+    ci_str = "[%0.2f, %0.2f]" % cis[0]
+    print(exper + ", EM, Ls: " + ci_str)
 
     out = exper + "_Ls.pdf"
     fig.tight_layout()
