@@ -30,8 +30,6 @@ default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Bau
 parser.add_argument("--burn", type=int, default=0)
 parser.add_argument("--thin", type=int, default=1)
 
-parser.add_argument("--logp_shift_file", type=str, default=None)
-
 args = parser.parse_args()
 
 
@@ -83,12 +81,14 @@ exclude_repeats = args.exclude_repeats.split()
 exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
 
+"""
 if args.logp_shift_file is None:
     logp_shift = {exper: 0 for exper in experiments}
     logp_shift = pd.Series(logp_shift)
 else:
     logp_shift = load_logp_shift(args.logp_shift_file)
 print("logp_shift", logp_shift)
+"""
 
 for exper in experiments:
     print("\n\nProcessing " + exper)
@@ -108,7 +108,6 @@ for exper in experiments:
     del trace_list
 
     logp = log_posterior_trace(pm_model, samples)
-    logp = logp + logp_shift[exper]
     samples["logp"] = logp
 
     out_file = exper + ".pickle"
