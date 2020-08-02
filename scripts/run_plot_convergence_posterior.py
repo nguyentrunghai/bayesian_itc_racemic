@@ -95,9 +95,7 @@ for exper in experiments:
 
             ax.errorbar(x, y, yerr=yerr, linestyle=line_style, c=color, marker=marker, markersize=5, label=legend)
 
-        #ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
-        #ax.legend(loc="best")
     axes[-1].set_xlabel(xlabel)
     axes[-2].set_xlabel(xlabel)
 
