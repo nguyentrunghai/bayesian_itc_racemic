@@ -88,7 +88,7 @@ def heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0
         #print("Kd", Kd)
 
         #PLn[n] = (0.5 / V0 * ((P + L + Kd * V0) - ((P + L + Kd * V0) ** 2 - 4 * P * L) ** 0.5))
-        PLn = tt.set_subtensor(PLn[n], (0.5 / V0 * ((P + L + Kd * V0) - ((P + L + Kd * V0) ** 2 - 4 * P * L) ** 0.5)))
+        PLn = tt.set_subtensor(PLn[n], (0.5 / V0 * ((P + L + Kd * V0) - tt.sqrt((P + L + Kd * V0) ** 2 - 4 * P * L))))
 
         # free protein concentration in sample cell after n injections (M)
         #Pn[n] = P / V0 - PLn[n]
@@ -235,14 +235,14 @@ def lognormal_prior(name, stated_value, uncertainty, auto_transform=True):
     if auto_transform:
         print("Automatic transform is on")
         return pymc3.Lognormal(name,
-                               mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
-                               tau=1.0 / np.log(1 + (v / (m ** 2))),
+                               mu=tt.log(m / tt.sqrt(1 + (v / (m ** 2)))),
+                               tau=1.0 / tt.log(1 + (v / (m ** 2))),
                                testval=m)
     else:
         print("Automatic transform is off")
         return pymc3.Lognormal(name,
-                               mu=np.log(m / np.sqrt(1 + (v / (m ** 2)))),
-                               tau=1.0 / np.log(1 + (v / (m ** 2))),
+                               mu=tt.log(m / tt.sqrt(1 + (v / (m ** 2)))),
+                               tau=1.0 / tt.log(1 + (v / (m ** 2))),
                                transform=None,
                                testval=m)
 
@@ -347,13 +347,13 @@ def make_TwoComponentBindingModel(q_actual_cal, exper_info,
 
         q_model_cal = heats_TwoComponentBindingModel(V0, DeltaVn, P0, Ls, DeltaG, DeltaH, DeltaH_0, beta, n_injections)
 
-        sigma_cal = np.exp(log_sigma)
+        sigma_cal = tt.exp(log_sigma)
 
-        q_model_micro_cal = q_model_cal * 10.**6
-        q_actual_micro_cal = q_actual_cal * 10.**6
-        sigma_micro_cal = sigma_cal * 10.**6
+        #q_model_micro_cal = q_model_cal * 10.**6
+        #q_actual_micro_cal = q_actual_cal * 10.**6
+        #sigma_micro_cal = sigma_cal * 10.**6
 
-        q_obs = pymc3.Normal("q_obs", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
+        q_obs = pymc3.Normal("q_obs", mu=q_model_cal, sd=sigma_cal, observed=q_actual_cal)
 
     return model
 
