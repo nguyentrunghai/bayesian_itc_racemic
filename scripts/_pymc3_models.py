@@ -457,13 +457,13 @@ def make_RacemicMixtureBindingModel(q_actual_cal, exper_info,
                                                        DeltaH1, DeltaH2, DeltaH_0, DeltaG1, DeltaDeltaG,
                                                        beta, n_injections)
 
-        sigma_cal = np.exp(log_sigma)
+        sigma_cal = tt.exp(log_sigma)
 
-        q_model_micro_cal = q_model_cal * 10. ** 6
-        q_actual_micro_cal = q_actual_cal * 10. ** 6
-        sigma_micro_cal = sigma_cal * 10. ** 6
+        #q_model_micro_cal = q_model_cal * 10. ** 6
+        #q_actual_micro_cal = q_actual_cal * 10. ** 6
+        #sigma_micro_cal = sigma_cal * 10. ** 6
 
-        q_obs = pymc3.Normal("q_obs", mu=q_model_micro_cal, sd=sigma_micro_cal, observed=q_actual_micro_cal)
+        q_obs = pymc3.Normal("q_obs", mu=q_model_cal, sd=sigma_cal, observed=q_actual_cal)
 
     return model
 
