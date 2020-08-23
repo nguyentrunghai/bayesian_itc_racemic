@@ -107,8 +107,7 @@ def read_axis_lims(filename, label_maps):
     return lims
 
 
-def pairplot_lims(df, model_abb, lims, out, figsize):
-    params = list(df.columns)
+def pairplot_lims(df, model_abb, lims=None, out="out.pdf", figsize=(10, 10)):
 
     plt.figure(figsize=figsize)
 
@@ -119,17 +118,25 @@ def pairplot_lims(df, model_abb, lims, out, figsize):
     g.map_diag(sns.kdeplot, lw=2)
     axes = g.axes
 
-    # set lims
-    for idx, param in enumerate(params):
-        for lim in lims:
-            model_abb_lim = lim[0]
-            param_lim = lim[1]
-            if (model_abb_lim == model_abb) and (param_lim == param):
-                axes[idx, 0].set_xlim([lim[2], lim[3]])
-                axes[0, idx].set_ylim([lim[2], lim[3]])
+    if lims is None:
+        plt.tight_layout()
+        plt.savefig(out, dpi=300)
+        return None
 
-                axes[idx, 0].set_ylim([lim[4], lim[5]])
-                axes[0, idx].set_xlim([lim[4], lim[5]])
+    # set lims
+    params = list(df.columns)
+    param_to_idx = {param: idx for idx, param in enumerate(params)}
+    for lim in lims:
+        model_abb_lim = lim[0]
+        if model_abb_lim == model_abb:
+            param = lim[1]
+            print("set lims for", model_abb_lim, param, lim)
+            idx = param_to_idx[param]
+            axes[idx, 0].set_xlim([lim[2], lim[3]])
+            axes[0, idx].set_ylim([lim[2], lim[3]])
+
+            axes[idx, 0].set_ylim([lim[4], lim[5]])
+            axes[0, idx].set_xlim([lim[4], lim[5]])
 
     plt.tight_layout()
     plt.savefig(out, dpi=300)
@@ -233,41 +240,22 @@ for exper in experiments:
 
     figsize = (20, 20)
 
-    out = exper + "_2C.pdf"
-    print("Plotinng " + out)
     if exper in axis_lims:
         lims = axis_lims[exper]
-        if lims[0] == "2C":
-            print("Set limits", lims)
-            pairplot_lims(tr_val_2c, "2C", lims, out, figsize)
-        else:
-            pairplot(tr_val_2c, out, figsize)
     else:
-        pairplot(tr_val_2c, out, figsize)
+        lims = None
+
+    out = exper + "_2C.pdf"
+    print("Plotinng " + out)
+    pairplot_lims(tr_val_2c, "2C", lims=lims, out=out, figsize=figsize)
 
     out = exper + "_RM.pdf"
     print("Plotinng " + out)
-    if exper in axis_lims:
-        lims = axis_lims[exper]
-        if lims[0] == "RM":
-            print("Set limits", lims)
-            pairplot_lims(tr_val_rm, "RM", lims, out, figsize)
-        else:
-            pairplot(tr_val_rm, out, figsize)
-    else:
-        pairplot(tr_val_rm, out, figsize)
+    pairplot_lims(tr_val_rm, "RM", lims=lims, out=out, figsize=figsize)
 
     out = exper + "_EM.pdf"
     print("Plotinng " + out)
-    if exper in axis_lims:
-        lims = axis_lims[exper]
-        if lims[0] == "EM":
-            print("Set limits", lims)
-            pairplot_lims(tr_val_em, "EM", lims, out, figsize)
-        else:
-            pairplot(tr_val_em, out, figsize)
-    else:
-        pairplot(tr_val_em, out, figsize)
+    pairplot_lims(tr_val_em, "EM", lims=lims, out=out, figsize=figsize)
 
 print("DONE")
 
