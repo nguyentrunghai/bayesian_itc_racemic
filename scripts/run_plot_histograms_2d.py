@@ -150,6 +150,16 @@ exclude_vars = ["DeltaH_0", "log_sigma"]
 sample_frac = args.sample_frac
 print("sample_frac:", sample_frac)
 
+axis_lims_files = glob.glob(os.path.join(args.axis_lims_dir, "*"))
+axis_lims_expers = [os.path.basename(f) for f in axis_lims_files]
+
+axis_lims = {}
+for exper, f in zip(axis_lims_expers, axis_lims_files):
+    lims = read_axis_lims(f)
+    axis_lims[exper] = lims
+
+print("axis_lims", axis_lims)
+
 for exper in experiments:
     print("\n\n", exper)
 
