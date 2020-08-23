@@ -226,6 +226,10 @@ for exper in experiments:
     tr_val_rm = tr_val_rm.rename(LABEL_MAPS, axis="columns")
     tr_val_em = tr_val_em.rename(LABEL_MAPS, axis="columns")
 
+    print("tr_val_2c.columns:", tr_val_2c.columns)
+    print("tr_val_rm.columns:", tr_val_rm.columns)
+    print("tr_val_em.columns:", tr_val_em.columns)
+
     figsize = (20, 20)
 
     out = exper + "_2C.pdf"
@@ -233,6 +237,7 @@ for exper in experiments:
     if exper in axis_lims:
         lims = axis_lims[exper]
         if lims[0] == "2C":
+            print("Set limits", lims)
             pairplot_lims(tr_val_2c, lims, out, figsize)
         else:
             pairplot(tr_val_2c, out, figsize)
@@ -244,6 +249,7 @@ for exper in experiments:
     if exper in axis_lims:
         lims = axis_lims[exper]
         if lims[0] == "RM":
+            print("Set limits", lims)
             pairplot_lims(tr_val_rm, lims, out, figsize)
         else:
             pairplot(tr_val_rm, out, figsize)
@@ -255,6 +261,7 @@ for exper in experiments:
     if exper in axis_lims:
         lims = axis_lims[exper]
         if lims[0] == "EM":
+            print("Set limits", lims)
             pairplot_lims(tr_val_em, lims, out, figsize)
         else:
             pairplot(tr_val_em, out, figsize)
