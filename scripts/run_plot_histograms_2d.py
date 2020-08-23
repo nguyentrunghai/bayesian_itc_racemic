@@ -32,6 +32,8 @@ parser.add_argument("--trace_pickle", type=str, default="trace_obj.pickle")
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
 
+parser.add_argument("--axis_lims_dir", type=str, default="axis_lims")
+
 parser.add_argument("--sample_frac", type=float, default=1.)
 
 parser.add_argument("--font_scale", type=float, default=1.)
