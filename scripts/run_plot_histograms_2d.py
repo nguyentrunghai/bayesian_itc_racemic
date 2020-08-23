@@ -90,7 +90,7 @@ def pairplot(df, out, figsize):
     return None
 
 
-def read_axis_lims(filename):
+def read_axis_lims(filename, label_maps):
     lims = []
     with open(filename) as handle:
         for line in handle:
@@ -101,6 +101,8 @@ def read_axis_lims(filename):
                     words[i] = None
                 else:
                     words[i] = float(words[i])
+
+            words[1] = label_maps[words[1]]
             lims.append(tuple(words))
     return lims
 
