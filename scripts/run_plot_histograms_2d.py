@@ -107,7 +107,7 @@ def read_axis_lims(filename, label_maps):
     return lims
 
 
-def pairplot_lims(df, lims, out, figsize):
+def pairplot_lims(df, model_abb, lims, out, figsize):
     params = list(df.columns)
 
     plt.figure(figsize=figsize)
@@ -122,8 +122,9 @@ def pairplot_lims(df, lims, out, figsize):
     # set lims
     for idx, param in enumerate(params):
         for lim in lims:
+            model_abb_lim = lim[0]
             param_lim = lim[1]
-            if param_lim == param:
+            if (model_abb_lim == model_abb) and (param_lim == param):
                 axes[idx, 0].set_xlim([lim[2], lim[3]])
                 axes[0, idx].set_ylim([lim[2], lim[3]])
 
@@ -238,7 +239,7 @@ for exper in experiments:
         lims = axis_lims[exper]
         if lims[0] == "2C":
             print("Set limits", lims)
-            pairplot_lims(tr_val_2c, lims, out, figsize)
+            pairplot_lims(tr_val_2c, "2C", lims, out, figsize)
         else:
             pairplot(tr_val_2c, out, figsize)
     else:
@@ -250,7 +251,7 @@ for exper in experiments:
         lims = axis_lims[exper]
         if lims[0] == "RM":
             print("Set limits", lims)
-            pairplot_lims(tr_val_rm, lims, out, figsize)
+            pairplot_lims(tr_val_rm, "RM", lims, out, figsize)
         else:
             pairplot(tr_val_rm, out, figsize)
     else:
@@ -262,7 +263,7 @@ for exper in experiments:
         lims = axis_lims[exper]
         if lims[0] == "EM":
             print("Set limits", lims)
-            pairplot_lims(tr_val_em, lims, out, figsize)
+            pairplot_lims(tr_val_em, "EM", lims, out, figsize)
         else:
             pairplot(tr_val_em, out, figsize)
     else:
