@@ -221,6 +221,11 @@ for exper in experiments:
     tr_val_em = tr_val_em.sort_index(axis=1)
     tr_val_em = filter_outliers(tr_val_em)
 
+    # rename columns
+    tr_val_2c = tr_val_2c.rename(LABEL_MAPS, axis="columns")
+    tr_val_rm = tr_val_rm.rename(LABEL_MAPS, axis="columns")
+    tr_val_em = tr_val_em.rename(LABEL_MAPS, axis="columns")
+
     figsize = (20, 20)
     out = exper + "_2C.pdf"
     pairplot(tr_val_2c, out, figsize)
