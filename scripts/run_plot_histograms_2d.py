@@ -127,7 +127,7 @@ def pairplot_lims(df, lims, out, figsize):
                 axes[0, idx].set_xlim([lim[4], lim[5]])
 
     plt.tight_layout()
-    # plt.savefig(out, dpi=300)
+    plt.savefig(out, dpi=300)
     return None
 
 
