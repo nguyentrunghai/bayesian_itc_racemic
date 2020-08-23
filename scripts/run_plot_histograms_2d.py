@@ -103,6 +103,34 @@ def read_axis_lims(filename):
     return lims
 
 
+def pairplot_lims(df, lims, out, figsize):
+    params = list(df.columns)
+
+    plt.figure(figsize=figsize)
+
+    g = sns.PairGrid(df, diag_sharey=False)
+    g.map_upper(sns.kdeplot)
+    # g.map_upper(sns.scatterplot)
+    g.map_lower(sns.kdeplot)
+    g.map_diag(sns.kdeplot, lw=2)
+    axes = g.axes
+
+    # set lims
+    for idx, param in enumerate(params):
+        for lim in lims:
+            param_lim = lim[1]
+            if param_lim == param:
+                axes[idx, 0].set_xlim([lim[2], lim[3]])
+                axes[0, idx].set_ylim([lim[2], lim[3]])
+
+                axes[idx, 0].set_ylim([lim[4], lim[5]])
+                axes[0, idx].set_xlim([lim[4], lim[5]])
+
+    plt.tight_layout()
+    # plt.savefig(out, dpi=300)
+    return None
+
+
 exclude_repeats = args.exclude_repeats.split()
 exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
