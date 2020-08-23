@@ -88,6 +88,21 @@ def pairplot(df, out, figsize):
     return None
 
 
+def read_axis_lims(filename):
+    lims = []
+    with open(filename) as handle:
+        for line in handle:
+            words = line.split()
+            assert len(words) == 6, line + " does not have correct number of entries"
+            for i in range(2, 6):
+                if words[i].lower() == "none":
+                    words[i] = None
+                else:
+                    words[i] = float(words[i])
+            lims.append(tuple(words))
+    return lims
+
+
 exclude_repeats = args.exclude_repeats.split()
 exclude_repeats = [args.repeat_prefix + r for r in exclude_repeats]
 print("exclude_repeats:", exclude_repeats)
