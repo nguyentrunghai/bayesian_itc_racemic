@@ -155,9 +155,22 @@ print("sample_frac:", sample_frac)
 axis_lims_files = glob.glob(os.path.join(args.axis_lims_dir, "*"))
 axis_lims_expers = [os.path.basename(f) for f in axis_lims_files]
 
+LABEL_MAPS = {}
+LABEL_MAPS["DeltaG"] = "$\Delta G$"
+LABEL_MAPS["DeltaH"] = "$\Delta H$"
+LABEL_MAPS["Ls"] = "$[L]_s$"
+LABEL_MAPS["P0"] = "$[R]_0$"
+
+LABEL_MAPS["DeltaDeltaG"] = "$\Delta \Delta G$"
+LABEL_MAPS["DeltaG1"] = "$\Delta G_1$"
+LABEL_MAPS["DeltaH1"] = "$\Delta H_1$"
+LABEL_MAPS["DeltaH2"] = "$\Delta H_2$"
+
+LABEL_MAPS["rho"] = "rho"
+
 axis_lims = {}
 for exper, f in zip(axis_lims_expers, axis_lims_files):
-    lims = read_axis_lims(f)
+    lims = read_axis_lims(f, LABEL_MAPS)
     axis_lims[exper] = lims
 
 print("axis_lims", axis_lims)
