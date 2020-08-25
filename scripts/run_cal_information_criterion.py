@@ -131,7 +131,7 @@ for exper in experiments:
 bics = pd.DataFrame(bics).T
 wbics = pd.DataFrame(wbics).T
 
-bics.to_csv("bic.csv", float_format="%0.5f", index=False)
-wbics.to_csv("wbic.csv", float_format="%0.5f", index=False)
+bics.to_csv("bic.csv", float_format="%0.5f", index=True)
+wbics.to_csv("wbic.csv", float_format="%0.5f", index=True)
 
 print("DONE")
