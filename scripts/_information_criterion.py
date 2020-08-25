@@ -40,3 +40,29 @@ def log_likelihood_trace(model, trace_values):
     get_logp = np.vectorize(obs_q.logp)
     logp = get_logp(trace_v)
     return logp
+
+
+def bic(log_llhs, n_samples, n_params):
+    """
+    bic = -2 \ln p(y | \theta_{MLE}) + \ln(n)k
+    Ref: Andrew Gelman et al., "Bayesian Data Analysis", 3rd Ed., CRC Press, page 169
+    :param log_llhs: array-like of float, log likelihood values
+    :param n_samples: int, number of samples
+    :param n_params: number of parameters
+    :return: float, Bayesian information criterion
+    """
+    return -2 * np.max(log_llhs) + np.log(n_samples) * n_params
+
+
+def bic_boostrap(log_llhs, n_samples, n_params, repeats=1000):
+    bic_val = bic(log_llhs, n_samples, n_params)
+
+    bic_boostrap_vals = []
+    size = len(log_llhs)
+    for _ in range(repeats):
+        rnd_log_llhs = np.random.choice(log_llhs, size=size, replace=True)
+        b = bic(rnd_log_llhs, n_samples, n_params)
+        bic_boostrap_vals.append(b)
+
+    bic_std = np.std(bic_boostrap_vals)
+    return bic_val, bic_std
