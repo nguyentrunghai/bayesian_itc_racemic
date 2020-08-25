@@ -14,7 +14,7 @@ import pandas as pd
 from _information_criterion import get_n_injections, get_n_params
 from _information_criterion import load_model, get_values_from_trace_files
 from _information_criterion import log_likelihood_trace
-from _information_criterion import bic_bootstrap, wbic_bootstrap
+from _information_criterion import bic_bootstrap, wbic_bootstrap, aic_bootstrap
 
 parser = argparse.ArgumentParser()
 
@@ -57,11 +57,13 @@ print("experiments", experiments)
 
 bics = {}
 wbics = {}
+aics = {}
 for exper in experiments:
     print("\n\n", exper)
 
     bics[exper] = {}
     wbics[exper] = {}
+    aics[exper] = {}
 
     dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_2c = [os.path.dirname(p) for p in dirs_2c]
@@ -128,10 +130,25 @@ for exper in experiments:
     wbics[exper]["EM"] = wbic
     wbics[exper]["EM_std"] = wbic_std
 
+    # AIC
+    aic, aic_std = aic_bootstrap(log_llhs_2c, n_params_2c, repeats=args.bootstrap_repeats)
+    aics[exper]["2C"] = aic
+    aics[exper]["2C_std"] = aic_std
+
+    aic, aic_std = aic_bootstrap(log_llhs_rm, n_params_rm, repeats=args.bootstrap_repeats)
+    aics[exper]["RM"] = aic
+    aics[exper]["RM_std"] = aic_std
+
+    aic, aic_std = aic_bootstrap(log_llhs_em, n_params_em, repeats=args.bootstrap_repeats)
+    aics[exper]["EM"] = aic
+    aics[exper]["EM_std"] = aic_std
+
 bics = pd.DataFrame(bics).T
 wbics = pd.DataFrame(wbics).T
+aics = pd.DataFrame(aics).T
 
 bics.to_csv("bic.csv", float_format="%0.5f", index=True)
 wbics.to_csv("wbic.csv", float_format="%0.5f", index=True)
+aics.to_csv("aic.csv", float_format="%0.5f", index=True)
 
 print("DONE")
