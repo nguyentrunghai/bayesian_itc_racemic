@@ -10,8 +10,17 @@ import pickle
 import copy
 import numpy as np
 
+from _data_io_py3 import load_heat_micro_cal
 from _bayes_factor import get_values_from_traces
 from _bayes_factor import dict_to_list
+
+
+def get_n_injections(heat_file):
+    return len(load_heat_micro_cal(heat_file))
+
+
+def get_n_params(model):
+    return len(model.free_RVs)
 
 
 def get_values_from_trace_files(model, trace_pkl_files, thin=1, burn=0):
