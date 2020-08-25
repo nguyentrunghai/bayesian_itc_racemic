@@ -9,13 +9,12 @@ import glob
 import os
 import pickle
 
-import numpy as np
 import pandas as pd
 
 from _information_criterion import get_n_injections, get_n_params
 from _information_criterion import load_model, get_values_from_trace_files
 from _information_criterion import log_likelihood_trace
-from _information_criterion import bic_boostrap, wbic_bootstrap
+from _information_criterion import bic_bootstrap, wbic_bootstrap
 
 parser = argparse.ArgumentParser()
 
@@ -36,6 +35,8 @@ parser.add_argument("--heat_data_dir", type=str, default="/home/tnguye46/bayesia
 
 parser.add_argument("--experiments", type=str,
 default="Fokkens_1_a Fokkens_1_b Fokkens_1_c Fokkens_1_d Fokkens_1_e Baum_57 Baum_59 Baum_60_1 Baum_60_2 Baum_60_3 Baum_60_4")
+
+parser.add_argument("--bootstrap_repeats", type=int, default=1000)
 
 args = parser.parse_args()
 
@@ -101,14 +102,36 @@ for exper in experiments:
     log_llhs_rm = log_likelihood_trace(model_rm, traces_rm)
     log_llhs_em = log_likelihood_trace(model_em, traces_em)
 
-    bic, bic_std = bic_boostrap(log_llhs_2c,  n_injections, n_params_2c)
+    # BIC
+    bic, bic_std = bic_bootstrap(log_llhs_2c,  n_injections, n_params_2c, repeats=args.bootstrap_repeats)
     bics[exper]["2C"] = bic
     bics[exper]["2C_std"] = bic_std
 
-    bic, bic_std = bic_boostrap(log_llhs_rm, n_injections, n_params_rm)
+    bic, bic_std = bic_bootstrap(log_llhs_rm, n_injections, n_params_rm, repeats=args.bootstrap_repeats)
     bics[exper]["RM"] = bic
     bics[exper]["RM_std"] = bic_std
 
-    bic, bic_std = bic_boostrap(log_llhs_em, n_injections, n_params_em)
+    bic, bic_std = bic_bootstrap(log_llhs_em, n_injections, n_params_em, repeats=args.bootstrap_repeats)
     bics[exper]["EM"] = bic
     bics[exper]["EM_std"] = bic_std
+
+    # WBIC
+    wbic, wbic_std = wbic_bootstrap(log_llhs_2c, n_injections, repeats=args.bootstrap_repeats)
+    wbics[exper]["2C"] = wbic
+    wbics[exper]["2C_std"] = wbic_std
+
+    wbic, wbic_std = wbic_bootstrap(log_llhs_rm, n_injections, repeats=args.bootstrap_repeats)
+    wbics[exper]["RM"] = wbic
+    wbics[exper]["RM_std"] = wbic_std
+
+    wbic, wbic_std = wbic_bootstrap(log_llhs_em, n_injections, repeats=args.bootstrap_repeats)
+    wbics[exper]["EM"] = wbic
+    wbics[exper]["EM_std"] = wbic_std
+
+bics = pd.DataFrame(bics)
+wbics = pd.DataFrame(wbics)
+
+bics.to_csv("bic.csv", float_format="%0.5f", index=False)
+wbics.to_csv("wbic.csv", float_format="%0.5f", index=False)
+
+print("DONE")
