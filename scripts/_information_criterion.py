@@ -51,6 +51,31 @@ def log_likelihood_trace(model, trace_values):
     return logp
 
 
+def aic(log_llhs, n_params):
+    """
+    aic = -2 \ln p(y | \theta_{MLE}) + 2k
+    Ref: Andrew Gelman et al., "Bayesian Data Analysis", 3rd Ed., CRC Press, page 169
+    :param log_llhs: array-like of float, log likelihood values
+    :param n_params: number of parameters
+    :return: float, Akaike information criterion
+    """
+    return -2 * np.max(log_llhs) + 2 * n_params
+
+
+def aic_bootstrap(log_llhs, n_params, repeats=1000):
+    aic_val = aic(log_llhs, n_params)
+
+    aic_boostrap_vals = []
+    size = len(log_llhs)
+    for _ in range(repeats):
+        rnd_log_llhs = np.random.choice(log_llhs, size=size, replace=True)
+        a = aic(rnd_log_llhs, n_params)
+        aic_boostrap_vals.append(a)
+
+    aic_std = np.std(aic_boostrap_vals)
+    return aic_val, aic_std
+
+
 def bic(log_llhs, n_samples, n_params):
     """
     bic = -2 \ln p(y | \theta_{MLE}) + \ln(n)k
