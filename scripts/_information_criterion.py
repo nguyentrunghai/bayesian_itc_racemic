@@ -63,7 +63,7 @@ def bic(log_llhs, n_samples, n_params):
     return -2 * np.max(log_llhs) + np.log(n_samples) * n_params
 
 
-def bic_boostrap(log_llhs, n_samples, n_params, repeats=1000):
+def bic_bootstrap(log_llhs, n_samples, n_params, repeats=1000):
     bic_val = bic(log_llhs, n_samples, n_params)
 
     bic_boostrap_vals = []
