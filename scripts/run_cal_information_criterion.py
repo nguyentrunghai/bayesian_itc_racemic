@@ -96,7 +96,7 @@ for exper in experiments:
 
     traces_2c = get_values_from_trace_files(model_2c, trace_files_2c)
     traces_rm = get_values_from_trace_files(model_rm, trace_files_rm)
-    traces_em = get_values_from_trace_files(model_rm, trace_files_em)
+    traces_em = get_values_from_trace_files(model_em, trace_files_em)
 
     log_llhs_2c = log_likelihood_trace(model_2c, traces_2c)
     log_llhs_rm = log_likelihood_trace(model_rm, traces_rm)
