@@ -14,6 +14,8 @@ import pandas as pd
 
 from _information_criterion import get_n_injections, get_n_params
 from _information_criterion import load_model, get_values_from_trace_files
+from _information_criterion import log_likelihood_trace
+from _information_criterion import bic_boostrap, wbic_bootstrap
 
 parser = argparse.ArgumentParser()
 
@@ -52,9 +54,13 @@ print("exclude_repeats:", exclude_repeats)
 experiments = args.experiments.split()
 print("experiments", experiments)
 
-
+bics = {}
+wbics = {}
 for exper in experiments:
     print("\n\n", exper)
+
+    bics[exper] = {}
+    wbics[exper] = {}
 
     dirs_2c = glob.glob(os.path.join(args.two_component_mcmc_dir, args.repeat_prefix + "*", exper, args.trace_pickle))
     dirs_2c = [os.path.dirname(p) for p in dirs_2c]
@@ -79,6 +85,10 @@ for exper in experiments:
     model_rm = load_model(os.path.join(dirs_rm[0], args.model_pickle))
     model_em = load_model(os.path.join(dirs_em[0], args.model_pickle))
 
+    n_params_2c = get_n_params(model_2c)
+    n_params_rm = get_n_params(model_rm)
+    n_params_em = get_n_params(model_em)
+
     trace_files_2c = [os.path.join(d, args.trace_pickle) for d in dirs_2c]
     trace_files_rm = [os.path.join(d, args.trace_pickle) for d in dirs_rm]
     trace_files_em = [os.path.join(d, args.trace_pickle) for d in dirs_em]
@@ -86,4 +96,19 @@ for exper in experiments:
     traces_2c = get_values_from_trace_files(model_2c, trace_files_2c)
     traces_rm = get_values_from_trace_files(model_rm, trace_files_rm)
     traces_em = get_values_from_trace_files(model_rm, trace_files_em)
-    
+
+    log_llhs_2c = log_likelihood_trace(model_2c, traces_2c)
+    log_llhs_rm = log_likelihood_trace(model_rm, traces_rm)
+    log_llhs_em = log_likelihood_trace(model_em, traces_em)
+
+    bic, bic_std = bic_boostrap(log_llhs_2c,  n_injections, n_params_2c)
+    bics[exper]["2C"] = bic
+    bics[exper]["2C_std"] = bic_std
+
+    bic, bic_std = bic_boostrap(log_llhs_rm, n_injections, n_params_rm)
+    bics[exper]["RM"] = bic
+    bics[exper]["RM_std"] = bic_std
+
+    bic, bic_std = bic_boostrap(log_llhs_em, n_injections, n_params_em)
+    bics[exper]["EM"] = bic
+    bics[exper]["EM_std"] = bic_std
