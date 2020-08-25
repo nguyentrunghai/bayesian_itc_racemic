@@ -128,8 +128,8 @@ for exper in experiments:
     wbics[exper]["EM"] = wbic
     wbics[exper]["EM_std"] = wbic_std
 
-bics = pd.DataFrame(bics)
-wbics = pd.DataFrame(wbics)
+bics = pd.DataFrame(bics).T
+wbics = pd.DataFrame(wbics).T
 
 bics.to_csv("bic.csv", float_format="%0.5f", index=False)
 wbics.to_csv("wbic.csv", float_format="%0.5f", index=False)
