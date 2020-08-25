@@ -76,3 +76,17 @@ def wbic(log_llhs, n_samples):
 
     result = np.sum(-log_llhs * weights) / np.sum(weights)
     return result
+
+
+def wbic_bootstrap(log_llhs, n_samples, repeats=1000):
+    wbic_val = wbic(log_llhs, n_samples)
+
+    wbic_vals = []
+    size = len(log_llhs)
+    for _ in range(repeats):
+        rnd_log_llhs = np.random.choice(log_llhs, size=size, replace=True)
+        b = wbic(rnd_log_llhs, n_samples)
+        wbic_vals.append(b)
+
+    wbic_std = np.std(wbic_vals)
+    return wbic_val, wbic_std
