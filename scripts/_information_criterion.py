@@ -66,3 +66,13 @@ def bic_boostrap(log_llhs, n_samples, n_params, repeats=1000):
 
     bic_std = np.std(bic_boostrap_vals)
     return bic_val, bic_std
+
+
+def wbic(log_llhs, n_samples):
+    beta = 1. / np.log(n_samples)
+    weights = log_llhs * (beta - 1)
+    weights -= weights.max()
+    weights = np.exp(weights)
+
+    result = np.sum(-log_llhs * weights) / np.sum(weights)
+    return result
